@@ -14,13 +14,10 @@ const { isAdmin } = require('../middlewares/isAdmin');
 
 const router = express.Router();
 
-// Create first admin (seed route - remove in production)
 router.get('/seed', createFirstAdmin);
 
-// Public routes
 router.post('/login', adminLogin);
 
-// Protected admin routes
 router.post('/register', verifyToken, isAdmin, adminRegister);
 router.get('/verify', verifyToken, getAdmin);
 router.post('/logout', verifyToken, adminLogout);

@@ -1,4 +1,3 @@
-// Components/Header/AdminHeader.jsx
 import React from 'react';
 import { BellIcon, MagnifyingGlassIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 

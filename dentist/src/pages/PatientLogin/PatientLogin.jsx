@@ -10,22 +10,21 @@ import {
     ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const PatientLogin = ({ isLogin = true }) => {
     const [isLoginMode, setIsLoginMode] = useState(isLogin);
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { setError, error, loading, setLoading, handlePatientLogin } = useAuth();
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: ''
     });
-    const navigate = useNavigate();
 
-    // Set axios defaults
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'http://localhost:8000';
 
@@ -35,46 +34,9 @@ const PatientLogin = ({ isLogin = true }) => {
             ...prev,
             [name]: value
         }));
-        // Clear errors when user starts typing
+
         if (error) setError('');
         if (success) setSuccess('');
-    };
-
-    const handleLogin = async () => {
-        try {
-            setLoading(true);
-            setError('');
-
-            const response = await axios.post('/api/users/login', {
-                email: formData.email,
-                password: formData.password
-            });
-
-            if (response.data.success) {
-                setSuccess('Login successful! Redirecting...');
-
-                // Store user data with role
-                const userData = {
-                    id: response.data.data.id,
-                    name: response.data.data.name,
-                    email: response.data.data.email,
-                    role: 'patient' // This should come from your backend
-                };
-
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                // Redirect to patient dashboard
-                navigate('/patient-dashboard/home');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Login failed. Please try again.';
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
-        }
     };
 
     const handleSignup = async () => {
@@ -101,11 +63,9 @@ const PatientLogin = ({ isLogin = true }) => {
             if (response.data.success) {
                 setSuccess('Registration successful! Please login.');
 
-                // Switch to login mode after successful registration
                 setTimeout(() => {
                     setIsLoginMode(true);
                     setSuccess('');
-                    // Clear password fields
                     setFormData(prev => ({
                         ...prev,
                         password: '',
@@ -125,7 +85,7 @@ const PatientLogin = ({ isLogin = true }) => {
         e.preventDefault();
 
         if (isLoginMode) {
-            await handleLogin();
+            await handlePatientLogin(formData.email, formData.password);
         } else {
             await handleSignup();
         }

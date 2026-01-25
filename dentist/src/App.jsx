@@ -26,7 +26,6 @@ import Analyze from './pages/Analyze/Analyze';
 function App() {
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/patient-login" element={<PatientLogin isLogin={true} />} />
       <Route path="/analyze" element={<Analyze isLogin={false} />} />
       <Route path="/patient-signup" element={<PatientLogin isLogin={false} />} />
@@ -36,9 +35,8 @@ function App() {
 
       <Route path="/requests" element={<AdminRequests />} />
 
-      {/* Patient Routes */}
       <Route path="/patient-dashboard" element={
-        <ProtectedRoute allowedRole="patient">
+        <ProtectedRoute allowedRoles="patient">
           <PatientLayout />
         </ProtectedRoute>
       }>
@@ -50,9 +48,8 @@ function App() {
         <Route path="consultations" element={<PatientAllConsultations />} />
       </Route>
 
-      {/* Dentist Routes */}
       <Route path="/dentist-dashboard" element={
-        <ProtectedRoute allowedRole="dentist">
+        <ProtectedRoute allowedRoles="dentist">
           <DentistLayout />
         </ProtectedRoute>
       }>
@@ -62,9 +59,8 @@ function App() {
         <Route path="slots" element={<AddSlots />} />
       </Route>
 
-      {/* Admin Routes */}
       <Route path="/admin-dashboard" element={
-        <ProtectedRoute allowedRole="admin">
+        <ProtectedRoute allowedRoles="admin">
           <AdminLayout />
         </ProtectedRoute>
       }>
@@ -76,7 +72,6 @@ function App() {
         <Route path="reports" element={<AdminAllReports />} />
       </Route>
 
-      {/* Default redirects */}
       <Route path="/" element={<Navigate to="/patient-login" replace />} />
       <Route path="*" element={<Navigate to="/patient-login" replace />} />
     </Routes>

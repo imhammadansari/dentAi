@@ -2,7 +2,6 @@ const adminModel = require("../models/adminModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
-// Create First Admin (Seed)
 const createFirstAdmin = async () => {
     try {
         const adminExists = await adminModel.findOne({ email: 'admin@dentai.com' });
@@ -21,7 +20,6 @@ const createFirstAdmin = async () => {
     }
 };
 
-// Admin Registration (Only by existing admin)
 const adminRegister = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -73,7 +71,6 @@ const adminRegister = async (req, res) => {
     }
 };
 
-// Admin Login
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -85,7 +82,6 @@ const adminLogin = async (req, res) => {
             });
         }
 
-        // Find admin by email
         const admin = await adminModel.findOne({ email });
 
         if (!admin) {
@@ -95,7 +91,6 @@ const adminLogin = async (req, res) => {
             });
         }
 
-        // Verify password
         const isPasswordValid = await bcrypt.compare(password, admin.password);
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -104,7 +99,6 @@ const adminLogin = async (req, res) => {
             });
         }
 
-        // Generate tokens
         const accessToken = jwt.sign(
             {
                 email: admin.email,
@@ -126,11 +120,9 @@ const adminLogin = async (req, res) => {
             { expiresIn: "7days" }
         );
 
-        // Save refresh token to database
         admin.refreshToken = refreshToken;
         await admin.save();
 
-        // Set cookies
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             sameSite: 'None',
@@ -167,7 +159,6 @@ const adminLogin = async (req, res) => {
     }
 };
 
-// Get Admin Profile
 const getAdmin = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -200,7 +191,6 @@ const getAdmin = async (req, res) => {
     }
 };
 
-// Admin Logout
 const adminLogout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
@@ -219,7 +209,6 @@ const adminLogout = async (req, res) => {
             await admin.save();
         }
 
-        // Clear cookies
         res.clearCookie("accessToken", {
             httpOnly: true,
             sameSite: 'None',
@@ -248,7 +237,6 @@ const adminLogout = async (req, res) => {
     }
 };
 
-// Get All Admins
 const getAllAdmins = async (req, res) => {
     try {
         const admins = await adminModel.find().select('-password');

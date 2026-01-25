@@ -13,13 +13,13 @@ import {
     BriefcaseIcon
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const DentistLogin = ({ isLogin = true }) => {
     const [isLoginMode, setIsLoginMode] = useState(isLogin);
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { setError, error, loading, setLoading, handleDentistLogin } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -29,9 +29,7 @@ const DentistLogin = ({ isLogin = true }) => {
         licenseNumber: '',
         phone: ''
     });
-    const navigate = useNavigate();
 
-    // Set axios defaults
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'http://localhost:8000';
 
@@ -45,47 +43,7 @@ const DentistLogin = ({ isLogin = true }) => {
         if (success) setSuccess('');
     };
 
-    const handleLogin = async () => {
-        try {
-            setLoading(true);
-            setError('');
-            
-            const response = await axios.post('/api/dentists/login', {
-                email: formData.email,
-                password: formData.password
-            });
-
-            if (response.data.success) {
-                setSuccess('Login successful! Redirecting...');
-                
-                // Store user data with role
-                const userData = {
-                    id: response.data.data.id,
-                    name: response.data.data.name,
-                    email: response.data.data.email,
-                    role: 'dentist',
-                    specialty: response.data.data.specialty,
-                    approvalStatus: response.data.data.approvalStatus
-                };
-                
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                // Redirect to dentist dashboard
-                navigate('/dentist-dashboard/home');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Login failed. Please try again.';
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleSignup = async () => {
-        // Validation
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match!');
             return;
@@ -117,7 +75,6 @@ const DentistLogin = ({ isLogin = true }) => {
             if (response.data.success) {
                 setSuccess('Registration submitted for admin approval! You will receive an email when approved.');
                 
-                // Clear form
                 setFormData({
                     name: '',
                     email: '',
@@ -141,7 +98,7 @@ const DentistLogin = ({ isLogin = true }) => {
         e.preventDefault();
         
         if (isLoginMode) {
-            await handleLogin();
+            await handleDentistLogin(formData.email, formData.password);
         } else {
             await handleSignup();
         }
@@ -169,7 +126,7 @@ const DentistLogin = ({ isLogin = true }) => {
                         {error && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#dc2626' }}>
-                                    ⚠️ {error}
+                                    {error}
                                 </p>
                             </div>
                         )}
@@ -177,7 +134,7 @@ const DentistLogin = ({ isLogin = true }) => {
                         {success && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#16a34a' }}>
-                                    ✅ {success}
+                                    {success}
                                 </p>
                             </div>
                         )}

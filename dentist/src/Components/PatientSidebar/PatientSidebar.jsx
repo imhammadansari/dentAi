@@ -1,4 +1,3 @@
-// Components/Sidebar/PatientSidebar.jsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -13,10 +12,13 @@ import {
     BellIcon,
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
-    const navigate = useNavigate();
+
     const { name, email } = userData;
+    const { handleLogout } = useAuth();
+
 
     const navItems = [
         { id: 'home', path: '/patient-dashboard/home', icon: HomeIcon, label: 'Dashboard' },
@@ -26,21 +28,6 @@ const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
         { id: 'consultations', path: '/patient-dashboard/consultations', icon: ClockIcon, label: 'My Consultations' },
     ];
 
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8000/api/users/logout', {}, {
-                withCredentials: true
-            });
-            
-            localStorage.removeItem('user');
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            
-            navigate('/patient-login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
 
     return (
         <div className="w-64 h-screen flex flex-col" style={{ backgroundColor: '#f0fdf4', borderRight: '1px solid #d1fae5' }}>
@@ -102,7 +89,6 @@ const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
                     })}
                 </nav>
 
-                {/* Stats Section */}
                 <div className="mt-8 p-4 rounded-xl" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '1px solid #d1fae5' }}>
                     <h4 className="font-medium mb-2" style={{ color: '#14532d' }}>Quick Stats</h4>
                     <div className="space-y-2">
@@ -117,7 +103,6 @@ const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
                     </div>
                 </div>
 
-                {/* Logout Button */}
                 <div className="mt-8">
                     <button
                         onClick={handleLogout}

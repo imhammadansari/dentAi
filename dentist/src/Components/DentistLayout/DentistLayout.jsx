@@ -1,19 +1,15 @@
-// Components/Layout/DentistLayout.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import DentistSidebar from '../DentistSidebar/DentistSidebar';
 import DentistHeader from '../DentistHeader/DentistHeader';
+import { useAuth } from '../../context/AuthContext';
 
 const DentistLayout = () => {
     const [activeTab, setActiveTab] = useState('home');
     const location = useLocation();
-    const [userData, setUserData] = useState(null);
+    const {user} = useAuth();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUserData(JSON.parse(storedUser));
-        }
         
         const path = location.pathname;
         if (path.includes('patients')) setActiveTab('patients');
@@ -21,7 +17,7 @@ const DentistLayout = () => {
         else setActiveTab('home');
     }, [location.pathname]);
 
-    if (!userData) {
+    if (!user) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-blue-50">
                 <div className="text-center">
@@ -35,12 +31,12 @@ const DentistLayout = () => {
     return (
         <div className="flex h-screen bg-gradient-to-br from-white to-blue-50 overflow-hidden">
             <div className="h-screen">
-                <DentistSidebar activeTab={activeTab} setActiveTab={setActiveTab} userData={userData} />
+                <DentistSidebar activeTab={activeTab} setActiveTab={setActiveTab} userData={user} />
             </div>
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
-                <DentistHeader activeTab={activeTab} userData={userData} />
+                <DentistHeader activeTab={activeTab} userData={user} />
                 <main className="flex-1 overflow-y-auto p-6">
-                    <Outlet context={{ activeTab, userData }} />
+                    <Outlet context={{ activeTab, user }} />
                 </main>
             </div>
         </div>

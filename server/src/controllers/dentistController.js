@@ -2,7 +2,6 @@ const dentistModel = require("../models/dentistModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
-// Dentist Registration
 const dentistRegister = async (req, res) => {
     try {
         const { name, email, password, specialty, licenseNumber, phone } = req.body;
@@ -14,7 +13,6 @@ const dentistRegister = async (req, res) => {
             });
         }
 
-        // Check if dentist already exists
         let existingDentist = await dentistModel.findOne({ email });
         if (existingDentist) {
             return res.status(400).json({ 
@@ -23,7 +21,6 @@ const dentistRegister = async (req, res) => {
             });
         }
 
-        // Hash password
         bcrypt.genSalt(10, (err, salt) => {
             if (err) {
                 return res.status(500).json({ 
@@ -43,7 +40,6 @@ const dentistRegister = async (req, res) => {
                 }
 
                 try {
-                    // Create new dentist with pending status
                     const dentist = await dentistModel.create({
                         name,
                         email,
@@ -51,7 +47,7 @@ const dentistRegister = async (req, res) => {
                         specialty: specialty || "General Dentistry",
                         licenseNumber: licenseNumber || "",
                         phone: phone || "",
-                        role: "Dentist",
+                        role: "dentist",
                         approvalStatus: "Pending"
                     });
 
@@ -86,7 +82,6 @@ const dentistRegister = async (req, res) => {
     }
 };
 
-// Dentist Login
 const dentistLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -98,7 +93,6 @@ const dentistLogin = async (req, res) => {
             });
         }
 
-        // Find dentist by email
         const dentist = await dentistModel.findOne({ email });
         
         if (!dentist) {
@@ -108,7 +102,6 @@ const dentistLogin = async (req, res) => {
             });
         }
 
-        // Check approval status
         if (dentist.approvalStatus !== "Approved") {
             return res.status(403).json({ 
                 success: false, 
@@ -117,7 +110,6 @@ const dentistLogin = async (req, res) => {
             });
         }
 
-        // Verify password
         bcrypt.compare(password, dentist.password, async (err, result) => {
             if (err) {
                 return res.status(500).json({ 
@@ -133,7 +125,6 @@ const dentistLogin = async (req, res) => {
                 });
             }
 
-            // Generate tokens
             const accessToken = jwt.sign(
                 { 
                     email: dentist.email, 
@@ -155,11 +146,9 @@ const dentistLogin = async (req, res) => {
                 { expiresIn: "7days" }
             );
 
-            // Save refresh token to database
             dentist.refreshToken = refreshToken;
             await dentist.save();
 
-            // Set cookies
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
                 sameSite: 'None',
@@ -199,7 +188,6 @@ const dentistLogin = async (req, res) => {
     }
 };
 
-// Get Dentist Profile
 const getDentist = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -235,7 +223,6 @@ const getDentist = async (req, res) => {
     }
 };
 
-// Dentist Logout
 const dentistLogout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
@@ -249,12 +236,11 @@ const dentistLogout = async (req, res) => {
     try {
         const dentist = await dentistModel.findOne({ refreshToken });
         
-        if (dentist) {
+        if (!dentist) {
             dentist.refreshToken = null;
             await dentist.save();
         }
 
-        // Clear cookies
         res.clearCookie("accessToken", {
             httpOnly: true,
             sameSite: 'None',
@@ -304,11 +290,10 @@ const getPendingDentists = async (req, res) => {
     }
 };
 
-// Update Dentist Approval Status (Admin)
 const updateDentistStatus = async (req, res) => {
     try {
         const { dentistId } = req.params;
-        const { status } = req.body; // "Approved" or "Rejected"
+        const { status } = req.body;
 
         if (!["Approved", "Rejected"].includes(status)) {
             return res.status(400).json({

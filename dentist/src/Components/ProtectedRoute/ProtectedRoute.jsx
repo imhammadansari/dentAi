@@ -1,69 +1,9 @@
-// Components/ProtectedRoute/ProtectedRoute.jsx
-import React, { useEffect, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-const ProtectedRoute = ({ children, allowedRole }) => {
-    const [auth, setAuth] = useState({ isAuthenticated: false, userRole: null });
-    const [loading, setLoading] = useState(true);
-    const location = useLocation();
-
-    useEffect(() => {
-        const verifyAuth = async () => {
-            try {
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    const user = JSON.parse(storedUser);
-                    setAuth({
-                        isAuthenticated: true,
-                        userRole: user.role
-                    });
-                    setLoading(false);
-                    return;
-                }
-
-                const response = await axios.get('http://localhost:8000/api/users/verify', {
-                    withCredentials: true
-                });
-
-                if (response.data.success) {
-                    const userData = response.data.user;
-                    localStorage.setItem('user', JSON.stringify(userData));
-                    
-                    setAuth({
-                        isAuthenticated: true,
-                        userRole: userData.role
-                    });
-                }
-            } catch (error) {
-                console.error('Auth verification failed:', error);
-                setAuth({ isAuthenticated: false, userRole: null });
-                
-                try {
-                    await axios.post('http://localhost:8000/api/users/refresh-token', {}, {
-                        withCredentials: true
-                    });
-                    const retryResponse = await axios.get('http://localhost:8000/api/users/verify', {
-                        withCredentials: true
-                    });
-                    if (retryResponse.data.success) {
-                        const userData = retryResponse.data.user;
-                        localStorage.setItem('user', JSON.stringify(userData));
-                        setAuth({
-                            isAuthenticated: true,
-                            userRole: userData.role
-                        });
-                    }
-                } catch (refreshError) {
-                    setAuth({ isAuthenticated: false, userRole: null });
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        verifyAuth();
-    }, [location.pathname]);
+const ProtectedRoute = ({ children, allowedRoles }) => {
+    const { user, loading, isAuthenticated } = useAuth();
 
     if (loading) {
         return (
@@ -76,14 +16,12 @@ const ProtectedRoute = ({ children, allowedRole }) => {
         );
     }
 
-    if (!auth.isAuthenticated) {
+    if (!isAuthenticated()) {
         return <Navigate to="/patient-login" replace />;
     }
 
-    // Check role-based access
-    if (allowedRole && auth.userRole !== allowedRole) {
-        // Redirect based on role
-        switch (auth.userRole) {
+    if (allowedRoles && !allowedRoles.includes(user?.role.toLowerCase())) {
+        switch (user?.role.toLowerCase()) {
             case 'patient':
                 return <Navigate to="/patient-dashboard/home" replace />;
             case 'dentist':

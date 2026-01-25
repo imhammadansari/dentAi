@@ -10,20 +10,18 @@ import {
     KeyIcon
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const { handleAdminLogin, loading, error, setError } = useAuth();
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
-    const navigate = useNavigate();
 
-    // Set axios defaults
-    axios.defaults.withCredentials = true;
-    axios.defaults.baseURL = 'http://localhost:8000';
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -31,46 +29,21 @@ const AdminLogin = () => {
             ...prev,
             [name]: value
         }));
+
         if (error) setError('');
     };
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        try {
-            setLoading(true);
-            setError('');
-            
-            const response = await axios.post('/api/admin/login', {
-                email: formData.email,
-                password: formData.password
-            });
 
-            if (response.data.success) {
-                // Store admin data
-                const userData = {
-                    id: response.data.data.id,
-                    name: response.data.data.name,
-                    email: response.data.data.email,
-                    role: 'admin',
-                    permissions: response.data.data.permissions
-                };
-                
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
+        const result = await handleAdminLogin(formData.email, formData.password);
 
-                // Redirect to admin dashboard
-                navigate('/admin-dashboard/home');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Login failed. Please try again.';
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
+        if (result) {
+            navigate('/admin-dashboard/home');
         }
-    };
+    }
+
+
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
@@ -97,7 +70,7 @@ const AdminLogin = () => {
                         {error && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#dc2626' }}>
-                                    ⚠️ {error}
+                                    {error}
                                 </p>
                             </div>
                         )}
@@ -112,7 +85,7 @@ const AdminLogin = () => {
                             </p>
                         </div>
 
-                        <form onSubmit={handleLogin}>
+                        <form onSubmit={handleSubmit}>
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium" style={{ color: '#374151' }}>Admin Email</label>
                                 <div className="relative">
@@ -206,7 +179,6 @@ const AdminLogin = () => {
                         </div>
                     </div>
 
-                    {/* Security Features */}
                     <div className="px-8 pb-8">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-xl text-center" style={{ backgroundColor: '#faf5ff', border: '1px solid #f3e8ff' }}>

@@ -1,4 +1,3 @@
-// Components/Sidebar/DentistSidebar.jsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -11,32 +10,18 @@ import {
     BellIcon,
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const DentistSidebar = ({ activeTab, setActiveTab, userData }) => {
-    const navigate = useNavigate();
     const { name, email } = userData || {};
+    const { handleLogout } = useAuth();
+
 
     const navItems = [
         { id: 'home', path: '/dentist-dashboard/home', icon: HomeIcon, label: 'Dashboard' },
         { id: 'patients', path: '/dentist-dashboard/patients', icon: UsersIcon, label: 'My Patients' },
         { id: 'slots', path: '/dentist-dashboard/slots', icon: CalendarIcon, label: 'Add Slots' },
     ];
-
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8000/api/users/logout', {}, {
-                withCredentials: true
-            });
-
-            localStorage.removeItem('user');
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-
-            navigate('/dentist-login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
 
     return (
         <div className="w-64 h-screen bg-gradient-to-br from-white to-emerald-50 border-r border-emerald-100 flex flex-col">

@@ -1,4 +1,3 @@
-// Components/Sidebar/AdminSidebar.jsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -7,16 +6,16 @@ import {
     HomeIcon,
     UsersIcon,
     DocumentTextIcon,
-    ChartBarIcon,
     ShieldCheckIcon,
     BellIcon,
     CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminSidebar = ({ activeTab, setActiveTab, userData }) => {
-    const navigate = useNavigate();
     const { name, email } = userData;
+    const { handleLogout } = useAuth();
 
     const navItems = [
         { id: 'home', path: '/admin-dashboard/home', icon: HomeIcon, label: 'Dashboard' },
@@ -26,21 +25,6 @@ const AdminSidebar = ({ activeTab, setActiveTab, userData }) => {
         { id: 'reports', path: '/admin-dashboard/reports', icon: DocumentTextIcon, label: 'All Reports' },
     ];
 
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8000/api/users/logout', {}, {
-                withCredentials: true
-            });
-            
-            localStorage.removeItem('user');
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            
-            navigate('/admin-login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
 
     return (
         <div className="w-64 h-screen flex flex-col" style={{ backgroundColor: '#f0fdf4', borderRight: '1px solid #d1fae5' }}>
