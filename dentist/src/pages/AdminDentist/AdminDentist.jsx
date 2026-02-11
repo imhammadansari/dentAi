@@ -108,8 +108,8 @@ const AdminDentist = () => {
     };
 
     return (
-        <div className="p-6 min-h-full">
-            <div className="max-w-7xl mx-auto">
+        <div className="p-2 p-4 min-h-full">
+            <div className="w-full mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h3 className="text-2xl font-bold text-emerald-900">Dentist Management</h3>
@@ -118,17 +118,17 @@ const AdminDentist = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-black font-medium">Total Dentists</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">{dentists.length}</h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-black font-medium">Verified</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">
                             {dentists.filter(d => d.status === 'verified').length}
                         </h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-black font-medium">Avg. Patients</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">
                             {Math.round(dentists.reduce((sum, d) => sum + d.patients, 0) / dentists.length)}
@@ -136,7 +136,7 @@ const AdminDentist = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm mb-6">
+                <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
@@ -262,7 +262,7 @@ const AdminDentist = () => {
                 </div>
 
                 {/* Pagination (optional) */}
-                <div className="mt-6 flex justify-between items-center">
+                <div className="mt-6 flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between items-center">
                     <p className="text-emerald-600">
                         Showing {filteredDentists.length} of {dentists.length} dentists
                     </p>

@@ -19,3 +19,19 @@
   }
 
 }
+
+.calendar-wrapper {
+  transform: scale(1.2);
+  transform-origin: top left;
+}
+
+.calendar-wrapper {
+  transform: scale(1.2);
+  transform-origin: top left;
+}
+
+@media (max-width: 768px) {
+  .calendar-wrapper {
+    transform: scale(1.04);
+  }
+}

@@ -124,10 +124,10 @@ const AdminPatients = () => {
     }, {});
 
     return (
-        <div className="p-6 min-h-full">
-            <div className="max-w-7xl mx-auto">
+        <div className="p-2 lg:p-4 min-h-full">
+            <div className="w-full mx-auto">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex justify-between items-center lg:mb-8">
                     <div>
                         <h3 className="text-2xl font-bold text-primary-900">Patient Management</h3>
                         <p className="text-primary-600">Manage all patients on the platform</p>

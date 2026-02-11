@@ -27,8 +27,8 @@ const AdminDashboard = () => {
 
 
     return (
-        <div className="p-6 space-y-6 min-h-full">
-            <div className="flex justify-between items-center">
+        <div className="p-2 lg:p-4 space-y-6 min-h-full">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between items-center">
                 <div>
                     <h3 className="text-2xl font-bold text-primary-900">System Overview</h3>
                     <p className="text-primary-600">Monitor platform performance and statistics</p>
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {stats.map((stat, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={idx} className="bg-white rounded-2xl border border-primary-100 p-4 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-primary-600 font-medium">{stat.label}</p>
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
             {/* Two Column Layout */}
             <div className=" gap-6">
                 {/* Recent Activities */}
-                <div className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm">
+                <div className="bg-white rounded-2xl border border-primary-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-primary-900">Recent Activities</h4>
                         <button className="text-primary-600 hover:text-primary-700 font-medium">

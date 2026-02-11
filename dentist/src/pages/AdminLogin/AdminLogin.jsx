@@ -36,10 +36,14 @@ const AdminLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const result = await handleAdminLogin(formData.email, formData.password);
+        try {
+            const result = await handleAdminLogin(formData.email, formData.password);
 
-        if (result) {
-            navigate('/admin-dashboard/home');
+            if (result) {
+                navigate('/admin-dashboard/home');
+            }
+        } catch (error) {
+
         }
     }
 

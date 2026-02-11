@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = async (req, res, next) => {
-    console.log('=== VERIFY TOKEN MIDDLEWARE ===');
-    console.log('Cookies:', req.cookies);
     
     let accessToken = req.cookies.accessToken;
     
@@ -15,15 +13,11 @@ const verifyToken = async (req, res, next) => {
     }
 
     try {
-        // Verify access token
         const decoded = jwt.verify(accessToken, process.env.JWT_TOKEN);
-        console.log('Token decoded successfully:', decoded);
+        // console.log('Token decoded successfully:', decoded);
         
-        // Make sure role is included
         if (!decoded.role) {
             console.log('No role found in token');
-            // Try to get role from ID
-            // You might need to fetch user from database here
         }
         
         req.user = decoded;
@@ -35,7 +29,6 @@ const verifyToken = async (req, res, next) => {
         if (error.name === 'TokenExpiredError') {
             console.log('Access token expired, checking for refresh token');
             
-            // Check for refresh token
             const refreshToken = req.cookies.refreshToken;
             if (!refreshToken) {
                 return res.status(401).json({
@@ -45,11 +38,9 @@ const verifyToken = async (req, res, next) => {
             }
             
             try {
-                // Verify refresh token
                 const refreshDecoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
                 console.log('Refresh token decoded:', refreshDecoded);
                 
-                // Generate new access token
                 const newAccessToken = jwt.sign(
                     { 
                         id: refreshDecoded.id, 
@@ -60,7 +51,6 @@ const verifyToken = async (req, res, next) => {
                     { expiresIn: '10h' }
                 );
                 
-                // Set new access token in cookie
                 res.cookie("accessToken", newAccessToken, {
                     httpOnly: true,
                     secure: true,

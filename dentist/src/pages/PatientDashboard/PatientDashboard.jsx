@@ -19,9 +19,9 @@ const mockConsultations = [
 
 const PatientDashboard = () => {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 lg:p-4 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-white to-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-emerald-50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-emerald-600 font-medium">Total Reports</p>
@@ -37,7 +37,7 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-emerald-50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-emerald-600 font-medium">Consultations</p>
@@ -53,7 +53,7 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-emerald-50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-emerald-600 font-medium">AI Analysis</p>
@@ -67,7 +67,7 @@ const PatientDashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+      <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-emerald-900">Recent Reports</h3>
           <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
@@ -87,7 +87,7 @@ const PatientDashboard = () => {
                     {finding}
                   </span>
                 ))}
-                <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
+                <button className="hidden lg:block px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
                   View Details
                 </button>
               </div>
@@ -96,7 +96,7 @@ const PatientDashboard = () => {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 p-6 shadow-sm">
+      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 p-4 shadow-sm">
         <h3 className="text-xl font-bold text-emerald-900 mb-6">Upcoming Consultation</h3>
         {mockConsultations.filter(c => c.status === 'upcoming').map((consultation) => (
           <div key={consultation.id} className="flex items-center justify-between p-6 bg-white rounded-xl shadow-sm">
@@ -116,7 +116,7 @@ const PatientDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="hidden lg:flex gap-3">
               <button className="px-6 py-3 bg-emerald-500 text-white font-medium rounded-xl hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200">
                 Chat
               </button>

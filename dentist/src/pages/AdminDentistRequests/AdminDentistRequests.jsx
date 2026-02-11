@@ -125,7 +125,7 @@ const AdminRequests = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="p-2 lg:p-4 space-y-6">
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">Dentist Requests</h1>
                 <p className="text-emerald-600">Review and manage dentist registration requests</p>
@@ -144,7 +144,7 @@ const AdminRequests = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Approved</p>
@@ -156,7 +156,7 @@ const AdminRequests = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Rejected</p>
@@ -168,7 +168,7 @@ const AdminRequests = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Total Requests</p>
@@ -181,7 +181,7 @@ const AdminRequests = () => {
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
+            <div className="bg-white p-4 rounded-xl border border-gray-200">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1">
                         <div className="relative">

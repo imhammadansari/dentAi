@@ -9,9 +9,9 @@ const mockConsultations = [
 
 const PatientAllConsultations = () => {
     return (
-        <div className="p-6">
-            <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
+        <div className="p-2 lg:p-4">
+            <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
+                <div className="flex flex-col lg:flex-row items-center justify-between mb-6 gap-4">
                     <h3 className="text-xl font-bold text-emerald-900">Consultation History</h3>
                     <div className="flex gap-2">
                         <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium">All</button>
@@ -21,11 +21,11 @@ const PatientAllConsultations = () => {
                 </div>
                 <div className="space-y-4">
                     {mockConsultations.map((consultation) => (
-                        <div key={consultation.id} className={`p-6 rounded-xl ${consultation.status === 'upcoming'
+                        <div key={consultation.id} className={`p-4 rounded-xl ${consultation.status === 'upcoming'
                                 ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-100'
                                 : 'bg-white border border-emerald-100'
                             }`}>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-4 lg:gap-0">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${consultation.status === 'completed'
                                             ? 'bg-green-100 text-green-600'
@@ -43,7 +43,7 @@ const PatientAllConsultations = () => {
                                         )}
                                     </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right flex items-center justify-center gap-4">
                                     <span className={`px-4 py-2 rounded-full font-medium ${consultation.status === 'completed'
                                             ? 'bg-green-100 text-green-700'
                                             : consultation.status === 'upcoming'
@@ -52,7 +52,7 @@ const PatientAllConsultations = () => {
                                         }`}>
                                         {consultation.status.charAt(0).toUpperCase() + consultation.status.slice(1)}
                                     </span>
-                                    <div className="mt-3">
+                                    <div className="">
                                         {consultation.status === 'upcoming' ? (
                                             <button className="px-6 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
                                                 Chat

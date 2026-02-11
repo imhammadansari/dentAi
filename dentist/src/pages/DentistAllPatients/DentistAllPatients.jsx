@@ -60,7 +60,7 @@ const DentistAllPatients = () => {
     }, {});
 
     return (
-        <div className="p-6 min-h-full">
+        <div className="p-2 lg:p-4 min-h-full">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
@@ -70,21 +70,21 @@ const DentistAllPatients = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-emerald-600 font-medium">Total Patients</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">{patients.length}</h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-emerald-600 font-medium">Active Patients</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">{statusCounts.active || 0}</h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-emerald-600 font-medium">Avg. Visits</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">
                             {(patients.reduce((sum, p) => sum + p.totalVisits, 0) / patients.length).toFixed(1)}
                         </h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <p className="text-emerald-600 font-medium">Upcoming Appointments</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">
                             {patients.filter(p => p.nextAppointment).length}
@@ -92,7 +92,7 @@ const DentistAllPatients = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm mb-6">
+                <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
@@ -147,7 +147,7 @@ const DentistAllPatients = () => {
                                 </div>
                             </div>
 
-                            <div className="p-6">
+                            <div className="p-4">
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3">
                                         <EnvelopeIcon className="w-5 h-5 text-emerald-500" />

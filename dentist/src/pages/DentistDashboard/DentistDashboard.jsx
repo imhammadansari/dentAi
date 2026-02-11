@@ -29,8 +29,8 @@ const DentistDashboard = () => {
         ];
 
     return (
-        <div className="p-6 space-y-6 min-h-full">
-            <div className="flex justify-between items-center">
+        <div className="p-2 lg:p-4 space-y-6 min-h-full">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between lg:items-center">
                 <div>
                     <h3 className="text-xl font-bold text-black">Practice Overview</h3>
                     <p className="text-emerald-600">Monitor your dental practice performance</p>
@@ -53,7 +53,7 @@ const DentistDashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {stats.map((stat, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                    <div key={idx} className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-emerald-600 font-medium">{stat.label}</p>
@@ -73,7 +73,7 @@ const DentistDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-black">Upcoming Appointments</h4>
                         <button className="text-emerald-600 hover:text-emerald-700 font-medium">
@@ -107,7 +107,7 @@ const DentistDashboard = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+                <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-black">Recent Patients</h4>
                         <button className="text-emerald-600 hover:text-emerald-700 font-medium">
@@ -136,14 +136,14 @@ const DentistDashboard = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
+            <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                     <h4 className="text-lg font-bold text-black">Today's Schedule</h4>
                     <div className="flex items-center gap-4">
-                        <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
+                        <button className="px-2 text-[14px] lg:text-[16px] lg:px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
                             Add Time Slot
                         </button>
-                        <button className="px-4 py-2 bg-white border-2 border-emerald-200 text-emerald-700 rounded-lg font-medium hover:bg-emerald-50 transition-colors">
+                        <button className="px-2 text-[14px] lg:text-[16px] lg:px-4 py-2 bg-white border-2 border-emerald-200 text-emerald-700 rounded-lg font-medium hover:bg-emerald-50 transition-colors">
                             View Calendar
                         </button>
                     </div>

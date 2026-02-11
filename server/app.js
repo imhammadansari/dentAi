@@ -35,6 +35,7 @@ app.use(cookieParser());
 
 const userRoute = require('./src/routes/patientRoute');
 const dentistRoute = require('./src/routes/dentistRoute');
+const slotsRoute = require('./src/routes/slotsRoute');
 const adminRoute = require('./src/routes/adminRoute');
 const aiRoute = require('./src/routes/analysis');
 const { verifyToken } = require('./src/middlewares/verifyToken');
@@ -42,6 +43,7 @@ const { verifyToken } = require('./src/middlewares/verifyToken');
 
 app.use("/api/users", userRoute);
 app.use("/api/dentists", dentistRoute);
+app.use("/api/slots", slotsRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/analysis", aiRoute);
 

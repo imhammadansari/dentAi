@@ -32,7 +32,7 @@ const PatientLayout = () => {
 
     return (
         <div className="flex h-screen bg-gradient-to-br from-white to-green-50 overflow-hidden">
-            <div className="h-screen">
+            <div className="hidden lg:flex h-screen">
                 <PatientSidebar
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}

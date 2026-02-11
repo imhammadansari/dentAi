@@ -34,17 +34,17 @@ const PatientUploadXray = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 lg:p-6">
       <div className="max-w-4xl mx-auto">
 
-        <div className="bg-gradient-to-br from-white to-emerald-50 border-2 border-dashed border-emerald-200 rounded-3xl p-12 text-center mb-8">
-          <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CameraIcon className="w-12 h-12 text-emerald-500" />
+        <div className="bg-gradient-to-br from-white to-emerald-50 border-2 border-dashed border-emerald-200 rounded-3xl p-4 text-center mb-8">
+          <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-6">
+            <CameraIcon className="w-9 h-9 lg:w-12 lg:h-12 text-emerald-500" />
           </div>
 
-          <h3 className="text-2xl font-bold text-emerald-900 mb-3">Upload Dental X-Ray</h3>
+          <h3 className="text-2xl font-bold text-emerald-900 mb-1 lg:mb-3">Upload Dental X-Ray</h3>
 
-          <p className="text-emerald-600 mb-6 max-w-md mx-auto">
+          <p className="text-emerald-600 mb-6 max-w-md mx-auto text-[14px] lg:text-[16px]">
             Upload panoramic, bitewing, or periapical X-rays. Our AI will analyze and generate reports.
           </p>
 
@@ -56,7 +56,7 @@ const PatientUploadXray = () => {
             onChange={onFileChange}
           />
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col lg:flex-row justify-center gap-4">
             <label
               htmlFor="xrayUpload"
               className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-400 text-white font-bold rounded-xl cursor-pointer hover:shadow-lg hover:shadow-emerald-200 transition-all text-lg"

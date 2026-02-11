@@ -31,7 +31,7 @@ const AdminLayout = () => {
 
     return (
         <div className="flex h-screen bg-gradient-to-br from-white to-emerald-50 overflow-hidden">
-            <div className="h-screen">
+            <div className="hidden lg:flex h-screen">
                 <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} userData={user} />
             </div>
             <div className="flex-1 flex flex-col h-screen overflow-hidden">

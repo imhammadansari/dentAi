@@ -5,7 +5,8 @@ const {
     getDentist,
     dentistLogout,
     getPendingDentists,
-    updateDentistStatus
+    updateDentistStatus,
+    getAllDentists
 } = require('../controllers/dentistController');
 const { verifyToken } = require('../middlewares/verifyToken');
 const { isAdmin } = require('../middlewares/isAdmin');
@@ -19,6 +20,8 @@ router.post('/login', dentistLogin);
 // Protected routes (dentist only)
 router.get('/verify', verifyToken, getDentist);
 router.post('/logout', verifyToken, dentistLogout);
+
+router.get('/get-dentists', verifyToken, getAllDentists);
 
 // Admin routes
 router.get('/pending', verifyToken, isAdmin, getPendingDentists);

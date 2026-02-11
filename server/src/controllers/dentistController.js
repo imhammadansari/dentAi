@@ -7,35 +7,36 @@ const dentistRegister = async (req, res) => {
         const { name, email, password, specialty, licenseNumber, phone } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Name, email, and password are required" 
+            return res.status(400).json({
+                success: false,
+                message: "Name, email, and password are required"
             });
         }
 
         let existingDentist = await dentistModel.findOne({ email });
+
         if (existingDentist) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Dentist with this email already exists" 
+            return res.status(400).json({
+                success: false,
+                message: "Dentist with this email already exists"
             });
         }
 
         bcrypt.genSalt(10, (err, salt) => {
             if (err) {
-                return res.status(500).json({ 
-                    success: false, 
-                    message: "Error generating salt", 
-                    error: err.message 
+                return res.status(500).json({
+                    success: false,
+                    message: "Error generating salt",
+                    error: err.message
                 });
             }
 
             bcrypt.hash(password, salt, async (err, hash) => {
                 if (err) {
-                    return res.status(500).json({ 
-                        success: false, 
-                        message: "Error hashing password", 
-                        error: err.message 
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error hashing password",
+                        error: err.message
                     });
                 }
 
@@ -64,19 +65,19 @@ const dentistRegister = async (req, res) => {
                         }
                     });
                 } catch (error) {
-                    res.status(500).json({ 
-                        success: false, 
-                        message: "Error creating dentist", 
-                        error: error.message 
+                    res.status(500).json({
+                        success: false,
+                        message: "Error creating dentist",
+                        error: error.message
                     });
                 }
             });
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: "Server error", 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
         });
         console.log(error.message);
     }
@@ -87,24 +88,24 @@ const dentistLogin = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Email and password are required" 
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
             });
         }
 
         const dentist = await dentistModel.findOne({ email });
-        
+
         if (!dentist) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "Dentist not found" 
+            return res.status(404).json({
+                success: false,
+                message: "Dentist not found"
             });
         }
 
         if (dentist.approvalStatus !== "Approved") {
-            return res.status(403).json({ 
-                success: false, 
+            return res.status(403).json({
+                success: false,
                 message: `Your account is ${dentist.approvalStatus}. Please wait for admin approval.`,
                 approvalStatus: dentist.approvalStatus
             });
@@ -112,37 +113,37 @@ const dentistLogin = async (req, res) => {
 
         bcrypt.compare(password, dentist.password, async (err, result) => {
             if (err) {
-                return res.status(500).json({ 
-                    success: false, 
-                    message: "Error comparing password" 
+                return res.status(500).json({
+                    success: false,
+                    message: "Error comparing password"
                 });
             }
 
             if (!result) {
-                return res.status(401).json({ 
-                    success: false, 
-                    message: "Invalid credentials" 
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid credentials"
                 });
             }
 
             const accessToken = jwt.sign(
-                { 
-                    email: dentist.email, 
+                {
+                    email: dentist.email,
                     id: dentist._id,
                     role: dentist.role,
-                    name: dentist.name 
-                }, 
+                    name: dentist.name
+                },
                 process.env.JWT_TOKEN,
                 { expiresIn: "10h" }
             );
 
             const refreshToken = jwt.sign(
-                { 
-                    email: dentist.email, 
+                {
+                    email: dentist.email,
                     id: dentist._id,
-                    role: dentist.role 
-                }, 
-                process.env.REFRESH_TOKEN, 
+                    role: dentist.role
+                },
+                process.env.REFRESH_TOKEN,
                 { expiresIn: "7days" }
             );
 
@@ -179,10 +180,10 @@ const dentistLogin = async (req, res) => {
             });
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: "Server error", 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
         });
         console.log(error.message);
     }
@@ -195,9 +196,9 @@ const getDentist = async (req, res) => {
         const dentist = await dentistModel.findById(userId).select('-password');
 
         if (!dentist) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Dentist not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'Dentist not found'
             });
         }
 
@@ -216,9 +217,9 @@ const getDentist = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Server error' 
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
         });
     }
 };
@@ -227,15 +228,15 @@ const dentistLogout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-        return res.status(401).json({ 
-            success: false, 
-            message: "No refresh token found" 
+        return res.status(401).json({
+            success: false,
+            message: "No refresh token found"
         });
     }
 
     try {
         const dentist = await dentistModel.findOne({ refreshToken });
-        
+
         if (!dentist) {
             dentist.refreshToken = null;
             await dentist.save();
@@ -269,11 +270,10 @@ const dentistLogout = async (req, res) => {
     }
 };
 
-// Get Pending Dentist Requests (Admin)
 const getPendingDentists = async (req, res) => {
     try {
-        const pendingDentists = await dentistModel.find({ 
-            approvalStatus: "Pending" 
+        const pendingDentists = await dentistModel.find({
+            approvalStatus: "Pending"
         }).select('-password');
 
         res.status(200).json({
@@ -329,11 +329,36 @@ const updateDentistStatus = async (req, res) => {
     }
 };
 
-module.exports = { 
-    dentistRegister, 
-    dentistLogin, 
-    getDentist, 
-    dentistLogout, 
+const getAllDentists = async (req, res) => {
+    try {
+        const dentists = await dentistModel.find().select("-password");
+
+        if (!dentists) return res.status(404).send("No Dentists Found!");
+
+        // console.log(dentists);
+
+        res.status(200).json({
+            success: true,
+            message: "Fetched all dentists",
+            data: dentists
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+}
+
+
+
+module.exports = {
+    dentistRegister,
+    dentistLogin,
+    getDentist,
+    dentistLogout,
     getPendingDentists,
-    updateDentistStatus 
+    updateDentistStatus,
+    getAllDentists
 };

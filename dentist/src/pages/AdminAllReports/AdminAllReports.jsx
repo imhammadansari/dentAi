@@ -77,8 +77,8 @@ const AdminAllReports = () => {
     };
 
     return (
-        <div className="p-6 min-h-full">
-            <div className="max-w-7xl mx-auto">
+        <div className="p-2 lg:p-4 min-h-full">
+            <div className="w-full mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h3 className="text-2xl font-bold text-primary-900">All Reports</h3>
@@ -88,21 +88,21 @@ const AdminAllReports = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-primary-100 p-4 shadow-sm">
                         <p className="text-primary-600 font-medium">Total Reports</p>
                         <h3 className="text-3xl font-bold text-primary-900 mt-2">{reports.length}</h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-primary-100 p-4 shadow-sm">
                         <p className="text-primary-600 font-medium">Completed</p>
                         <h3 className="text-3xl font-bold text-primary-900 mt-2">{statusCounts.completed || 0}</h3>
                     </div>
-                    <div className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-primary-100 p-4 shadow-sm">
                         <p className="text-primary-600 font-medium">Pending</p>
                         <h3 className="text-3xl font-bold text-primary-900 mt-2">{statusCounts.pending || 0}</h3>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm mb-6">
+                <div className="bg-white rounded-2xl border border-primary-100 p-4 shadow-sm mb-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-primary-700 mb-2">

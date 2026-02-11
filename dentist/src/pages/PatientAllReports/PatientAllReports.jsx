@@ -8,11 +8,11 @@ const mockReports = [
 
 const PatientAllReports = () => {
     return (
-        <div className="p-6">
+        <div className="p-2 lg:p-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    <div className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm">
-                        <div className="flex items-center justify-between mb-6">
+                    <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
+                        <div className="flex flex-col lg:flex-row items-center justify-between mb-6 gap-4 lg:gap-0">
                             <h3 className="text-xl font-bold text-emerald-900">All Reports</h3>
                             <div className="flex gap-2">
                                 <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium">All</button>
@@ -43,7 +43,7 @@ const PatientAllReports = () => {
                                             }`}>
                                             {report.status}
                                         </span>
-                                        <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
+                                        <button className="hidden lg:flex px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
                                             Generate Report
                                         </button>
                                     </div>
