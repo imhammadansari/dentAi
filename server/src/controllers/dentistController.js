@@ -237,22 +237,22 @@ const dentistLogout = async (req, res) => {
     try {
         const dentist = await dentistModel.findOne({ refreshToken });
 
-        if (!dentist) {
+        if (dentist) {
             dentist.refreshToken = null;
             await dentist.save();
         }
 
         res.clearCookie("accessToken", {
             httpOnly: true,
-            sameSite: 'None',
-            secure: true,
+            sameSite: 'Lax',
+            secure: false,
             path: '/'
         });
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            sameSite: 'None',
-            secure: true,
+            sameSite: 'Lax',
+            secure: false,
             path: '/'
         });
 
@@ -275,6 +275,8 @@ const getPendingDentists = async (req, res) => {
         const pendingDentists = await dentistModel.find({
             approvalStatus: "Pending"
         }).select('-password');
+
+        if (!pendingDentists) return req.send("No Pending Requests found");
 
         res.status(200).json({
             success: true,

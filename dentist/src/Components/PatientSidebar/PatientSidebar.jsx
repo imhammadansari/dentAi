@@ -13,8 +13,11 @@ import {
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { ImCross } from "react-icons/im";
+import { IoMenuSharp } from 'react-icons/io5';
 
-const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
+
+const PatientSidebar = ({ activeTab, setActiveTab, userData, setMobileSidebar }) => {
 
     const { name, email } = userData;
     const { handleLogout } = useAuth();
@@ -32,22 +35,27 @@ const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
     return (
         <div className="w-64 h-screen flex flex-col" style={{ backgroundColor: '#f0fdf4', borderRight: '1px solid #d1fae5' }}>
             <div className="p-6">
-                <div className="flex items-center gap-3 mb-10">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
-                        <ShieldCheckIcon className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-between lg:justify-normal lg:gap-3 mb-6">
+                    <div className='flex gap-2 items-center'>
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
+                            <ShieldCheckIcon className="w-6 h-6 text-white cusror-pointer" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold" style={{ color: '#14532d' }}>
+                                Dent<span style={{ color: '#22c55e' }}>AI</span>
+                            </h1>
+                            <p className="text-xs font-medium" style={{ color: '#16a34a' }}>Patient Portal</p>
+                        </div>
+
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold" style={{ color: '#14532d' }}>
-                            Dent<span style={{ color: '#22c55e' }}>AI</span>
-                        </h1>
-                        <p className="text-xs font-medium" style={{ color: '#16a34a' }}>Patient Portal</p>
-                    </div>
+
+                    <IoMenuSharp onClick={() => setMobileSidebar(false)} className='text-emerald-900 w-6 h-6 cusror-pointer lg:hidden' />
                 </div>
 
-                <div className="p-4 rounded-2xl mb-6" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '1px solid #d1fae5' }}>
+                <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '1px solid #d1fae5' }}>
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
-                            <UserCircleIcon className="w-10 h-10 text-white" />
+                            <UserCircleIcon className="w-10 h-10 text-white cusror-pointer" />
                         </div>
                         <div>
                             <h3 className="font-semibold" style={{ color: '#14532d' }}>{name}</h3>
@@ -56,7 +64,7 @@ const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <BellIcon className="w-4 h-4" style={{ color: '#6b7280' }} />
+                            <BellIcon className="w-4 h-4 cusror-pointer" style={{ color: '#6b7280' }} />
                             <span className="text-xs" style={{ color: '#6b7280' }}>{email}</span>
                         </div>
                         <div className="text-xs bg-white/50 p-2 rounded-lg" style={{ color: '#6b7280' }}>
@@ -75,7 +83,11 @@ const PatientSidebar = ({ activeTab, setActiveTab, userData }) => {
                             <NavLink
                                 key={item.id}
                                 to={item.path}
-                                onClick={() => setActiveTab(item.id)}
+                                onClick={() => {
+                                    setActiveTab(item.id);
+                                    setMobileSidebar(false)
+                                
+                                }}
                                 className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isActive
                                     ? 'text-white shadow-lg'
                                     : 'text-gray-700 hover:bg-white/50 hover:shadow-sm'

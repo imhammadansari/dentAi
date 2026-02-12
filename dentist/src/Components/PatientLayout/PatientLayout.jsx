@@ -8,6 +8,11 @@ const PatientLayout = () => {
     const [activeTab, setActiveTab] = useState('home');
     const location = useLocation();
     const { user } = useAuth();
+    const [mobileSidebar, setMobileSidebar] = useState(false);
+
+    const toggleSidebar = () => {
+        setMobileSidebar(!mobileSidebar);
+    }
 
     useEffect(() => {
         const path = location.pathname;
@@ -40,8 +45,19 @@ const PatientLayout = () => {
                 />
             </div>
 
+            <div className={`absolute z-10 top-0 left-0 lg:hidden transform transition-transform duration-300 
+                ${mobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
+                <PatientSidebar
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    userData={user}
+                    setMobileSidebar={setMobileSidebar}
+                />
+
+            </div>
+
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
-                <PatientHeader activeTab={activeTab} userData={user} />
+                <PatientHeader activeTab={activeTab} userData={user} toggleSidebar={toggleSidebar} />
 
                 <main className="flex-1 overflow-y-auto p-6">
                     <Outlet context={{ activeTab, user }} />

@@ -61,11 +61,11 @@ const AuthProvider = ({ children }) => {
 
         } catch (error) {
             console.log("Verification error:", error.message);
-            localStorage.removeItem("user");
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            setUser(null);
-            setAccessToken(null);
+            // localStorage.removeItem("user");
+            // localStorage.removeItem("accessToken");
+            // localStorage.removeItem("refreshToken");
+            // setUser(null);
+            // setAccessToken(null);
         } finally {
             setLoading(false);
         }
