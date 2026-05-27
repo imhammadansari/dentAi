@@ -38,12 +38,12 @@ const getAllSlots = async (req, res) => {
 
         const dentistSlots = slots.map(slot => ({
             id: slot._id,
-            dentistId: slot.dentistId?.id,
+            dentistId: slot.dentistId?._id,
             dentistName: slot.dentistId?.name,
-            date: slot.date,
+            date: slot.date.toISOString().split("T")[0],
             start: slot.start,
             end: slot.end
-        }))
+        }));
 
         res.status(200).json({
             success: true,
@@ -68,10 +68,23 @@ const getDentistsSlots = async (req, res) => {
 
         if (!slots) return res.status(404).send("No Slots found for that dentist");
 
+        const formattedSlots = slots.map(slot => ({
+            id: slot._id,
+            date: slot.date.toISOString().split("T")[0],
+            start: slot.start,
+            end: slot.end
+        }));
+
         res.status(200).json({
             success: true,
             message: "All slots fetched",
-            data: slots
+            data: formattedSlots
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "All slots fetched",
+            data: formattedSlots
         })
     } catch (error) {
         console.log(error.message);
@@ -79,4 +92,30 @@ const getDentistsSlots = async (req, res) => {
     }
 }
 
-module.exports = { addSlots, getAllSlots, getDentistsSlots }
+const deleteSlot = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const dentistId = req.user.id;
+
+        const slot = await slotsModel.findOneAndDelete({
+            _id: id,
+            dentistId
+        });
+
+        if (!slot) {
+            return res.status(404).send("Slot not found");
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Slot deleted successfully"
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send(error.message);
+    }
+};
+
+
+module.exports = { addSlots, getAllSlots, getDentistsSlots, deleteSlot }

@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const PatientBookConsultation = () => {
-  // const dentists = [
-  //   { name: 'Dr. Sarah Johnson', specialty: 'Dentist', next: 'Today, 3:30 PM' },
-  //   { name: 'Dr. Michael Chen', specialty: 'Dentist', next: 'Tomorrow, 10:00 AM' },
-  //   { name: 'Dr. Emily Wilson', specialty: 'Dentist', next: 'Tomorrow, 2:15 PM' },
-  //   { name: 'Dr. James Miller', specialty: 'Dentist', next: 'Feb 22, 11:30 AM' },
-  // ];
 
   const [dentists, setDentists] = useState([]);
-  
-  const getDentists = async() => {
+  const navigate = useNavigate();
+
+  const getDentists = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/dentists/get-dentists`);
 
-      if(response.status === 200){
+      if (response.status === 200) {
         setDentists(response.data.data);
         // console.log(response.data.data);
       }
 
     } catch (error) {
       console.log(error.message)
-    
+
     }
   }
 
@@ -50,7 +46,10 @@ const PatientBookConsultation = () => {
                 <p className="text-sm text-emerald-600 mb-2">Next available:</p>
                 <p className="font-medium text-emerald-900">{dentist.next}</p>
               </div> */}
-              <button className="w-full py-3 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors">
+              <button
+                onClick={() => navigate(`/patient-dashboard//book-slot/${dentist._id}`)}
+                className="w-full py-3 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600"
+              >
                 Book Appointment
               </button>
             </div>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
     UsersIcon,
     CalendarDaysIcon,
@@ -9,24 +10,83 @@ import {
     XCircleIcon,
     UserGroupIcon,
 } from '@heroicons/react/24/outline';
+import { useNavigate } from "react-router-dom";
+
+
 
 const DentistDashboard = () => {
+    const [patients, setPatients] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const [slots, setSlots] = useState([]);
+
     const [timeFilter, setTimeFilter] = useState('today');
+    const navigate = useNavigate()
+
+    const fetchDashboardData = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const patientsRes = await axios.get(
+                `${import.meta.env.VITE_SERVER_URL}/api/bookings/dentist-patients`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+
+            const slotsRes = await axios.get(
+                `${import.meta.env.VITE_SERVER_URL}/api/slots/dentist-slots`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log(patientsRes.data.data)
+
+            const allData = patientsRes.data.data;
+
+            // nearest upcoming bookings
+            const upcoming = allData
+                .filter(item => item.status?.toLowerCase() === "booked")
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // latest completed bookings
+            const recentCompleted = allData
+                .filter(item => item.status?.toLowerCase() === "completed")
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            setAppointments(upcoming);
+            setPatients(recentCompleted);
+
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
 
     const stats = [
-        { icon: UsersIcon, label: 'Total Patients', value: '400', change: '+12%', color: 'from-emerald-500 to-green-400' },
-        { icon: CalendarDaysIcon, label: 'Appointments', value: '42', change: '+8%', color: 'from-emerald-500 to-green-400' },
+        {
+            icon: UsersIcon,
+            label: "Total Patients",
+            value: patients.length,
+            change: "",
+            color: "from-emerald-500 to-green-400"
+        },
+        {
+            icon: CalendarDaysIcon,
+            label: "Appointments",
+            value: appointments.length,
+            change: "",
+            color: "from-emerald-500 to-green-400"
+        }
     ];
 
-    const upcomingAppointments = [
-        { id: 1, patient: 'Hamza', time: '10:30 AM', type: 'Follow-up', status: 'confirmed' },
-        { id: 2, patient: 'Abdullah', time: '11:45 AM', type: 'Consultation', status: 'confirmed' },
-    ];
-
-    const recentPatients = [
-        { id: 1, name: 'Rayyan', lastVisit: '2 days ago', nextAppointment: 'Tomorrow', treatment: 'Cavity Filling' },
-        { id: 2, name: 'Maaz', lastVisit: '1 week ago', nextAppointment: 'Next week', treatment: 'Cavity Filling' },
-        ];
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
 
     return (
         <div className="p-2 lg:p-4 space-y-6 min-h-full">
@@ -41,8 +101,8 @@ const DentistDashboard = () => {
                             key={filter}
                             onClick={() => setTimeFilter(filter)}
                             className={`px-4 py-2 rounded-lg font-medium capitalize ${timeFilter === filter
-                                    ? 'bg-emerald-600 text-white'
-                                    : 'bg-emerald-50 text-emerald-600'
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-emerald-50 text-emerald-600'
                                 }`}
                         >
                             {filter}
@@ -76,62 +136,79 @@ const DentistDashboard = () => {
                 <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-black">Upcoming Appointments</h4>
-                        <button className="text-emerald-600 hover:text-emerald-700 font-medium">
+                        <button
+                            onClick={() => navigate("/dentist-dashboard/appointments")}
+                            className="text-emerald-600 hover:text-emerald-700 font-medium"
+                        >
                             View All →
                         </button>
                     </div>
                     <div className="space-y-4">
-                        {upcomingAppointments.map((appointment) => (
-                            <div key={appointment.id} className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${appointment.status === 'confirmed' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
-                                        }`}>
-                                        {appointment.status === 'confirmed' ? (
-                                            <CheckCircleIcon className="w-5 h-5" />
-                                        ) : (
-                                            <ClockIcon className="w-5 h-5" />
-                                        )}
+                        {appointments.length > 0 ? (
+                            appointments.slice(0, 5).map((appointment) => (
+                                <div key={appointment.id} className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${appointment.status === 'confirmed' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+                                            }`}>
+                                            {appointment.status === 'Booked' ? (
+                                                <CheckCircleIcon className="w-5 h-5" />
+                                            ) : (
+                                                <ClockIcon className="w-5 h-5" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h5 className="font-semibold text-black">{appointment.name}</h5>
+                                            <p className="text-sm text-emerald-600">{appointment.start} - {appointment.end}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h5 className="font-semibold text-black">{appointment.patient}</h5>
-                                        <p className="text-sm text-emerald-600">{appointment.time} • {appointment.type}</p>
+                                    <div className="flex items-center gap-3">
+                                        <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
+                                            Chat
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
-                                        Chat
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-center text-emerald-600 py-6">
+                                No Appointments
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-black">Recent Patients</h4>
-                        <button className="text-emerald-600 hover:text-emerald-700 font-medium">
+                        <button
+                            onClick={() => navigate("/dentist-dashboard/patients")}
+                            className="text-emerald-600 hover:text-emerald-700 font-medium"
+                        >
                             View All →
                         </button>
                     </div>
                     <div className="space-y-4">
-                        {recentPatients.map((patient) => (
-                            <div key={patient.id} className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl hover:bg-emerald-50 transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-400 rounded-full flex items-center justify-center">
-                                        <UserGroupIcon className="w-5 h-5 text-white" />
+                        {patients.length > 0 ? (
+                            patients.slice(0, 5).map((patient) => (
+                                <div key={patient.id} className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl hover:bg-emerald-50 transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-400 rounded-full flex items-center justify-center">
+                                            <UserGroupIcon className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div>
+                                            <h5 className="font-semibold text-black">{patient.name}</h5>
+                                            <p className="text-sm text-emerald-600">Consultation</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h5 className="font-semibold text-black">{patient.name}</h5>
-                                        <p className="text-sm text-emerald-600">Treatment: {patient.treatment}</p>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium text-emerald-600">Next: {patient.nextAppointment}</p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-sm text-emerald-600">Last visit: {patient.lastVisit}</p>
-                                    <p className="text-sm font-medium text-emerald-600">Next: {patient.nextAppointment}</p>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-center text-emerald-600 py-6">
+                                No Patients
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -88,6 +89,7 @@ const AuthProvider = ({ children }) => {
 
             if (response.data.success) {
                 setSuccess('Login successful! Redirecting...');
+                toast.success('Login successful!');
 
                 const userData = {
                     id: response.data.data.id,
@@ -104,13 +106,12 @@ const AuthProvider = ({ children }) => {
                 localStorage.setItem('accessToken', response.data.data.accessToken);
                 localStorage.setItem('refreshToken', response.data.data.refreshToken);
 
-                setTimeout(() => {
-                    navigate('/admin-dashboard/home');
-                }, 1000);
-
                 return { success: true };
             }
         } catch (error) {
+            if (error.status === 404) {
+                toast.error("Email or Password Incorrect")
+            }
             console.error('Login error:', error);
             const errorMessage = error.response?.data?.message ||
                 error.response?.data ||
@@ -136,6 +137,7 @@ const AuthProvider = ({ children }) => {
 
             if (response.data.success) {
                 setSuccess('Login successful! Redirecting...');
+                toast.success('Login successful!');
 
                 const userData = {
                     id: response.data.data.id,
@@ -160,6 +162,9 @@ const AuthProvider = ({ children }) => {
                 return { success: true };
             }
         } catch (error) {
+            if (error.status === 404) {
+                toast.error("Email or Password Incorrect")
+            }
             console.error('Login error:', error);
             const errorMessage = error.response?.data?.message ||
                 error.response?.data ||
@@ -185,6 +190,7 @@ const AuthProvider = ({ children }) => {
 
             if (response.data.success) {
                 setSuccess('Login successful! Redirecting...');
+                toast.success('Login successful!');
 
                 const userData = {
                     id: response.data.data.id,
@@ -207,6 +213,9 @@ const AuthProvider = ({ children }) => {
                 return { success: true };
             }
         } catch (error) {
+            if (error.status === 404) {
+                toast.error("Email or Password Incorrect")
+            }
             console.error('Login error:', error);
             const errorMessage = error.response?.data?.message ||
                 error.response?.data ||
@@ -238,12 +247,14 @@ const AuthProvider = ({ children }) => {
                 endpoint = '/api/dentists/logout';
             }
 
-            await axios.post(endpoint, {}, {
+            const response = await axios.post(endpoint, {}, {
                 withCredentials: true
             });
-        } catch (error) {
-            console.error('Logout API error:', error);
-        } finally {
+
+            if (response.success) {
+                toast.success("Loggedout Successfull");
+            }
+
             localStorage.removeItem('user');
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
@@ -252,18 +263,23 @@ const AuthProvider = ({ children }) => {
             setAccessToken(null);
             setError('');
             setSuccess('');
-            setLoading(false);
 
-            const role = user?.role;
-            if (role === 'admin') {
-                navigate('/admin-login');
-            } else if (role === 'dentist') {
-                navigate('/dentist-login');
-            } else {
-                navigate('/patient-login');
-            }
+            navigate('/home');
+
+        } catch (error) {
+            console.error('Logout API error:', error);
+
+            localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+
+            setUser(null);
+            setAccessToken(null);
+
+            navigate('/home');
         }
     };
+
 
     const contextValue = {
         user,

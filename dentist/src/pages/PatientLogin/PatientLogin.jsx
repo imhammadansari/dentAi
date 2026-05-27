@@ -16,7 +16,7 @@ const PatientLogin = ({ isLogin = true }) => {
     const [isLoginMode, setIsLoginMode] = useState(isLogin);
     const [showPassword, setShowPassword] = useState(false);
     const [success, setSuccess] = useState('');
-    const { setError, error, loading, setLoading, handlePatientLogin } = useAuth();
+    const { setError, error, handlePatientLogin } = useAuth();
 
     const [formData, setFormData] = useState({
         name: '',
@@ -24,6 +24,8 @@ const PatientLogin = ({ isLogin = true }) => {
         password: '',
         confirmPassword: ''
     });
+
+    const [loading, setLoading] = useState(false)
 
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'http://localhost:8000';
@@ -110,11 +112,11 @@ const PatientLogin = ({ isLogin = true }) => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #f0f9f0 0%, #e6f7e6 100%)' }}>
+        <div className="min-h-screen flex items-center justify-center p-2" style={{ background: 'linear-gradient(135deg, #f0f9f0 0%, #e6f7e6 100%)' }}>
             <div className="w-full max-w-md">
-                {/* Logo & Header */}
-                <div className="text-center mb-10">
-                    <div className="flex justify-center mb-6">
+
+                <div className="text-center">
+                    <div className="flex justify-center mb-1">
                         <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                             <ShieldCheckIcon className="w-8 h-8 text-white" />
                         </div>
@@ -122,19 +124,17 @@ const PatientLogin = ({ isLogin = true }) => {
                     <h1 className="text-3xl font-bold mb-2" style={{ color: '#14532d' }}>
                         Dent<span style={{ color: '#22c55e' }}>AI</span>
                     </h1>
-                    <p className="text-lg" style={{ color: '#4b5563' }}>
-                        {isLoginMode ? 'Welcome back to your dental care' : 'Join our dental care community'}
+                    <p className="text-lg pb-2" style={{ color: '#4b5563' }}>
+                        {isLoginMode ? 'Welcome back to your Dental Care' : 'Join our Dental Care Community'}
                     </p>
                 </div>
 
-                {/* Form Container */}
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden" style={{ border: '1px solid #d1fae5' }}>
-                    <div className="p-8">
-                        {/* Error/Success Messages */}
+                    <div className="p-6">
                         {error && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#dc2626' }}>
-                                    ⚠️ {error}
+                                    {error}
                                 </p>
                             </div>
                         )}
@@ -142,17 +142,16 @@ const PatientLogin = ({ isLogin = true }) => {
                         {success && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#16a34a' }}>
-                                    ✅ {success}
+                                    {success}
                                 </p>
                             </div>
                         )}
 
-                        {/* Toggle Switch */}
-                        <div className="flex mb-8">
+                        <div className="flex mb-4">
                             <button
                                 onClick={() => setIsLoginMode(true)}
                                 disabled={loading}
-                                className={`flex-1 py-3 text-center font-semibold rounded-xl transition-all ${isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`flex-1 cursor-pointer py-3 text-center font-semibold rounded-xl transition-all ${isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 style={isLoginMode ? { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' } : { backgroundColor: '#f9fafb' }}
                             >
                                 Login
@@ -160,7 +159,7 @@ const PatientLogin = ({ isLogin = true }) => {
                             <button
                                 onClick={() => setIsLoginMode(false)}
                                 disabled={loading}
-                                className={`flex-1 py-3 text-center font-semibold rounded-xl transition-all ml-4 ${!isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`flex-1 cursor-pointer py-3 text-center font-semibold rounded-xl transition-all ml-4 ${!isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 style={!isLoginMode ? { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' } : { backgroundColor: '#f9fafb' }}
                             >
                                 Sign Up
@@ -169,7 +168,7 @@ const PatientLogin = ({ isLogin = true }) => {
 
                         <form onSubmit={handleSubmit}>
                             {!isLoginMode && (
-                                <div className="mb-6">
+                                <div className="mb-2">
                                     <label className="block mb-2 font-medium" style={{ color: '#374151' }}>Full Name</label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
@@ -194,7 +193,7 @@ const PatientLogin = ({ isLogin = true }) => {
                                 </div>
                             )}
 
-                            <div className="mb-6">
+                            <div className="mb-2">
                                 <label className="block mb-2 font-medium" style={{ color: '#374151' }}>Email Address</label>
                                 <div className="relative">
                                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
@@ -283,8 +282,8 @@ const PatientLogin = ({ isLogin = true }) => {
                                 </div>
                             )}
 
-                            {isLoginMode && (
-                                <div className="flex justify-between items-center mb-8">
+                            {/* {isLoginMode && (
+                                <div className="flex justify-between items-center mb-3">
                                     <div className="flex items-center">
                                         <input
                                             type="checkbox"
@@ -307,7 +306,7 @@ const PatientLogin = ({ isLogin = true }) => {
                                         Forgot Password?
                                     </button>
                                 </div>
-                            )}
+                            )} */}
 
                             <button
                                 type="submit"
@@ -332,7 +331,7 @@ const PatientLogin = ({ isLogin = true }) => {
                             </button>
                         </form>
 
-                        <div className="mt-8 pt-8 border-t text-center" style={{ borderColor: '#d1fae5' }}>
+                        <div className="mt-2 pt-2 border-t text-center" style={{ borderColor: '#d1fae5' }}>
                             <p className="text-gray-600">
                                 {isLoginMode ? "Don't have an account? " : "Already have an account? "}
                                 <button
@@ -351,8 +350,7 @@ const PatientLogin = ({ isLogin = true }) => {
                         </div>
                     </div>
 
-                    {/* Feature Highlights */}
-                    <div className="px-8 pb-8">
+                    {/* <div className="px-8 pb-8">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-xl text-center" style={{ backgroundColor: '#f0fdf4', border: '1px solid #d1fae5' }}>
                                 <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2" style={{ backgroundColor: '#dcfce7' }}>
@@ -371,18 +369,17 @@ const PatientLogin = ({ isLogin = true }) => {
                                 <p className="text-sm font-medium" style={{ color: '#374151' }}>Privacy First</p>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
-                {/* Footer Note */}
-                <div className="mt-8 text-center">
+                {/* <div className="mt-8 text-center">
                     <p className="text-sm" style={{ color: '#6b7280' }}>
                         By continuing, you agree to our{' '}
                         <Link to="/terms" className="font-medium hover:underline" style={{ color: '#16a34a' }}>Terms</Link>
                         {' '}and{' '}
                         <Link to="/privacy" className="font-medium hover:underline" style={{ color: '#16a34a' }}>Privacy Policy</Link>
                     </p>
-                </div>
+                </div> */}
             </div>
         </div>
     );

@@ -19,7 +19,8 @@ const DentistLogin = ({ isLogin = true }) => {
     const [isLoginMode, setIsLoginMode] = useState(isLogin);
     const [showPassword, setShowPassword] = useState(false);
     const [success, setSuccess] = useState('');
-    const { setError, error, loading, setLoading, handleDentistLogin } = useAuth();
+    const { setError, error, handleDentistLogin } = useAuth();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -105,15 +106,15 @@ const DentistLogin = ({ isLogin = true }) => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}>
+        <div className="min-h-screen flex items-center justify-center px-4 py-1" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}>
             <div className="w-full max-w-lg">
-                <div className="text-center mb-10">
-                    <div className="flex justify-center mb-6">
+                <div className="text-center mb-2">
+                    <div className="flex justify-center mb-1">
                         <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                             <ShieldCheckIcon className="w-8 h-8 text-white" />
                         </div>
                     </div>
-                    <h1 className="text-3xl font-bold mb-2" style={{ color: '#22c55e' }}>
+                    <h1 className="text-3xl font-bold mb-1" style={{ color: '#22c55e' }}>
                         Dent<span style={{ color: '#22c55e' }}>AI</span>
                     </h1>
                     <p className="text-lg" style={{ color: '#4b5563' }}>
@@ -122,7 +123,7 @@ const DentistLogin = ({ isLogin = true }) => {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden" style={{ border: '1px solid #dbeafe' }}>
-                    <div className="p-8">
+                    <div className="px-6 py-4">
                         {error && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#dc2626' }}>
@@ -139,7 +140,7 @@ const DentistLogin = ({ isLogin = true }) => {
                             </div>
                         )}
 
-                        <div className="flex mb-8">
+                        <div className="flex mb-4">
                             <button
                                 onClick={() => setIsLoginMode(true)}
                                 disabled={loading}
@@ -354,7 +355,7 @@ const DentistLogin = ({ isLogin = true }) => {
                                 </div>
                             )}
 
-                            {isLoginMode && (
+                            {/* {isLoginMode && (
                                 <div className="flex justify-between items-center mb-8">
                                     <div className="flex items-center">
                                         <input
@@ -377,7 +378,7 @@ const DentistLogin = ({ isLogin = true }) => {
                                         Forgot Password?
                                     </button>
                                 </div>
-                            )}
+                            )} */}
 
                             <button
                                 type="submit"
@@ -402,7 +403,7 @@ const DentistLogin = ({ isLogin = true }) => {
                             </button>
                         </form>
 
-                        <div className="mt-8 pt-8 border-t text-center" style={{ borderColor: '#dbeafe' }}>
+                        <div className="pt-2 border-t text-center" style={{ borderColor: '#dbeafe' }}>
                             <p className="text-gray-600">
                                 {isLoginMode ? "Don't have an account? " : "Already have an account? "}
                                 <button
@@ -431,7 +432,7 @@ const DentistLogin = ({ isLogin = true }) => {
                     </div>
 
                     {/* Feature Highlights */}
-                    <div className="px-8 pb-8">
+                    {/* <div className="px-8 pb-8">
                         <div className="grid grid-cols-3 gap-4">
                             <div className="p-4 rounded-xl text-center" style={{ backgroundColor: '#eff6ff', border: '1px solid #dbeafe' }}>
                                 <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2" style={{ backgroundColor: '#dbeafe' }}>
@@ -458,18 +459,18 @@ const DentistLogin = ({ isLogin = true }) => {
                                 <p className="text-sm font-medium" style={{ color: '#374151' }}>Approval</p>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Footer Note */}
-                <div className="mt-8 text-center">
+                {/* <div className="mt-8 text-center">
                     <p className="text-sm" style={{ color: '#6b7280' }}>
                         By continuing, you agree to our{' '}
                         <Link to="/terms" className="font-medium hover:underline" style={{ color: '#22c55e' }}>Terms</Link>
                         {' '}and{' '}
                         <Link to="/privacy" className="font-medium hover:underline" style={{ color: '#22c55e' }}>Privacy Policy</Link>
                     </p>
-                </div>
+                </div> */}
             </div>
         </div>
     );

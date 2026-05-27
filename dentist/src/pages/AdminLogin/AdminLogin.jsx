@@ -39,7 +39,7 @@ const AdminLogin = () => {
         try {
             const result = await handleAdminLogin(formData.email, formData.password);
 
-            if (result) {
+            if (result.success) {
                 navigate('/admin-dashboard/home');
             }
         } catch (error) {
@@ -48,12 +48,11 @@ const AdminLogin = () => {
     }
 
 
-
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                <div className="text-center mb-10">
-                    <div className="flex justify-center mb-6">
+                <div className="text-center mb-2">
+                    <div className="flex justify-center mb-1">
                         <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                             <ShieldCheckIcon className="w-8 h-8 text-white" />
                         </div>
@@ -64,13 +63,10 @@ const AdminLogin = () => {
                     <p className="text-lg" style={{ color: '#6b7280' }}>
                         Administrator Portal
                     </p>
-                    <p className="text-sm mt-2" style={{ color: '#9ca3af' }}>
-                        Secure system administration
-                    </p>
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden" style={{ border: '1px solid #f3e8ff' }}>
-                    <div className="p-8">
+                    <div className="px-6 py-2">
                         {error && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#dc2626' }}>
@@ -79,7 +75,7 @@ const AdminLogin = () => {
                             </div>
                         )}
 
-                        <div className="mb-8 p-4 rounded-xl text-center">
+                        <div className="mb-2 p-2 rounded-xl text-center">
                             <div className="flex items-center justify-center gap-2 mb-2">
                                 <KeyIcon className="w-5 h-5" style={{ color: '#22c55e' }} />
                                 <p className="font-semibold" style={{ color: '#22c55e' }}>Restricted Access</p>
@@ -114,7 +110,7 @@ const AdminLogin = () => {
                                 </div>
                             </div>
 
-                            <div className="mb-8">
+                            <div className="mb-4">
                                 <label className="block mb-2 font-medium" style={{ color: '#374151' }}>Admin Password</label>
                                 <div className="relative">
                                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
@@ -175,15 +171,15 @@ const AdminLogin = () => {
                             </button>
                         </form>
 
-                        <div className="mt-8 pt-8 border-t text-center" style={{ borderColor: '#f3e8ff' }}>
+                        {/* <div className="mt-8 pt-8 border-t text-center" style={{ borderColor: '#f3e8ff' }}>
                             <p className="text-sm" style={{ color: '#6b7280' }}>
                                 Forgot credentials? Contact{' '}
                                 <span className="font-medium" style={{ color: '#22c55e' }}>system@dentai.com</span>
                             </p>
-                        </div>
+                        </div> */}
                     </div>
 
-                    <div className="px-8 pb-8">
+                    {/* <div className="px-8 pb-8">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-xl text-center" style={{ backgroundColor: '#faf5ff', border: '1px solid #f3e8ff' }}>
                                 <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2" style={{ backgroundColor: '#f3e8ff' }}>
@@ -202,11 +198,11 @@ const AdminLogin = () => {
                                 <p className="text-sm font-medium" style={{ color: '#374151' }}>Secure</p>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Footer */}
-                <div className="mt-8 text-center">
+                {/* <div className="mt-8 text-center">
                     <p className="text-xs" style={{ color: '#9ca3af' }}>
                         © 2024 DentAI Admin Portal. All rights reserved.
                     </p>
@@ -221,7 +217,7 @@ const AdminLogin = () => {
                             Terms
                         </Link>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

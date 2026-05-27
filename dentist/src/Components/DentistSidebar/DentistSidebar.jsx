@@ -22,7 +22,8 @@ const DentistSidebar = ({ activeTab, setActiveTab, userData, setMobileSidebar })
     const navItems = [
         { id: 'home', path: '/dentist-dashboard/home', icon: HomeIcon, label: 'Dashboard' },
         { id: 'patients', path: '/dentist-dashboard/patients', icon: UsersIcon, label: 'My Patients' },
-        { id: 'slots', path: '/dentist-dashboard/slots', icon: CalendarIcon, label: 'Add Slots' },
+        { id: 'add-slots', path: '/dentist-dashboard/add-slots', icon: CalendarIcon, label: 'Add Slots' },
+        { id: 'slots', path: '/dentist-dashboard/slots', icon: CalendarIcon, label: 'Slots' },
     ];
 
     return (

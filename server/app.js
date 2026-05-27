@@ -38,6 +38,8 @@ const dentistRoute = require('./src/routes/dentistRoute');
 const slotsRoute = require('./src/routes/slotsRoute');
 const adminRoute = require('./src/routes/adminRoute');
 const aiRoute = require('./src/routes/analysis');
+const bookingRoutes = require('./src/routes/bookingRoutes');
+
 const { verifyToken } = require('./src/middlewares/verifyToken');
 
 
@@ -46,6 +48,7 @@ app.use("/api/dentists", dentistRoute);
 app.use("/api/slots", slotsRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/analysis", aiRoute);
+app.use("/api/bookings", bookingRoutes);
 
 app.post("/api/test", verifyToken, async (req, res) => {
     console.log("Tested")

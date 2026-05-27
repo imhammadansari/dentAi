@@ -249,9 +249,9 @@ const AdminRequests = () => {
                                     <tr key={dentist._id} className="hover:bg-gray-50">
                                         <td className="py-4 px-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-semibold">
+                                                {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-semibold">
                                                     {dentist.name.charAt(0).toUpperCase()}
-                                                </div>
+                                                </div> */}
                                                 <div>
                                                     <p className="font-medium text-gray-900">{dentist.name}</p>
                                                     <p className="text-sm text-gray-600">{dentist.specialty}</p>

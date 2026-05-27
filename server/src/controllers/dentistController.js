@@ -120,7 +120,7 @@ const dentistLogin = async (req, res) => {
             }
 
             if (!result) {
-                return res.status(401).json({
+                return res.status(404).json({
                     success: false,
                     message: "Invalid credentials"
                 });

@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     }
 
     if (!isAuthenticated()) {
-        return <Navigate to="/patient-login" replace />;
+        return <Navigate to="/" replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(user?.role.toLowerCase())) {

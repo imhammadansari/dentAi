@@ -1,6 +1,7 @@
 const patientModel = require("../models/patientModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
+const bookingModel = require("../models/bookingModel");
 
 const patientRegister = async (req, res) => {
     try {
@@ -61,7 +62,7 @@ const userLogin = async (req, res) => {
             bcrypt.compare(password, user.password, async (err, result) => {
                 if (err) return res.send("Something went wrong, Check your password");
 
-                if (!result) return res.send("Invalid Credentials");
+                if (!result) return res.status(404).send("Invalid Credentials");
 
 
                 let accessToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.JWT_TOKEN,
@@ -171,6 +172,35 @@ const getPatient = async (req, res) => {
     }
 }
 
+const getPatientById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const patient = await patientModel.findById(id);
+
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                message: "Patient not found"
+            });
+        }
+
+        const bookings = await bookingModel.find({ patientId: id });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                ...patient.toObject(),
+                bookings
+            }
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send(error.message);
+    }
+};
+
 const testRoute = async (req, res) => {
     res.status(200).json({ message: 'Test route working' });
 }
@@ -221,4 +251,4 @@ const userLogout = async (req, res) => {
 
 }
 
-module.exports = { patientRegister, userLogin, refreshTokenGenerate, getPatient, testRoute, userLogout }
+module.exports = { patientRegister, userLogin, refreshTokenGenerate, getPatient, testRoute, userLogout, getPatientById }
