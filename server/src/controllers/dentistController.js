@@ -227,19 +227,13 @@ const getDentist = async (req, res) => {
 const dentistLogout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
-    if (!refreshToken) {
-        return res.status(401).json({
-            success: false,
-            message: "No refresh token found"
-        });
-    }
-
     try {
-        const dentist = await dentistModel.findOne({ refreshToken });
-
-        if (dentist) {
-            dentist.refreshToken = null;
-            await dentist.save();
+        if (refreshToken) {
+            const dentist = await dentistModel.findOne({ refreshToken });
+            if (dentist) {
+                dentist.refreshToken = null;
+                await dentist.save();
+            }
         }
 
         res.clearCookie("accessToken", {
@@ -260,13 +254,10 @@ const dentistLogout = async (req, res) => {
             success: true,
             message: "Logged out successfully"
         });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message,
-        });
+
+    } catch (err) {
+        console.error("dentistLogout error:", err.message);
+        res.status(500).json({ success: false, message: err.message });
     }
 };
 

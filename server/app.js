@@ -22,18 +22,23 @@ app.use(cors({
 
 
 const URL = process.env.MONGODB_URL;
-const connectDB = async () => {
+const startServer = async () => {
     try {
-        await mongoose.connect(URL);
-        console.log("Databse Connected");
+        await mongoose.connect(process.env.MONGODB_URL);
+
+        console.log("Database Connected");
+
+        app.listen(PORT, () => {
+            console.log(`Server is listening at PORT: ${PORT}`);
+        });
+
     } catch (error) {
-        console.log("MongoDB Connection failed", error.message);
-        process.exit();
-
+        console.log("MongoDB Connection failed:", error.message);
+        process.exit(1);
     }
-}
+};
 
-connectDB()
+startServer();
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));

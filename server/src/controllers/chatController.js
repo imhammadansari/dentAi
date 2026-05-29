@@ -6,23 +6,19 @@ const cloudinary = require("../config/cloudinary");
 let ably;
 const getAbly = () => {
     if (!ably) {
-        ably = new Ably.Rest({
-            key: process.env.ABLY_API_KEY,
-            queryTime: true  // ← syncs with Ably server time when signing tokens
-        });
+        ably = new Ably.Rest({ key: process.env.ABLY_API_KEY });
     }
     return ably;
 };
 
+// Generate an Ably token for the client
 const getAblyToken = async (req, res) => {
     try {
         const tokenParams = {
             clientId: req.user.id.toString(),
             capability: { "*": ["subscribe", "publish", "presence"] },
             ttl: 24 * 60 * 60 * 1000,
-            timestamp: Date.now(),  // ← add this
         };
-
         const tokenRequest = await getAbly().auth.createTokenRequest(tokenParams);
         res.json(tokenRequest);
     } catch (err) {
@@ -99,7 +95,6 @@ const saveMessage = async (req, res) => {
         chat.messages.push(message);
         await chat.save();
 
-        // Publish via Ably — don't let this crash the response
         try {
             const channel = getAbly().channels.get(`chat-${bookingId}`);
             await channel.publish("message", message);

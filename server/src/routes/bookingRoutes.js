@@ -1,5 +1,5 @@
 const express = require("express");
-const { bookSlot, getSingleDentistSlots, updatePatientStatus, getDentistPatients, getSinglePatientBookings, getTodaySchedule, getDentistAllBookings, getDentistSlotBookings } = require("../controllers/bookingController");
+const { bookSlot, getSingleDentistSlots, updatePatientStatus, getDentistPatients, getSinglePatientBookings, getTodaySchedule, getDentistAllBookings, getDentistSlotBookings, getPatientConsultations } = require("../controllers/bookingController");
 const { verifyToken } = require("../middlewares/verifyToken");
 const router = express.Router();
 
@@ -20,5 +20,6 @@ router.get(
 );
 router.get("/today-schedule", verifyToken, getTodaySchedule);
 router.get("/dentist-all-bookings", verifyToken, getDentistAllBookings);
+router.get("/my-consultations", verifyToken, getPatientConsultations);
 
 module.exports = router;

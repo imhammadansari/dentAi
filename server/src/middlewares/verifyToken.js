@@ -1,4 +1,7 @@
 const jwt = require('jsonwebtoken');
+const patientModel = require('../models/patientModel');
+const dentistModel = require('../models/dentistModel');
+const adminModel = require('../models/adminModel');
 
 const verifyToken = async (req, res, next) => {
 
@@ -29,14 +32,12 @@ const verifyToken = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(accessToken, process.env.JWT_TOKEN);
-        // console.log('Token decoded successfully:', decoded);
 
         if (!decoded.role) {
             console.log('No role found in token');
         }
 
         req.user = decoded;
-        // console.log('User attached to request:', req.user);
         next();
     } catch (error) {
         console.error('Token verification error:', error.message);
@@ -44,7 +45,16 @@ const verifyToken = async (req, res, next) => {
         if (error.name === 'TokenExpiredError') {
             console.log('Access token expired, checking for refresh token');
 
-            const refreshToken = req.cookies.refreshToken;
+            // Accept refresh token from cookie OR Authorization-Refresh header OR query param
+            let refreshToken = req.cookies.refreshToken;
+            if (!refreshToken) {
+                const refreshHeader = req.headers['x-refresh-token'];
+                if (refreshHeader) refreshToken = refreshHeader;
+            }
+            if (!refreshToken) {
+                refreshToken = req.query.refreshToken ? decodeURIComponent(req.query.refreshToken) : null;
+            }
+
             if (!refreshToken) {
                 return res.status(401).json({
                     success: false,
@@ -56,6 +66,25 @@ const verifyToken = async (req, res, next) => {
                 const refreshDecoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
                 console.log('Refresh token decoded:', refreshDecoded);
 
+                // Validate refresh token exists in DB for the correct role
+                const role = refreshDecoded.role?.toLowerCase();
+                let dbUser = null;
+
+                if (role === 'patient') {
+                    dbUser = await patientModel.findOne({ refreshToken });
+                } else if (role === 'dentist') {
+                    dbUser = await dentistModel.findOne({ refreshToken });
+                } else if (role === 'admin') {
+                    dbUser = await adminModel.findOne({ refreshToken });
+                }
+
+                if (!dbUser) {
+                    return res.status(403).json({
+                        success: false,
+                        message: 'Refresh token revoked or not found'
+                    });
+                }
+
                 const newAccessToken = jwt.sign(
                     {
                         id: refreshDecoded.id,
@@ -66,6 +95,7 @@ const verifyToken = async (req, res, next) => {
                     { expiresIn: '10h' }
                 );
 
+                // Set new access token as cookie
                 res.cookie("accessToken", newAccessToken, {
                     httpOnly: true,
                     secure: true,
@@ -73,7 +103,9 @@ const verifyToken = async (req, res, next) => {
                     maxAge: 10 * 60 * 60 * 1000
                 });
 
-                // Attach user to request
+                // Also send it in response header so localStorage-based clients can pick it up
+                res.setHeader('X-New-Access-Token', newAccessToken);
+
                 req.user = refreshDecoded;
                 console.log('New user from refresh token:', req.user);
                 next();

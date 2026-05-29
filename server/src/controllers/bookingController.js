@@ -60,6 +60,8 @@ const getDentistPatients = async (req, res) => {
     try {
         const dentistId = req.user.id;
 
+        const book = await bookingModel.find({ dentistId });
+        console.log(book)
         const bookings = await bookingModel.find({ dentistId })
             .populate("patientId", "name email phone")
             .sort({ createdAt: -1 });
