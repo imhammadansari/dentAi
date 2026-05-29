@@ -1,49 +1,111 @@
-import React, { useState } from 'react';
-import { CalendarDaysIcon, ClockIcon, XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from 'react';
+import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import axios from "axios";
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
+const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+    '18:00', '18:30', '19:00', '19:30'
+];
 
 const AddSlots = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [slots, setSlots] = useState([]);
-    const [newSlot, setNewSlot] = useState({ startTime: '09:00', endTime: '09:30', maxPatients: 1 });
-    console.log(selectedDate)
+    const [newSlot, setNewSlot] = useState({ startTime: '09:00', endTime: '09:30' });
+    const [existingSlots, setExistingSlots] = useState([]); // slots already added for selected date
+    const [loading, setLoading] = useState(false);
+    const [adding, setAdding] = useState(false);
 
-    const addSlot = async () => {
+    // Fetch dentist's slots whenever date changes
+    useEffect(() => {
+        fetchExistingSlotsForDate(selectedDate);
+    }, [selectedDate]);
+
+    const fetchExistingSlotsForDate = async (date) => {
+        setLoading(true);
         try {
-            if (newSlot.startTime && newSlot.endTime) {
-                const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/slots/add-slot`, {
-                    date: selectedDate.toDateString(),
-                    start: newSlot.startTime,
-                    end: newSlot.endTime,
-                });
+            const token = localStorage.getItem('token');
+            const res = await axios.get(
+                `${import.meta.env.VITE_SERVER_URL}/api/slots/dentist-slots`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-                console.log(response.data);
+            const allSlots = res.data.data || [];
+            const selectedDateStr = date.toISOString().split('T')[0];
 
-                if (response.status === 200) {
-                    alert("Slot added")
-                    // setSlots([...slots, response.data.data]);
-                    // setNewSlot({ startTime: '09:00', endTime: '09:30', maxPatients: 1 });
+            const slotsForDate = allSlots.filter(s => {
+                const slotDate = new Date(s.date).toISOString().split('T')[0];
+                return slotDate === selectedDateStr;
+            });
 
-                }
-            }
-        } catch (error) {
-            console.log(error.message);
+            setExistingSlots(slotsForDate);
+        } catch (err) {
+            console.log(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const removeSlot = (id) => {
-        setSlots(slots.filter(slot => slot.id !== id));
+    // Check if a start time is already taken on the selected date
+    const isStartTimeTaken = (time) => {
+        return existingSlots.some(s => s.start === time);
     };
 
-    const timeSlots = [
-        '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-        '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-        '18:00', '18:30', '19:00', '19:30'
-    ];
+    // Check if a time overlaps with any existing slot
+    const isTimeOverlapping = (time) => {
+        return existingSlots.some(s => {
+            // disable any end time that's <= start time of another slot's range
+            return time > s.start && time <= s.end;
+        });
+    };
 
+    const isStartDisabled = (time) => isStartTimeTaken(time);
+    const isEndDisabled = (time) => {
+        // end time must be after start time
+        if (time <= newSlot.startTime) return true;
+        // can't end in the middle of an existing slot
+        return isTimeOverlapping(time);
+    };
+
+    const addSlot = async () => {
+        if (!newSlot.startTime || !newSlot.endTime) return;
+        if (newSlot.endTime <= newSlot.startTime) {
+            toast.error('End time must be after start time');
+            return;
+        }
+        if (isStartTimeTaken(newSlot.startTime)) {
+            toast.error('This start time is already added for the selected date');
+            return;
+        }
+
+        setAdding(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${import.meta.env.VITE_SERVER_URL}/api/slots/add-slot`,
+                {
+                    date: selectedDate.toISOString().split('T')[0],
+                    start: newSlot.startTime,
+                    end: newSlot.endTime,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                toast.success('Slot added successfully!');
+                fetchExistingSlotsForDate(selectedDate);
+                // Reset to next available time
+                const nextAvailable = timeSlots.find(t => !isStartTimeTaken(t) && t > newSlot.startTime);
+                setNewSlot({ startTime: nextAvailable || timeSlots[0], endTime: '09:30' });
+            }
+        } catch (error) {
+            toast.error(error.response?.data || error.message);
+        } finally {
+            setAdding(false);
+        }
+    };
 
     return (
         <div className="p-2 lg:p-4 min-h-full">
@@ -53,60 +115,131 @@ const AddSlots = () => {
                         <h3 className="text-2xl font-bold text-black">Schedule Management</h3>
                         <p className="text-emerald-600">Add and manage your available time slots</p>
                     </div>
-                    
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6">
-                    <div className='flex flex-col gap-10'>
+                    {/* Calendar */}
+                    <div className="flex flex-col gap-6">
                         <div className="calendar-wrapper">
                             <Calendar onChange={setSelectedDate} value={selectedDate} />
                         </div>
 
-
+                        {/* Slots already added for this date */}
+                        <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
+                            <h4 className="text-base font-bold text-black mb-3">
+                                Slots for{' '}
+                                {selectedDate.toLocaleDateString('en-US', {
+                                    weekday: 'short', month: 'short', day: 'numeric'
+                                })}
+                            </h4>
+                            {loading ? (
+                                <p className="text-emerald-500 text-sm">Loading...</p>
+                            ) : existingSlots.length === 0 ? (
+                                <p className="text-emerald-500 text-sm">No slots added yet for this date.</p>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-2">
+                                    {existingSlots.map((slot) => (
+                                        <div
+                                            key={slot.id}
+                                            className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-lg border border-emerald-100"
+                                        >
+                                            <CheckCircleIcon className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                                            <span className="text-sm text-emerald-800 font-medium">
+                                                {slot.start} – {slot.end}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
+                    {/* Add Slot Form */}
                     <div className="space-y-6">
                         <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                             <h4 className="text-lg font-bold text-black mb-6">Add Time Slot</h4>
                             <div className="space-y-4">
+                                {/* Start Time */}
                                 <div>
                                     <label className="block text-sm font-medium text-black mb-2">Start Time</label>
-                                    <select
-                                        value={newSlot.startTime}
-                                        onChange={(e) => setNewSlot({ ...newSlot, startTime: e.target.value })}
-                                        className="w-full p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                    >
-                                        {timeSlots.map((time) => (
-                                            <option key={time} value={time}>{time}</option>
-                                        ))}
-                                    </select>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {timeSlots.map((time) => {
+                                            const taken = isStartDisabled(time);
+                                            const selected = newSlot.startTime === time;
+                                            return (
+                                                <button
+                                                    key={time}
+                                                    disabled={taken}
+                                                    onClick={() => setNewSlot({ ...newSlot, startTime: time })}
+                                                    className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${
+                                                        taken
+                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
+                                                            : selected
+                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                    }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {isStartDisabled(newSlot.startTime) && (
+                                        <p className="text-red-500 text-xs mt-2">
+                                            This time is already added. Please select another.
+                                        </p>
+                                    )}
                                 </div>
+
+                                {/* End Time */}
                                 <div>
                                     <label className="block text-sm font-medium text-black mb-2">End Time</label>
-                                    <select
-                                        value={newSlot.endTime}
-                                        onChange={(e) => setNewSlot({ ...newSlot, endTime: e.target.value })}
-                                        className="w-full p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                    >
-                                        {timeSlots.map((time) => (
-                                            <option key={time} value={time}>{time}</option>
-                                        ))}
-                                    </select>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {timeSlots.map((time) => {
+                                            const disabled = isEndDisabled(time);
+                                            const selected = newSlot.endTime === time;
+                                            return (
+                                                <button
+                                                    key={time}
+                                                    disabled={disabled}
+                                                    onClick={() => setNewSlot({ ...newSlot, endTime: time })}
+                                                    className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${
+                                                        disabled
+                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                            : selected
+                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                    }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                                
+
+                                {/* Preview */}
+                                {newSlot.startTime && newSlot.endTime && newSlot.endTime > newSlot.startTime && !isStartDisabled(newSlot.startTime) && (
+                                    <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                                        <ClockIcon className="w-4 h-4 text-emerald-500" />
+                                        <span className="text-emerald-800 text-sm font-medium">
+                                            Slot: {newSlot.startTime} – {newSlot.endTime} on{' '}
+                                            {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                        </span>
+                                    </div>
+                                )}
+
                                 <button
                                     onClick={addSlot}
-                                    className="w-full cursor-pointer py-3 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-emerald-200 transition-all"
+                                    disabled={adding || isStartDisabled(newSlot.startTime) || newSlot.endTime <= newSlot.startTime}
+                                    className="w-full cursor-pointer py-3 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-emerald-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Add Slot
+                                    {adding ? 'Adding...' : 'Add Slot'}
                                 </button>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
-
             </div>
         </div>
     );

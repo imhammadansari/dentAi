@@ -328,13 +328,43 @@ const deleteAdmin = async (req, res) => {
     }
 };
 
+const getAdminStats = async (req, res) => {
+    try {
+        const patientModel = require('../models/patientModel');
+        const dentistModel = require('../models/dentistModel');
+        const bookingModel = require('../models/bookingModel');
+
+        const [totalPatients, totalDentists, allBookings, pendingDentists] = await Promise.all([
+            patientModel.countDocuments(),
+            dentistModel.countDocuments({ approvalStatus: 'Approved' }),
+            bookingModel.find(),
+            dentistModel.countDocuments({ approvalStatus: 'Pending' })
+        ]);
+
+        const totalAppointments = allBookings.filter(
+            b => ['Booked', 'Completed'].includes(b.status)
+        ).length;
+        const upcomingCount = allBookings.filter(b => b.status === 'Booked').length;
+        const completedCount = allBookings.filter(b => b.status === 'Completed').length;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalPatients,
+                totalDentists,
+                totalAppointments,
+                upcomingCount,
+                completedCount,
+                pendingDentists,
+                totalReports: 0
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
-    createFirstAdmin,
-    adminRegister,
-    adminLogin,
-    getAdmin,
-    adminLogout,
-    getAllAdmins,
-    updateAdmin,
-    deleteAdmin
+    createFirstAdmin, adminRegister, adminLogin, getAdmin, adminLogout,
+    getAllAdmins, updateAdmin, deleteAdmin, getAdminStats
 };

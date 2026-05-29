@@ -18,7 +18,9 @@ const DentistLayout = () => {
 
         const path = location.pathname;
         if (path.includes('patients')) setActiveTab('patients');
+        else if (path.includes('add-slots')) setActiveTab('add-slots');
         else if (path.includes('slots')) setActiveTab('slots');
+        else if (path.includes('account')) setActiveTab('account');
         else setActiveTab('home');
     }, [location.pathname]);
 

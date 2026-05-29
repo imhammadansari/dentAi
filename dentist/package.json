@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.18",
+    "ably": "^2.21.0",
     "axios": "^1.13.5",
     "react": "^19.2.0",
     "react-calendar": "^6.0.0",

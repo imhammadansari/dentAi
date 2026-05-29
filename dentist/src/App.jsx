@@ -7,6 +7,7 @@ import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
 import PatientUploadXray from './pages/PatientUploadXRay/PatientUploadXRay';
 import PatientBookConsultation from './pages/PatientBookConsultation/PatientBookConsultation';
 import PatientAllConsultations from "./pages/PatientAllConsultations/PatientAllConsultations";
+import PatientConsultationDetail from "./pages/PatientConsultationDetail/PatientConsultationDetail";
 import PatientDashboard from "./pages/PatientDashboard/PatientDashboard";
 import PatientAllReports from "./pages/PatientAllReports/PatientAllReports";
 import DentistDashboard from './pages/DentistDashboard/DentistDashboard';
@@ -16,10 +17,11 @@ import DentistLogin from './pages/DentistLogin/DentistLogin';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import AdminDentist from './pages/AdminDentist/AdminDentist';
 import AdminAllReports from './pages/AdminAllReports/AdminAllReports';
-
 import AdminPatient from './pages/AdminDentist/AdminDentist';
 import AdminLogin from './pages/AdminLogin/AdminLogin';
 import AdminRequests from './pages/AdminDentistRequests/AdminDentistRequests';
+import PatientAccount from './pages/PatientAccount/PatientAccount';
+import DentistAccount from './pages/DentistAccount/DentistAccount';
 import Analyze from './pages/Analyze/Analyze';
 import toast, { Toaster } from 'react-hot-toast';
 import PatientLogin from './pages/PatientLogin/PatientLogin';
@@ -30,6 +32,7 @@ import BookSlot from './pages/PatientBookSlot/PatientBookSlot';
 import PatientDetailPage from './pages/PatientDetailPage/PatientDetailPage';
 import DentistAllAppointments from './pages/DentistAllAppointments/DentistAllAppointments';
 import PatientBookingsPage from './pages/PatientBookingPage/PatientBookingPage';
+import Chat from './pages/Chat/Chat';
 
 
 function App() {
@@ -59,7 +62,10 @@ function App() {
           <Route path="reports" element={<PatientAllReports />} />
           <Route path="book" element={<PatientBookConsultation />} />
           <Route path="consultations" element={<PatientAllConsultations />} />
+          <Route path="consultation/:id" element={<PatientConsultationDetail />} />
           <Route path="book-slot/:dentistId" element={<BookSlot />} />
+          <Route path="account" element={<PatientAccount />} />
+          <Route path="chat/:bookingId" element={<Chat />} />
         </Route>
 
         <Route path="/dentist-dashboard" element={
@@ -79,6 +85,8 @@ function App() {
             element={<PatientDetailPage />}
           />
           <Route path="appointments" element={<DentistAllAppointments />} />
+          <Route path="account" element={<DentistAccount />} />
+          <Route path="chat/:bookingId" element={<Chat />} />
         </Route>
 
         <Route path="/admin-dashboard" element={

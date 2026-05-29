@@ -353,6 +353,16 @@ const getAllDentists = async (req, res) => {
     }
 }
 
+const deleteDentist = async (req, res) => {
+    try {
+        const { dentistId } = req.params;
+        const dentist = await dentistModel.findByIdAndDelete(dentistId);
+        if (!dentist) return res.status(404).json({ message: 'Dentist not found' });
+        res.status(200).json({ success: true, message: 'Dentist deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 module.exports = {
@@ -362,5 +372,6 @@ module.exports = {
     dentistLogout,
     getPendingDentists,
     updateDentistStatus,
-    getAllDentists
+    getAllDentists,
+    deleteDentist
 };

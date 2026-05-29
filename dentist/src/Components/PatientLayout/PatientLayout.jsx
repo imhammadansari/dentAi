@@ -19,7 +19,8 @@ const PatientLayout = () => {
         if (path.includes('upload')) setActiveTab('upload');
         else if (path.includes('reports')) setActiveTab('reports');
         else if (path.includes('book')) setActiveTab('book');
-        else if (path.includes('consultations')) setActiveTab('consultations');
+        else if (path.includes('consultations') || path.includes('consultation/')) setActiveTab('consultations');
+        else if (path.includes('account')) setActiveTab('account');
         else setActiveTab('home');
 
     }, [location.pathname]);

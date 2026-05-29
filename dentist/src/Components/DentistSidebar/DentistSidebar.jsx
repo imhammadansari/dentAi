@@ -80,7 +80,6 @@ const DentistSidebar = ({ activeTab, setActiveTab, userData, setMobileSidebar })
                                 onClick={() => {
                                     setActiveTab(item.id);
                                     setMobileSidebar(false)
-
                                 }}
                                 className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isActive
                                     ? 'text-white shadow-lg'
