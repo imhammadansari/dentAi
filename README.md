@@ -354,3 +354,26 @@ Either party clicks **End Chat** → confirms → chat `status` set to `"ended"`
 ## 📄 License
 
 This project is licensed under the **ISC License**.
+
+## Credentials
+
+### Admin
+admin@dentai.com
+Admin@123
+
+### Dentists
+farankhalil@gmail.com
+123456
+
+dusdus@gmail.com
+123456
+
+hammadansari@example.com
+123456
+
+### Patients
+jhulelaal@gmail.com
+123456
+
+muaaz@gmail.com
+123456
