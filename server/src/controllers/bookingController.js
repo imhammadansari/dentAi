@@ -60,6 +60,8 @@ const getDentistPatients = async (req, res) => {
     try {
         const dentistId = req.user.id;
 
+        const book = await bookingModel.find({ dentistId });
+        console.log(book)
         const bookings = await bookingModel.find({ dentistId })
             .populate("patientId", "name email phone")
             .sort({ createdAt: -1 });
@@ -205,7 +207,100 @@ const getPatientConsultations = async (req, res) => {
     }
 };
 
+const getTodaySchedule = async (req, res) => {
+    try {
+        const dentistId = req.user.id;
+        const today = new Date().toISOString().split("T")[0];
+
+        const slotsModel = require("../models/slotsModel");
+
+        // Get all slots for today
+        const slots = await slotsModel.find({ dentistId });
+
+        // Filter slots whose date matches today
+        const todaySlots = slots.filter(slot => {
+            const slotDate = slot.date instanceof Date
+                ? slot.date.toISOString().split("T")[0]
+                : new Date(slot.date).toISOString().split("T")[0];
+            return slotDate === today;
+        });
+
+        // Get all bookings for those slots
+        const slotIds = todaySlots.map(s => s._id);
+        const bookings = await bookingModel.find({
+            dentistId,
+            slotId: { $in: slotIds },
+            status: { $ne: "Cancelled" }
+        }).populate("patientId", "name");
+
+        const bookedSlotIdSet = new Set(bookings.map(b => b.slotId.toString()));
+
+        const schedule = todaySlots.map(slot => ({
+            id: slot._id,
+            start: slot.start,
+            end: slot.end,
+            isBooked: bookedSlotIdSet.has(slot._id.toString()),
+            patientName: bookings.find(b => b.slotId.toString() === slot._id.toString())?.patientId?.name || null
+        }));
+
+        // Sort by start time
+        schedule.sort((a, b) => a.start.localeCompare(b.start));
+
+        res.json({ success: true, data: schedule });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+const getDentistAllBookings = async (req, res) => {
+    try {
+        const dentistId = req.user.id;
+
+        const bookings = await bookingModel.find({ dentistId })
+            .populate("patientId", "name email phone")
+            .sort({ createdAt: -1 });
+
+        const formatted = bookings.map(b => ({
+            id: b._id,
+            slotId: b.slotId,
+            date: b.date,
+            start: b.start,
+            end: b.end,
+            status: b.status,
+            patient: {
+                id: b.patientId?._id,
+                name: b.patientId?.name,
+                email: b.patientId?.email,
+                phone: b.patientId?.phone,
+            }
+        }));
+
+        res.json({ success: true, data: formatted });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+// Returns all active bookings (slotId list) for a given dentist — used by patients to see which slots are Full
+const getDentistSlotBookings = async (req, res) => {
+    try {
+        const { dentistId } = req.params;
+
+        const bookings = await bookingModel.find({
+            dentistId,
+            status: { $ne: "Cancelled" }
+        }).select("slotId status");
+
+        res.json({
+            success: true,
+            data: bookings.map(b => ({ slotId: b.slotId, status: b.status }))
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 module.exports = {
     bookSlot, getSingleDentistSlots,
-    getDentistPatients, updatePatientStatus, getPatientConsultations, getSinglePatientBookings
+    getDentistPatients, updatePatientStatus, getPatientConsultations, getSinglePatientBookings,
+    getTodaySchedule, getDentistAllBookings, getDentistSlotBookings
 };

@@ -227,19 +227,13 @@ const getDentist = async (req, res) => {
 const dentistLogout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
-    if (!refreshToken) {
-        return res.status(401).json({
-            success: false,
-            message: "No refresh token found"
-        });
-    }
-
     try {
-        const dentist = await dentistModel.findOne({ refreshToken });
-
-        if (dentist) {
-            dentist.refreshToken = null;
-            await dentist.save();
+        if (refreshToken) {
+            const dentist = await dentistModel.findOne({ refreshToken });
+            if (dentist) {
+                dentist.refreshToken = null;
+                await dentist.save();
+            }
         }
 
         res.clearCookie("accessToken", {
@@ -260,13 +254,10 @@ const dentistLogout = async (req, res) => {
             success: true,
             message: "Logged out successfully"
         });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message,
-        });
+
+    } catch (err) {
+        console.error("dentistLogout error:", err.message);
+        res.status(500).json({ success: false, message: err.message });
     }
 };
 
@@ -353,6 +344,16 @@ const getAllDentists = async (req, res) => {
     }
 }
 
+const deleteDentist = async (req, res) => {
+    try {
+        const { dentistId } = req.params;
+        const dentist = await dentistModel.findByIdAndDelete(dentistId);
+        if (!dentist) return res.status(404).json({ message: 'Dentist not found' });
+        res.status(200).json({ success: true, message: 'Dentist deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 module.exports = {
@@ -362,5 +363,6 @@ module.exports = {
     dentistLogout,
     getPendingDentists,
     updateDentistStatus,
-    getAllDentists
+    getAllDentists,
+    deleteDentist
 };

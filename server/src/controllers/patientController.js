@@ -251,4 +251,80 @@ const userLogout = async (req, res) => {
 
 }
 
-module.exports = { patientRegister, userLogin, refreshTokenGenerate, getPatient, testRoute, userLogout, getPatientById }
+const getAllPatientsAdmin = async (req, res) => {
+    try {
+        const patients = await patientModel.find().select('-password -refreshToken');
+
+        // Get all bookings for stats
+        const allBookings = await bookingModel.find();
+
+        const totalAppointments = allBookings.filter(
+            b => ['Booked', 'Completed'].includes(b.status)
+        ).length;
+        const upcomingCount = allBookings.filter(b => b.status === 'Booked').length;
+
+        // Build per-patient visit counts
+        const visitMap = {};
+        allBookings.forEach(b => {
+            const pid = b.patientId?.toString();
+            if (pid) visitMap[pid] = (visitMap[pid] || 0) + 1;
+        });
+
+        const patientsData = patients.map(p => ({
+            id: p._id,
+            name: p.name,
+            email: p.email,
+            phone: p.phone || null,
+            age: p.age || null,
+            gender: p.gender || null,
+            totalVisits: visitMap[p._id.toString()] || 0,
+            createdAt: p.createdAt
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: patientsData,
+            stats: {
+                totalPatients: patients.length,
+                totalAppointments,
+                upcomingCount,
+                totalReports: 0 // future
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const deletePatient = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const patient = await patientModel.findByIdAndDelete(id);
+        if (!patient) return res.status(404).json({ message: 'Patient not found' });
+        // Also delete their bookings
+        await bookingModel.deleteMany({ patientId: id });
+        res.status(200).json({ success: true, message: 'Patient deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const updatePatientProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { phone, gender, age } = req.body;
+        const updated = await patientModel.findByIdAndUpdate(
+            userId,
+            { phone, gender, age },
+            { new: true }
+        ).select('-password -refreshToken');
+
+        if (!updated) return res.status(404).json({ message: 'Patient not found' });
+
+        res.status(200).json({ success: true, data: updated });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { patientRegister, userLogin, refreshTokenGenerate, getPatient, testRoute, userLogout, getPatientById, getAllPatientsAdmin, deletePatient, updatePatientProfile };
