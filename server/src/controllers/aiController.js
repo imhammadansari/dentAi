@@ -23,7 +23,7 @@ exports.analyzeXray = async (req, res) => {
         });
 
         // Pipeline connection to localized running FastAPI process running on port 5000
-        const internalAIServiceEndpoint = 'http://127.0.0.1:5000/predict';
+        const internalAIServiceEndpoint = 'http://127.0.0.1:8001/predict';
         
         console.log(`[Gatekeeper] Forwarding buffer matrix to local model cluster: ${internalAIServiceEndpoint}`);
         
