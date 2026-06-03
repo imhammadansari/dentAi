@@ -33,8 +33,8 @@ const PatientAllReports = () => {
   }, []);
 
   const filtered = reports.filter(r => {
-    if (filter === 'generated') return r.status === 'Generated';
-    if (filter === 'saved') return r.status === 'Saved';
+    if (filter === 'generated') return r.status === 'generated';
+    if (filter === 'saved') return r.status === 'saved';
     return true;
   });
 
@@ -190,7 +190,7 @@ const PatientAllReports = () => {
                           ? 'bg-blue-100 text-blue-700'
                           : 'bg-emerald-100 text-emerald-700'
                       }`}>
-                        {report.status}
+                        {report.status.toUpperCase()}
                       </span>
 
                       <button
