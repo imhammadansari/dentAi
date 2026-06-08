@@ -238,15 +238,15 @@ const dentistLogout = async (req, res) => {
 
         res.clearCookie("accessToken", {
             httpOnly: true,
-            sameSite: 'Lax',
-            secure: false,
+            sameSite: 'None',
+            secure: true,
             path: '/'
         });
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            sameSite: 'Lax',
-            secure: false,
+            sameSite: 'None',
+            secure: true,
             path: '/'
         });
 
