@@ -1,12 +1,3 @@
-"""
-============================================================
-  DENT AI — FastAPI Production Microservice Layer
-  Project : DENT AI Smart Dental Diagnosis (P24F25)
-  Author  : Faran Khalil (SE221057)
-  Version : 2.5
-============================================================
-"""
-
 import os
 import io
 import base64
