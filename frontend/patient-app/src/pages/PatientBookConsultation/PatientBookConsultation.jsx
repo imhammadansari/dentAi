@@ -28,7 +28,7 @@ const PatientBookConsultation = () => {
   }, []);
 
   return (
-    <div className="p-6 w-full mx-auto">
+    <div className="w-full mx-auto">
       <div className="bg-gradient-to-br from-white to-emerald-50 rounded-2xl border border-emerald-100 p-8 shadow-sm">
         <h3 className="text-2xl font-bold text-emerald-900 mb-2">Book Online Consultation</h3>
         <p className="text-emerald-600 mb-8">Schedule a virtual appointment with our dental specialists</p>

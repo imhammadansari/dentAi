@@ -74,7 +74,7 @@ const PatientAllReports = () => {
   };
 
   return (
-    <div className="p-2 lg:p-4">
+    <div className="lg:p-4">
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-6">

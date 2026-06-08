@@ -71,7 +71,7 @@ const DentistDashboard = () => {
     ];
 
     return (
-        <div className="p-2 lg:p-4 space-y-6 min-h-full">
+        <div className="lg:p-4 space-y-6 min-h-full">
             <div>
                 <h3 className="text-xl font-bold text-black">Practice Overview</h3>
                 <p className="text-emerald-600">Monitor your dental practice performance</p>

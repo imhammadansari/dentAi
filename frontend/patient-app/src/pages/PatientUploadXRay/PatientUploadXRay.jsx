@@ -152,7 +152,7 @@ const PatientUploadXray = () => {
   };
 
   return (
-    <div className="p-2 lg:p-6">
+    <div className="lg:p-6">
       <div className="max-w-4xl mx-auto">
 
         {/* Upload Card */}

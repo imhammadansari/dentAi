@@ -63,7 +63,7 @@ const AdminDentist = () => {
     const approvedCount = dentists.filter(d => d.approvalStatus === 'Approved').length;
 
     return (
-        <div className="p-2 lg:p-4 min-h-full space-y-6">
+        <div className="lg:p-4 min-h-full space-y-6">
             <div>
                 <h3 className="text-2xl font-bold text-gray-900">All Dentists</h3>
                 <p className="text-emerald-600">Manage all dental professionals on the platform</p>
@@ -155,8 +155,13 @@ const AdminDentist = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="py-4 px-5">
+                                        {/* <td className="py-4 px-5">
                                             <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm rounded-full">
+                                                {dentist.specialty || '—'}
+                                            </span>
+                                        </td> */}
+                                        <td className="py-4 px-5">
+                                            <span className="inline-flex items-center whitespace-nowrap px-2 py-1 sm:px-3 sm:py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-medium">
                                                 {dentist.specialty || '—'}
                                             </span>
                                         </td>
@@ -167,13 +172,12 @@ const AdminDentist = () => {
                                             </div>
                                         </td>
                                         <td className="py-4 px-5">
-                                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                                                dentist.approvalStatus === 'Approved'
+                                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${dentist.approvalStatus === 'Approved'
                                                     ? 'bg-emerald-100 text-emerald-700'
                                                     : dentist.approvalStatus === 'Pending'
-                                                    ? 'bg-amber-100 text-amber-700'
-                                                    : 'bg-red-100 text-red-700'
-                                            }`}>
+                                                        ? 'bg-amber-100 text-amber-700'
+                                                        : 'bg-red-100 text-red-700'
+                                                }`}>
                                                 {dentist.approvalStatus === 'Approved' && <CheckBadgeIcon className="w-3.5 h-3.5" />}
                                                 {dentist.approvalStatus}
                                             </span>

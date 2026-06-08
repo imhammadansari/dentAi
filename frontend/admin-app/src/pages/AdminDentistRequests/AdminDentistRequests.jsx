@@ -88,7 +88,7 @@ const AdminRequests = () => {
     };
 
     return (
-        <div className="p-2 lg:p-4 space-y-6">
+        <div className="lg:p-4 space-y-6">
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">Dentist Requests</h1>
                 <p className="text-emerald-600">Review and manage dentist registration requests</p>

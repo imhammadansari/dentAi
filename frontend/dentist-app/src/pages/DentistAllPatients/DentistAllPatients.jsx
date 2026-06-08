@@ -93,7 +93,7 @@ const DentistAllPatients = () => {
 
 
     return (
-        <div className="p-2 lg:p-4 min-h-full">
+        <div className="lg:p-4 min-h-full">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>

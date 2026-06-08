@@ -67,7 +67,7 @@ const AdminAllPatients = () => {
     ];
 
     return (
-        <div className="p-2 lg:p-4 min-h-full space-y-6">
+        <div className="lg:p-4 min-h-full space-y-6">
             <div>
                 <h3 className="text-2xl font-bold text-gray-900">All Patients</h3>
                 <p className="text-emerald-600">Manage all patients on the platform</p>
@@ -160,7 +160,7 @@ const AdminAllPatients = () => {
                                             <p className="text-xs text-gray-400 capitalize">{patient.gender || '—'}</p>
                                         </td>
                                         <td className="py-4 px-5">
-                                            <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                                            <span className="inline-flex items-center whitespace-nowrap px-2 py-1 sm:px-3 sm:py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-medium">
                                                 {patient.totalVisits} visit{patient.totalVisits !== 1 ? 's' : ''}
                                             </span>
                                         </td>

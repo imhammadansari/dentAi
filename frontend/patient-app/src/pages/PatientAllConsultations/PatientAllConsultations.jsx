@@ -72,7 +72,7 @@ const PatientAllConsultations = () => {
     };
 
     return (
-        <div className="p-2 lg:p-4">
+        <div className="lg:p-4">
             <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                 <div className="flex flex-col lg:flex-row items-center justify-between mb-6 gap-4">
                     <h3 className="text-xl font-bold text-emerald-900">Consultation History</h3>

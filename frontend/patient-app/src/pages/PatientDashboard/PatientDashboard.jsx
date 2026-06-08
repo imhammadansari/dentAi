@@ -86,7 +86,7 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="p-2 lg:p-4 space-y-6">
+    <div className="lg:p-4 space-y-6">
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

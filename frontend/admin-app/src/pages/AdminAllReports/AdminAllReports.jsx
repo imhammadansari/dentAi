@@ -5,8 +5,6 @@ import {
     ClockIcon
 } from '@heroicons/react/24/outline';
 
-// FUTURE: This page will be connected to the AI reports API.
-// For now, using static/demo data.
 const STATIC_REPORTS = [
     { id: 1, patientName: 'Aqdus Haider', patientId: 'PAT-0001', date: '2024-02-15', type: 'Dental X-Ray', dentist: 'Dr. Hammad Ansari', status: 'completed', findings: ['Cavity detected', 'Mild gingivitis'] },
     { id: 2, patientName: 'Maaz Ilyas', patientId: 'PAT-0002', date: '2024-03-01', type: 'Dental X-Ray', dentist: 'Dr. Faran Khalil', status: 'completed', findings: ['Healthy teeth', 'Minor tartar'] },
