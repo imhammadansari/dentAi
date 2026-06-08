@@ -33,6 +33,7 @@ const adminRoute = require('./src/routes/adminRoute');
 const aiRoute = require('./src/routes/analysis');
 const bookingRoutes = require('./src/routes/bookingRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
+const reportRoutes = require('./src/routes/reportRoutes');
 
 const { createFirstAdmin } = require('./src/controllers/adminController');
 
@@ -50,6 +51,7 @@ app.use("/api/admin", adminRoute);
 app.use("/api/analysis", aiRoute);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/reports", reportRoutes);
 
 app.post("/api/test", verifyToken, async (req, res) => {
     console.log("Tested")
