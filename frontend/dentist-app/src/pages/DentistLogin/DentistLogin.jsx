@@ -32,7 +32,7 @@ const DentistLogin = ({ isLogin = true }) => {
     });
 
     axios.defaults.withCredentials = true;
-    axios.defaults.baseURL = 'http://localhost:8000';
+    axios.defaults.baseURL = 'https://13.51.175.156.nip.io';
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -63,7 +63,7 @@ const DentistLogin = ({ isLogin = true }) => {
         try {
             setLoading(true);
             setError('');
-            
+
             const response = await axios.post('/api/dentists/register', {
                 name: formData.name,
                 email: formData.email,
@@ -75,7 +75,7 @@ const DentistLogin = ({ isLogin = true }) => {
 
             if (response.data.success) {
                 setSuccess('Registration submitted for admin approval! You will receive an email when approved.');
-                
+
                 setFormData({
                     name: '',
                     email: '',
@@ -97,7 +97,7 @@ const DentistLogin = ({ isLogin = true }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (isLoginMode) {
             await handleDentistLogin(formData.email, formData.password);
         } else {

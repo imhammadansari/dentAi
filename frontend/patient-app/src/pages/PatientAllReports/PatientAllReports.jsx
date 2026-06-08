@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API = 'http://localhost:8000';
+const API = 'https://13.51.175.156.nip.io';
 
 const PatientAllReports = () => {
   const [reports, setReports] = useState([]);
@@ -107,11 +107,10 @@ const PatientAllReports = () => {
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${
-                      filter === f
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${filter === f
                         ? 'bg-emerald-500 text-white shadow-sm'
                         : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                    }`}
+                      }`}
                   >
                     {f}
                   </button>
@@ -149,9 +148,8 @@ const PatientAllReports = () => {
                   >
                     {/* Left: icon + info */}
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                        report.status === 'generated' ? 'bg-blue-100' : 'bg-emerald-100'
-                      }`}>
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${report.status === 'generated' ? 'bg-blue-100' : 'bg-emerald-100'
+                        }`}>
                         {report.status === 'generated'
                           ? <DocumentTextIcon className="w-5 h-5 text-blue-600" />
                           : <BookmarkIcon className="w-5 h-5 text-emerald-600" />
@@ -185,11 +183,10 @@ const PatientAllReports = () => {
 
                     {/* Right: status badge + download */}
                     <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                      <span className={`hidden sm:inline px-2 py-1 rounded-full text-xs font-medium ${
-                        report.status === 'generated'
+                      <span className={`hidden sm:inline px-2 py-1 rounded-full text-xs font-medium ${report.status === 'generated'
                           ? 'bg-blue-100 text-blue-700'
                           : 'bg-emerald-100 text-emerald-700'
-                      }`}>
+                        }`}>
                         {report.status.toUpperCase()}
                       </span>
 

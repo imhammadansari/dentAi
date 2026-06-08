@@ -250,7 +250,7 @@ npm install
 Create `server/.env` (see [Environment Variables](#-environment-variables) below), then:
 
 npm run dev
-# Server starts at http://localhost:8000
+# Server starts at https://13.51.175.156.nip.io
 
 
 ### 3. Seed the First Admin (one-time only)
@@ -303,17 +303,17 @@ ABLY_API_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
 
 ### Patient App — `frontend/patient-app/.env`
 
-VITE_SERVER_URL=http://localhost:8000
+VITE_SERVER_URL=https://13.51.175.156.nip.io
 VITE_ABLY_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
 
 ### Dentist App — `frontend/dentist-app/.env`
 
-VITE_SERVER_URL=http://localhost:8000
+VITE_SERVER_URL=https://13.51.175.156.nip.io
 VITE_ABLY_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
 
 ### Admin App — `frontend/admin-app/.env`
 
-VITE_SERVER_URL=http://localhost:8000
+VITE_SERVER_URL=https://13.51.175.156.nip.io
 VITE_ABLY_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
 
 

@@ -24,7 +24,7 @@ const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         axios.defaults.withCredentials = true;
-        axios.defaults.baseURL = 'http://localhost:8000';
+        axios.defaults.baseURL = 'https://13.51.175.156.nip.io';
     }, []);
 
     const verifyUser = async () => {

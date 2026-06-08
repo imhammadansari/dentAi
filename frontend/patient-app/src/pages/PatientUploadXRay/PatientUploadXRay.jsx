@@ -6,7 +6,7 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API = 'http://localhost:8000';
+const API = 'https://13.51.175.156.nip.io';
 
 const PatientUploadXray = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -31,7 +31,7 @@ const PatientUploadXray = () => {
       try {
         const res = await axios.get(`${API}/api/reports/has-previous`, { headers: authHeader });
         setHasPrevious(res.data.hasPrevious);
-      } catch (_) {}
+      } catch (_) { }
     };
     check();
   }, []);
