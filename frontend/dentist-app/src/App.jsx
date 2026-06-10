@@ -14,7 +14,7 @@ import DentistAccount from './pages/DentistAccount/DentistAccount';
 import Chat from './pages/Chat/Chat';
 import { Toaster } from 'react-hot-toast';
 import UpcomingConsultations from './pages/UpcomingConsultaions/UpcomingConsultations';
-import DentistUploadXRay from './pages/DentistUploadXRay/DentistUploadXray';
+import DentistUploadXRay from './pages/DentistUploadXRay/DentistUploadXRay';
 
 function App() {
     return (
