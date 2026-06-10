@@ -100,11 +100,10 @@ const DentistUploadXRay = () => {
                         <button
                             onClick={onUpload}
                             disabled={!selectedFile || loading}
-                            className={`px-8 py-3 font-bold rounded-xl transition-all ${
-                                loading
+                            className={`px-8 py-3 font-bold rounded-xl transition-all ${loading
                                     ? 'bg-gray-400 text-white cursor-not-allowed'
                                     : 'bg-emerald-700 text-white hover:bg-emerald-800'
-                            }`}
+                                }`}
                         >
                             {loading ? 'Analyzing...' : 'Start AI Scan'}
                         </button>
