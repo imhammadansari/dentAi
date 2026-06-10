@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API = 'https://13.51.175.156.nip.io';
+const API = import.meta.env.VITE_SERVER_URL;
 
 const PatientAllReports = () => {
   const [reports, setReports] = useState([]);

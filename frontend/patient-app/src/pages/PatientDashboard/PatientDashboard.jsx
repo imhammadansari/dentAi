@@ -7,7 +7,7 @@ import {
   ExclamationCircleIcon, BookmarkIcon, ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 
-const API = 'https://13.51.175.156.nip.io';
+const API = import.meta.env.VITE_SERVER_URL;
 
 const PatientDashboard = () => {
   const navigate = useNavigate();

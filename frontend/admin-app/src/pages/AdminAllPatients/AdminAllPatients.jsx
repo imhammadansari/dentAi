@@ -116,7 +116,7 @@ const AdminAllPatients = () => {
                                     <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Patient</th>
                                     <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Contact</th>
                                     <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Age / Gender</th>
-                                    <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Total Visits</th>
+                                    <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Total Sessions</th>
                                     <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Actions</th>
                                 </tr>
                             </thead>
@@ -161,7 +161,7 @@ const AdminAllPatients = () => {
                                         </td>
                                         <td className="py-4 px-5">
                                             <span className="inline-flex items-center whitespace-nowrap px-2 py-1 sm:px-3 sm:py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-medium">
-                                                {patient.totalVisits} visit{patient.totalVisits !== 1 ? 's' : ''}
+                                                {patient.totalVisits} session{patient.totalVisits !== 1 ? 's' : ''}
                                             </span>
                                         </td>
                                         <td className="py-4 px-5">

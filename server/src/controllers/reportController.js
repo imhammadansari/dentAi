@@ -1,5 +1,6 @@
 const ReportModel = require('../models/reportModel');
 const PatientModel = require('../models/patientModel');
+const DentistModel = require('../models/dentistModel');
 const PDFDocument = require('pdfkit');
 const axios = require('axios');
 
@@ -16,10 +17,10 @@ const buildPDF = (report, patientName) => {
         const GRAY = '#6b7280';
         const RED = '#dc2626';
         const AMBER = '#d97706';
-        const pageWidth = doc.page.width;   // 595
+        const pageWidth = doc.page.width;
         const margin = 50;
         const contentWidth = pageWidth - margin * 2;
-        const pageHeight = doc.page.height; // 842
+        const pageHeight = doc.page.height;
         const FOOTER_H = 55;
         const SAFE_BOTTOM = pageHeight - FOOTER_H - 20;
 
@@ -31,12 +32,10 @@ const buildPDF = (report, patientName) => {
             return currentY;
         };
 
-        // ── Header Banner
+        // Header
         doc.rect(0, 0, pageWidth, 110).fill(GREEN);
         doc.fontSize(26).fillColor('white').font('Helvetica-Bold')
             .text('DENT AI', margin, 28, { continued: true });
-        doc.fontSize(12).font('Helvetica').fillColor('rgba(255,255,255,0.85)')
-            .text('  -  Smart Dental Diagnostic Platform', { continued: false });
         doc.fontSize(10).fillColor('rgba(255,255,255,0.75)').font('Helvetica')
             .text('Powered by AI-assisted radiograph analysis', margin, 58);
         doc.fontSize(9).fillColor('rgba(255,255,255,0.7)')
@@ -45,7 +44,7 @@ const buildPDF = (report, patientName) => {
 
         let y = 125;
 
-        // ── Patient Info Card
+        // Patient Info Card
         y = checkPage(80, y);
         doc.rect(margin, y, contentWidth, 70).fill('#f0fdf4').stroke('#bbf7d0');
         doc.fillColor(DARK).font('Helvetica-Bold').fontSize(11)
@@ -64,9 +63,17 @@ const buildPDF = (report, patientName) => {
             .text('Date:', margin + 250, y + 44, { continued: true })
             .fillColor(DARK).font('Helvetica-Bold')
             .text('  ' + new Date(report.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), { continued: false });
+
+        // Uploaded by tag
+        if (report.uploadedBy === 'dentist' && report.dentistName) {
+            doc.font('Helvetica').fontSize(9).fillColor(GRAY)
+                .text('Uploaded by:', margin + 15, y + 58, { continued: true })
+                .fillColor('#1d4ed8').font('Helvetica-Bold').text('  Dr. ' + report.dentistName, { continued: false });
+        }
+
         y += 85;
 
-        // ── Findings Section
+        // Findings
         y = checkPage(40, y);
         doc.fillColor(GREEN).font('Helvetica-Bold').fontSize(13)
             .text('DIAGNOSTIC FINDINGS', margin, y);
@@ -81,7 +88,6 @@ const buildPDF = (report, patientName) => {
             y += 54;
         } else {
             report.detections.forEach((d, i) => {
-                // Measure card height dynamically
                 const expText = d.explanation || 'N/A';
                 const expHeight = doc.heightOfString(expText, { width: contentWidth - 40, fontSize: 9.5 });
                 const cardH = Math.max(72, expHeight + 40);
@@ -106,7 +112,7 @@ const buildPDF = (report, patientName) => {
 
         y += 8;
 
-        // ── Comments
+        // Comments
         if (report.comments) {
             const commentH = doc.heightOfString(report.comments, { width: contentWidth - 30, fontSize: 10 });
             const boxH = commentH + 30;
@@ -121,7 +127,7 @@ const buildPDF = (report, patientName) => {
             y += boxH + 18;
         }
 
-        // ── Comparison Report
+        // Comparison Report
         if (report.comparisonReport) {
             const compH = doc.heightOfString(report.comparisonReport, { width: contentWidth - 30, fontSize: 10 });
             const compBoxH = compH + 30;
@@ -136,7 +142,7 @@ const buildPDF = (report, patientName) => {
             y += compBoxH + 18;
         }
 
-        // ── Footer — right after content
+        // Footer
         y += 16;
         y = checkPage(FOOTER_H + 10, y);
         doc.rect(0, y, pageWidth, FOOTER_H).fill(GREEN);
@@ -149,7 +155,7 @@ const buildPDF = (report, patientName) => {
     });
 };
 
-// ─── CONTROLLER: Check if patient has previous reports ───────────────────────
+// ─── Patient: Check if patient has previous reports ───────────────────────────
 exports.checkHasPreviousReport = async (req, res) => {
     try {
         const patientId = req.user.id;
@@ -160,7 +166,7 @@ exports.checkHasPreviousReport = async (req, res) => {
     }
 };
 
-// ─── CONTROLLER: Save Report (no PDF) ────────────────────────────────────────
+// ─── Patient: Save Report (no PDF) ───────────────────────────────────────────
 exports.saveReport = async (req, res) => {
     try {
         const patientId = req.user.id;
@@ -175,17 +181,17 @@ exports.saveReport = async (req, res) => {
             detections: detections || [],
             annotatedImage: annotatedImage || null,
             comments: comments || '',
-            status: 'saved'
+            status: 'saved',
+            uploadedBy: 'patient'
         });
 
         res.status(200).json({ success: true, message: 'Report saved successfully', data: report });
     } catch (error) {
-        console.error('[saveReport]', error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// ─── CONTROLLER: Generate Report — streams PDF directly as download ───────────
+// ─── Patient: Generate Report PDF ────────────────────────────────────────────
 exports.generateReport = async (req, res) => {
     try {
         const patientId = req.user.id;
@@ -193,7 +199,6 @@ exports.generateReport = async (req, res) => {
         const patient = await PatientModel.findById(patientId);
         if (!patient) return res.status(404).json({ success: false, message: 'Patient not found' });
 
-        // Save record so it appears in Reports page
         const report = await ReportModel.create({
             patientId,
             patientName: patient.name,
@@ -201,30 +206,25 @@ exports.generateReport = async (req, res) => {
             detections: detections || [],
             annotatedImage: annotatedImage || null,
             comments: comments || '',
-            status: 'generated'
+            status: 'generated',
+            uploadedBy: 'patient'
         });
 
-        // Build PDF
         const pdfBuffer = await buildPDF(report, patient.name);
-
-        // Store base64 so patient can re-download from Reports page
         report.pdfBase64 = pdfBuffer.toString('base64');
         await report.save();
 
-        // Stream directly to browser — triggers file download
         const filename = 'DentAI_Report_' + new Date().toISOString().slice(0, 10) + '_' + report._id.toString().slice(-6).toUpperCase() + '.pdf';
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
         res.setHeader('Content-Length', pdfBuffer.length);
         res.send(pdfBuffer);
-
     } catch (error) {
-        console.error('[generateReport]', error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// ─── CONTROLLER: Download existing PDF by report ID ──────────────────────────
+// ─── Patient: Download existing PDF by report ID ──────────────────────────────
 exports.downloadReport = async (req, res) => {
     try {
         const { id } = req.params;
@@ -233,7 +233,6 @@ exports.downloadReport = async (req, res) => {
         if (!report) return res.status(404).json({ success: false, message: 'Report not found' });
 
         if (!report.pdfBase64) {
-            // Re-generate PDF on the fly
             const patient = await PatientModel.findById(patientId);
             const pdfBuffer = await buildPDF(report, patient.name);
             report.pdfBase64 = pdfBuffer.toString('base64');
@@ -251,13 +250,12 @@ exports.downloadReport = async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
         res.setHeader('Content-Length', pdfBuffer.length);
         res.send(pdfBuffer);
-
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// ─── CONTROLLER: Get patient's all reports ────────────────────────────────────
+// ─── Patient: Get all reports ─────────────────────────────────────────────────
 exports.getMyReports = async (req, res) => {
     try {
         const patientId = req.user.id;
@@ -270,7 +268,7 @@ exports.getMyReports = async (req, res) => {
     }
 };
 
-// ─── CONTROLLER: Get single report ───────────────────────────────────────────
+// ─── Patient: Get single report ───────────────────────────────────────────────
 exports.getReportById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -283,13 +281,12 @@ exports.getReportById = async (req, res) => {
     }
 };
 
-// ─── CONTROLLER: Compare current scan with last report via Grok ──────────────
+// ─── Patient: Compare current scan with last report ──────────────────────────
 exports.compareWithLastReport = async (req, res) => {
     try {
         const patientId = req.user.id;
         const { currentScan } = req.body;
 
-        // Only compare against non-comparison reports (original scans)
         const lastReport = await ReportModel.findOne({
             patientId,
             comparisonReport: { $in: [null, ''] }
@@ -300,15 +297,10 @@ exports.compareWithLastReport = async (req, res) => {
         }
 
         const patient = await PatientModel.findById(patientId);
-
-        // Build detailed issue-level comparison
         const prevIssues = lastReport.detections || [];
         const currIssues = currentScan.detections || [];
-
         const prevStages = prevIssues.map(d => d.stage || d.label_raw || '').filter(Boolean);
         const currStages = currIssues.map(d => d.stage || d.label_raw || '').filter(Boolean);
-
-        // Count occurrences of each stage
         const countStages = (arr) => arr.reduce((acc, s) => { acc[s] = (acc[s] || 0) + 1; return acc; }, {});
         const prevCounts = countStages(prevStages);
         const currCounts = countStages(currStages);
@@ -325,38 +317,7 @@ exports.compareWithLastReport = async (req, res) => {
         const currDetail = currIssues.map(d => `- ${(d.stage || d.label_raw || 'unknown').replace(/_/g, ' ')}: ${d.explanation || 'N/A'} (confidence: ${d.confidence || 'N/A'})`).join('\n') || 'None';
         const changesDetail = issueChanges.map(c => `- ${c.stage}: was ${c.prev}, now ${c.curr} → ${c.status}`).join('\n');
 
-        const prompt = `You are an expert dental radiologist AI. Analyze the two dental X-ray scan reports below for patient "${patient?.name}" and provide a thorough issue-by-issue comparison.
-
-PREVIOUS REPORT (Date: ${new Date(lastReport.createdAt).toLocaleDateString()}):
-Total issues: ${lastReport.totalFound}
-Detected issues:
-${prevDetail}
-Comments: ${lastReport.comments || 'None'}
-
-CURRENT SCAN (Today):
-Total issues: ${currentScan.totalFound}
-Detected issues:
-${currDetail}
-Comments: ${currentScan.comments || 'None'}
-
-ISSUE-LEVEL CHANGES:
-${changesDetail}
-
-Please provide a professional dental comparison report with these sections:
-
-1. OVERALL STATUS: State clearly if health has IMPROVED, WORSENED, or REMAINED STABLE and why.
-
-2. ISSUE-BY-ISSUE ANALYSIS: For each issue listed in the changes above, explain what it means clinically — whether it has resolved, worsened, appeared for the first time, or stayed the same. Be specific about what each dental condition means for the patient.
-
-3. NEW FINDINGS: List any issues that appeared in the current scan that were not in the previous one.
-
-4. RESOLVED ISSUES: List any issues from the previous scan that are no longer detected.
-
-5. RECOMMENDATIONS: Give specific, actionable dental advice based on the findings.
-
-6. PATIENT MESSAGE: Write a short encouraging or cautionary note directly to the patient about their dental health progress.
-
-Write in plain text paragraphs only (no markdown, no asterisks, no bullet symbols). Be thorough but patient-friendly.`;
+        const prompt = `You are an expert dental radiologist AI. Analyze the two dental X-ray scan reports below for patient "${patient?.name}" and provide a thorough issue-by-issue comparison.\n\nPREVIOUS REPORT (Date: ${new Date(lastReport.createdAt).toLocaleDateString()}):\nTotal issues: ${lastReport.totalFound}\nDetected issues:\n${prevDetail}\nComments: ${lastReport.comments || 'None'}\n\nCURRENT SCAN (Today):\nTotal issues: ${currentScan.totalFound}\nDetected issues:\n${currDetail}\nComments: ${currentScan.comments || 'None'}\n\nISSUE-LEVEL CHANGES:\n${changesDetail}\n\nPlease provide a professional dental comparison report with these sections:\n\n1. OVERALL STATUS: State clearly if health has IMPROVED, WORSENED, or REMAINED STABLE and why.\n\n2. ISSUE-BY-ISSUE ANALYSIS: For each issue listed in the changes above, explain what it means clinically.\n\n3. NEW FINDINGS: List any issues that appeared in the current scan that were not in the previous one.\n\n4. RESOLVED ISSUES: List any issues from the previous scan that are no longer detected.\n\n5. RECOMMENDATIONS: Give specific, actionable dental advice based on the findings.\n\n6. PATIENT MESSAGE: Write a short encouraging or cautionary note directly to the patient.\n\nWrite in plain text paragraphs only (no markdown, no asterisks, no bullet symbols).`;
 
         if (!process.env.GROQ_API_KEY) {
             return res.status(500).json({ success: false, message: 'GROQ_API_KEY not set in .env file.' });
@@ -364,34 +325,22 @@ Write in plain text paragraphs only (no markdown, no asterisks, no bullet symbol
 
         const groqRes = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',
-            {
-                model: 'llama-3.3-70b-versatile',
-                max_tokens: 700,
-                messages: [{ role: 'user', content: prompt }]
-            },
-            {
-                headers: {
-                    'Authorization': 'Bearer ' + process.env.GROQ_API_KEY,
-                    'Content-Type': 'application/json'
-                }
-            }
+            { model: 'llama-3.3-70b-versatile', max_tokens: 700, messages: [{ role: 'user', content: prompt }] },
+            { headers: { 'Authorization': 'Bearer ' + process.env.GROQ_API_KEY, 'Content-Type': 'application/json' } }
         );
 
         const comparisonText = groqRes.data.choices[0].message.content;
-
         res.status(200).json({
             success: true,
             comparison: comparisonText,
             previousReport: { id: lastReport._id, date: lastReport.createdAt, totalFound: lastReport.totalFound }
         });
-
     } catch (error) {
-        console.error('[compareWithLastReport]', error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// ─── CONTROLLER: Generate comparison PDF ─────────────────────────────────────
+// ─── Patient: Generate comparison PDF ────────────────────────────────────────
 exports.generateComparisonReport = async (req, res) => {
     try {
         const patientId = req.user.id;
@@ -407,7 +356,8 @@ exports.generateComparisonReport = async (req, res) => {
             annotatedImage: annotatedImage || null,
             comments: comments || '',
             comparisonReport: comparisonReport || '',
-            status: 'generated'
+            status: 'generated',
+            uploadedBy: 'patient'
         });
 
         const pdfBuffer = await buildPDF(report, patient.name);
@@ -419,9 +369,121 @@ exports.generateComparisonReport = async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
         res.setHeader('Content-Length', pdfBuffer.length);
         res.send(pdfBuffer);
-
     } catch (error) {
-        console.error('[generateComparisonReport]', error.message);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// ─── DENTIST: Save Report on behalf of a patient ─────────────────────────────
+exports.dentistSaveReport = async (req, res) => {
+    try {
+        const dentistId = req.user.id;
+        const { patientId, totalFound, detections, annotatedImage, comments } = req.body;
+
+        if (!patientId) return res.status(400).json({ success: false, message: 'patientId is required' });
+
+        const patient = await PatientModel.findById(patientId);
+        if (!patient) return res.status(404).json({ success: false, message: 'Patient not found' });
+
+        const dentist = await DentistModel.findById(dentistId);
+
+        const report = await ReportModel.create({
+            patientId,
+            patientName: patient.name,
+            totalFound: totalFound || 0,
+            detections: detections || [],
+            annotatedImage: annotatedImage || null,
+            comments: comments || '',
+            status: 'saved',
+            uploadedBy: 'dentist',
+            dentistId,
+            dentistName: dentist?.name || null
+        });
+
+        res.status(200).json({ success: true, message: 'Report saved successfully', data: report });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// ─── DENTIST: Get reports for a specific patient ──────────────────────────────
+exports.dentistGetPatientReports = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        const reports = await ReportModel.find({ patientId })
+            .select('-annotatedImage -pdfBase64')
+            .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: reports });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// ─── ADMIN: Get all reports with optional filters ─────────────────────────────
+exports.adminGetAllReports = async (req, res) => {
+    try {
+        const { search, dateFilter, uploadedBy, page = 1, limit = 50 } = req.query;
+
+        const query = {};
+
+        // Filter by who uploaded
+        if (uploadedBy && uploadedBy !== 'all') {
+            query.uploadedBy = uploadedBy;
+        }
+
+        // Date filter
+        if (dateFilter === 'week') {
+            query.createdAt = { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) };
+        } else if (dateFilter === 'month') {
+            const now = new Date();
+            query.createdAt = {
+                $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+                $lte: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+            };
+        }
+
+        // Search by patient name (server-side)
+        if (search) {
+            query.$or = [
+                { patientName: { $regex: search, $options: 'i' } },
+                { dentistName: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        const [reports, total] = await Promise.all([
+            ReportModel.find(query)
+                .select('-annotatedImage -pdfBase64')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(parseInt(limit)),
+            ReportModel.countDocuments(query)
+        ]);
+
+        // Stats (always across all reports, not filtered)
+        const [totalCount, savedCount, generatedCount, patientCount, dentistCount] = await Promise.all([
+            ReportModel.countDocuments(),
+            ReportModel.countDocuments({ status: 'saved' }),
+            ReportModel.countDocuments({ status: 'generated' }),
+            ReportModel.countDocuments({ uploadedBy: 'patient' }),
+            ReportModel.countDocuments({ uploadedBy: 'dentist' }),
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: reports,
+            total,
+            stats: {
+                total: totalCount,
+                saved: savedCount,
+                generated: generatedCount,
+                byPatient: patientCount,
+                byDentist: dentistCount
+            }
+        });
+    } catch (error) {
+        console.error('[adminGetAllReports]', error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 };

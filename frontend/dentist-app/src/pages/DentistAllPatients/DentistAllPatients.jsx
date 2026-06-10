@@ -118,7 +118,7 @@ const DentistAllPatients = () => {
                     </div>
 
                     <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
-                        <p className="text-emerald-600 font-medium">Avg. Visits</p>
+                        <p className="text-emerald-600 font-medium">Avg. Sessions</p>
                         <h3 className="text-3xl font-bold text-emerald-900 mt-2">
                             {patients.length
                                 ? (patients.reduce((sum, p) => sum + (p.totalVisits || 0), 0) / patients.length).toFixed(1)
@@ -191,7 +191,7 @@ const DentistAllPatients = () => {
                                     </div>
 
                                     <div className="text-right">
-                                        <p className="text-sm text-emerald-600">Total Visits</p>
+                                        <p className="text-sm text-emerald-600">Total Sessions</p>
                                         <p className="text-xl font-bold text-black">
                                             {patient.totalVisits || 0}
                                         </p>

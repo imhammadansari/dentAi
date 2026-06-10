@@ -7,10 +7,10 @@ const DetectionSchema = new mongoose.Schema({
 }, { _id: false });
 
 const ReportSchema = new mongoose.Schema({
-    patientId:
-    {
+    patientId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Patients', required: true
+        ref: 'Patients',
+        required: true
     },
     patientName:
         { type: String },
@@ -30,6 +30,22 @@ const ReportSchema = new mongoose.Schema({
         { type: String, default: 'saved' },
     comparisonReport:
         { type: String, default: null },
+    // Who generated/uploaded this report
+    uploadedBy: {
+        type: String,
+        enum: ['patient', 'dentist'],
+        default: 'patient'
+    },
+    // If uploaded by dentist, store which dentist
+    dentistId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dentists',
+        default: null
+    },
+    dentistName: {
+        type: String,
+        default: null
+    },
     createdAt:
         { type: Date, default: Date.now }
 });

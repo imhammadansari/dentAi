@@ -1,55 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     DocumentTextIcon, MagnifyingGlassIcon, FunnelIcon,
-    CalendarDaysIcon, EyeIcon, ArrowDownTrayIcon, PrinterIcon,
-    ClockIcon
+    CalendarDaysIcon, ArrowDownTrayIcon, ClockIcon,
+    UserIcon, ShieldCheckIcon, ArrowPathIcon
 } from '@heroicons/react/24/outline';
+import axios from 'axios';
 
-const STATIC_REPORTS = [
-    { id: 1, patientName: 'Aqdus Haider', patientId: 'PAT-0001', date: '2024-02-15', type: 'Dental X-Ray', dentist: 'Dr. Hammad Ansari', status: 'completed', findings: ['Cavity detected', 'Mild gingivitis'] },
-    { id: 2, patientName: 'Maaz Ilyas', patientId: 'PAT-0002', date: '2024-03-01', type: 'Dental X-Ray', dentist: 'Dr. Faran Khalil', status: 'completed', findings: ['Healthy teeth', 'Minor tartar'] },
-    { id: 3, patientName: 'Abdullah Faisal', patientId: 'PAT-0003', date: '2024-03-10', type: 'Dental X-Ray', dentist: 'Dr. Hammad Ansari', status: 'pending', findings: [] },
-];
+const SERVER = import.meta.env.VITE_SERVER_URL || 'https://13.51.175.156.nip.io';
 
 const AdminAllReports = () => {
+    const [reports, setReports] = useState([]);
+    const [stats, setStats] = useState({ total: 0, saved: 0, generated: 0, byPatient: 0, byDentist: 0 });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
     const [search, setSearch] = useState('');
-    const [filterType, setFilterType] = useState('all');
     const [dateFilter, setDateFilter] = useState('all');
+    const [uploadedByFilter, setUploadedByFilter] = useState('all');
 
-    const filtered = STATIC_REPORTS.filter(r => {
-        const matchSearch =
-            r.patientName.toLowerCase().includes(search.toLowerCase()) ||
-            r.patientId.toLowerCase().includes(search.toLowerCase()) ||
-            r.dentist.toLowerCase().includes(search.toLowerCase());
-        const matchType = filterType === 'all' || r.type === filterType;
-        const matchDate = dateFilter === 'all' ||
-            (dateFilter === 'week' && new Date(r.date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
-            (dateFilter === 'month' && new Date(r.date).getMonth() === new Date().getMonth());
-        return matchSearch && matchType && matchDate;
-    });
+    const token = localStorage.getItem('accessToken');
+    const authHeader = { Authorization: `Bearer ${token}` };
 
-    const completedCount = STATIC_REPORTS.filter(r => r.status === 'completed').length;
-    const pendingCount = STATIC_REPORTS.filter(r => r.status === 'pending').length;
+    const fetchReports = useCallback(async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const params = new URLSearchParams();
+            if (search) params.set('search', search);
+            if (dateFilter !== 'all') params.set('dateFilter', dateFilter);
+            if (uploadedByFilter !== 'all') params.set('uploadedBy', uploadedByFilter);
+            params.set('limit', '200');
+
+            const res = await axios.get(`${SERVER}/api/reports/admin/all?${params}`, { headers: authHeader });
+            if (res.data.success) {
+                setReports(res.data.data);
+                setStats(res.data.stats);
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to load reports');
+        } finally {
+            setLoading(false);
+        }
+    }, [search, dateFilter, uploadedByFilter]);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(fetchReports, 300);
+        return () => clearTimeout(timer);
+    }, [fetchReports]);
+
+    const handleDownload = async (reportId, patientName) => {
+        try {
+            const res = await axios.get(`${SERVER}/api/reports/download/${reportId}`, {
+                headers: authHeader,
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `DentAI_Report_${patientName?.replace(/\s+/g, '_')}_${reportId.slice(-6)}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch {
+            alert('PDF not available for this report');
+        }
+    };
+
+    const statCards = [
+        { label: 'Total Reports', value: stats.total, color: 'from-emerald-500 to-green-400' },
+        { label: 'Saved', value: stats.saved, color: 'from-blue-500 to-blue-400' },
+        { label: 'Generated (PDF)', value: stats.generated, color: 'from-purple-500 to-violet-400' },
+        { label: 'By Patient', value: stats.byPatient, color: 'from-teal-500 to-emerald-400' },
+        { label: 'By Dentist', value: stats.byDentist, color: 'from-amber-400 to-orange-400' },
+    ];
 
     return (
         <div className="p-2 lg:p-4 min-h-full space-y-6">
+            {/* Header */}
             <div className="flex items-start justify-between">
                 <div>
                     <h3 className="text-2xl font-bold text-gray-900">All Reports</h3>
                     <p className="text-emerald-600">View and manage all patient dental reports</p>
                 </div>
-                <span className="px-3 py-1.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
-                    Coming Soon — Static Data
-                </span>
+                <button
+                    onClick={fetchReports}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors text-sm font-medium disabled:opacity-50"
+                >
+                    <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    Refresh
+                </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-                {[
-                    { label: 'Total Reports', value: STATIC_REPORTS.length, color: 'from-emerald-500 to-green-400' },
-                    { label: 'Completed', value: completedCount, color: 'from-green-500 to-emerald-400' },
-                    { label: 'Pending', value: pendingCount, color: 'from-amber-400 to-orange-400' },
-                ].map((c, i) => (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {statCards.map((c, i) => (
                     <div key={i} className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                         <div className={`w-9 h-9 bg-gradient-to-br ${c.color} rounded-xl mb-2 flex items-center justify-center`}>
                             <DocumentTextIcon className="w-5 h-5 text-white" />
@@ -67,7 +114,7 @@ const AdminAllReports = () => {
                         <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                             type="text"
-                            placeholder="Search by patient, dentist..."
+                            placeholder="Search by patient or dentist..."
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             className="w-full pl-10 pr-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-400"
@@ -76,12 +123,13 @@ const AdminAllReports = () => {
                     <div className="relative">
                         <FunnelIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <select
-                            value={filterType}
-                            onChange={e => setFilterType(e.target.value)}
+                            value={uploadedByFilter}
+                            onChange={e => setUploadedByFilter(e.target.value)}
                             className="w-full pl-10 pr-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                         >
-                            <option value="all">All Types</option>
-                            <option value="Dental X-Ray">Dental X-Ray</option>
+                            <option value="all">All Uploads</option>
+                            <option value="patient">By Patient</option>
+                            <option value="dentist">By Dentist</option>
                         </select>
                     </div>
                     <div className="relative">
@@ -99,6 +147,13 @@ const AdminAllReports = () => {
                 </div>
             </div>
 
+            {/* Error */}
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+                    {error}
+                </div>
+            )}
+
             {/* Table */}
             <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -108,62 +163,109 @@ const AdminAllReports = () => {
                                 <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Patient</th>
                                 <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Type</th>
                                 <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Date</th>
-                                <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Dentist</th>
+                                <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Uploaded By</th>
+                                <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Issues</th>
                                 <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Status</th>
                                 <th className="py-4 px-5 text-left text-sm font-semibold text-gray-700">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-emerald-50">
-                            {filtered.length === 0 ? (
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        {Array.from({ length: 7 }).map((__, j) => (
+                                            <td key={j} className="py-4 px-5">
+                                                <div className="h-4 bg-emerald-100 rounded w-3/4" />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            ) : reports.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-12 text-center">
+                                    <td colSpan={7} className="py-16 text-center">
                                         <DocumentTextIcon className="w-10 h-10 text-emerald-200 mx-auto mb-2" />
-                                        <p className="text-gray-400">No reports found</p>
+                                        <p className="text-gray-400 font-medium">No reports found</p>
+                                        <p className="text-gray-300 text-sm mt-1">Try adjusting your filters</p>
                                     </td>
                                 </tr>
-                            ) : filtered.map(report => (
-                                <tr key={report.id} className="hover:bg-emerald-50/40 transition-colors">
+                            ) : reports.map(report => (
+                                <tr key={report._id} className="hover:bg-emerald-50/40 transition-colors">
                                     <td className="py-4 px-5">
-                                        <p className="font-semibold text-gray-900">{report.patientName}</p>
-                                        <p className="text-xs text-gray-400">{report.patientId}</p>
+                                        <p className="font-semibold text-gray-900">{report.patientName || '—'}</p>
+                                        <p className="text-xs text-gray-400 font-mono">{report.patientId?.toString().slice(-8).toUpperCase()}</p>
                                     </td>
                                     <td className="py-4 px-5">
-                                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm rounded-full">{report.type}</span>
-                                    </td>
-                                    <td className="py-4 px-5">
-                                        <p className="text-sm text-gray-700">{new Date(report.date).toLocaleDateString()}</p>
-                                    </td>
-                                    <td className="py-4 px-5">
-                                        <p className="text-sm text-gray-700">{report.dentist}</p>
-                                    </td>
-                                    <td className="py-4 px-5">
-                                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                                            report.status === 'completed'
-                                                ? 'bg-emerald-100 text-emerald-700'
-                                                : 'bg-amber-100 text-amber-700'
-                                        }`}>
-                                            {report.status === 'pending' && <ClockIcon className="w-3 h-3" />}
-                                            {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm rounded-full">
+                                            {report.type || 'Dental X-Ray AI Scan'}
                                         </span>
                                     </td>
                                     <td className="py-4 px-5">
-                                        <div className="flex gap-2">
-                                            {[EyeIcon, ArrowDownTrayIcon, PrinterIcon].map((Icon, i) => (
-                                                <button
-                                                    key={i}
-                                                    className="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors"
-                                                    title={['View', 'Download', 'Print'][i]}
-                                                >
-                                                    <Icon className="w-4 h-4" />
-                                                </button>
-                                            ))}
-                                        </div>
+                                        <p className="text-sm text-gray-700">
+                                            {new Date(report.createdAt).toLocaleDateString('en-US', {
+                                                day: 'numeric', month: 'short', year: 'numeric'
+                                            })}
+                                        </p>
+                                        <p className="text-xs text-gray-400">
+                                            {new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </p>
+                                    </td>
+                                    <td className="py-4 px-5">
+                                        {report.uploadedBy === 'dentist' ? (
+                                            <span className="flex items-center gap-1.5 text-sm text-blue-700">
+                                                <ShieldCheckIcon className="w-4 h-4" />
+                                                Dr. {report.dentistName || 'Dentist'}
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-1.5 text-sm text-emerald-700">
+                                                <UserIcon className="w-4 h-4" />
+                                                Patient
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="py-4 px-5">
+                                        <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                                            report.totalFound > 0
+                                                ? 'bg-red-100 text-red-700'
+                                                : 'bg-emerald-100 text-emerald-700'
+                                        }`}>
+                                            {report.totalFound ?? '—'}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-5">
+                                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                                            report.status === 'generated'
+                                                ? 'bg-purple-100 text-purple-700'
+                                                : 'bg-blue-100 text-blue-700'
+                                        }`}>
+                                            {report.status === 'generated'
+                                                ? <ArrowDownTrayIcon className="w-3 h-3" />
+                                                : <ClockIcon className="w-3 h-3" />
+                                            }
+                                            {report.status === 'generated' ? 'PDF Ready' : 'Saved'}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-5">
+                                        <button
+                                            onClick={() => handleDownload(report._id, report.patientName)}
+                                            disabled={report.status !== 'generated' || !report.pdfBase64}
+                                            title={report.status !== 'generated' ? 'No PDF — report was only saved, not generated' : 'Download PDF'}
+                                            className="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                        >
+                                            <ArrowDownTrayIcon className="w-4 h-4" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+
+                {/* Footer count */}
+                {!loading && reports.length > 0 && (
+                    <div className="px-5 py-3 border-t border-emerald-50 text-sm text-gray-400">
+                        Showing {reports.length} report{reports.length !== 1 ? 's' : ''}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -32,7 +32,7 @@ const DentistLogin = ({ isLogin = true }) => {
     });
 
     axios.defaults.withCredentials = true;
-    axios.defaults.baseURL = 'https://13.51.175.156.nip.io';
+    axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

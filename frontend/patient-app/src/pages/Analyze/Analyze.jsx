@@ -22,7 +22,7 @@ const Analyze = () => {
 
         try {
             // Node.js backend ka endpoint call karna
-            const res = await axios.post('https://13.51.175.156.nip.io/api/analysis/predict', formData);
+            const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/analysis/predict`, formData);
             setResult(res.data); // Python AI se aya hua report
         } catch (err) {
             console.error(err);

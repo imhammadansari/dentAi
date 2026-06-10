@@ -8,7 +8,8 @@ import toast from 'react-hot-toast';
 const timeSlots = [
     '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
     '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-    '18:00', '18:30', '19:00', '19:30'
+    '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
+    '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'
 ];
 
 const AddSlots = () => {
@@ -166,10 +167,10 @@ const AddSlots = () => {
                                                     disabled={taken}
                                                     onClick={() => setNewSlot({ ...newSlot, startTime: time })}
                                                     className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${taken
-                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
-                                                            : selected
-                                                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
+                                                        : selected
+                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                                         }`}
                                                 >
                                                     {time}
@@ -197,10 +198,10 @@ const AddSlots = () => {
                                                     disabled={disabled}
                                                     onClick={() => setNewSlot({ ...newSlot, endTime: time })}
                                                     className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${disabled
-                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                                            : selected
-                                                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                        : selected
+                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                                         }`}
                                                 >
                                                     {time}

@@ -355,6 +355,10 @@ Either party clicks **End Chat** → confirms → chat `status` set to `"ended"`
 
 This project is licensed under the **ISC License**.
 
+# AI Server Start
+cd ai_service
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8001
+
 ## Credentials
 
 ### Admin

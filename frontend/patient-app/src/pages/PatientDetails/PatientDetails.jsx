@@ -218,7 +218,7 @@ const PatientDetails = () => {
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <p className="text-sm text-primary-600">Total Visits</p>
+                                        <p className="text-sm text-primary-600">Total Sessions</p>
                                         <p className="text-2xl font-bold text-primary-900">{patient.totalVisits}</p>
                                     </div>
                                     <div>

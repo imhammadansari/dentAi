@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -7,6 +7,8 @@ import {
     ClockIcon,
     UserIcon,
     MagnifyingGlassIcon,
+    EyeIcon,
+    FunnelIcon,
 } from '@heroicons/react/24/outline';
 
 const SERVER = import.meta.env.VITE_SERVER_URL;
@@ -16,27 +18,56 @@ const UpcomingConsultations = () => {
     const [consultations, setConsultations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [chatStatuses, setChatStatuses] = useState({}); // bookingId -> { exists, hasMessages, status }
+
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+    const authHeader = { Authorization: `Bearer ${token}` };
+
+    // Auto-complete past bookings, then fetch all bookings
+    const init = useCallback(async () => {
+        try {
+            // Silently auto-complete any past bookings
+            await axios.post(`${SERVER}/api/chat/auto-complete-bookings`, {}, { headers: authHeader });
+        } catch (_) {}
+
+        try {
+            const res = await axios.get(`${SERVER}/api/bookings/dentist-all-bookings`, { headers: authHeader });
+            // Show Booked + Completed (not Cancelled)
+            const relevant = (res.data.data || []).filter(
+                b => b.status?.toLowerCase() == 'booked'
+            );
+            setConsultations(relevant);
+        } catch (err) {
+            console.log('fetchConsultations error:', err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchConsultations = async () => {
-            try {
-                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                const res = await axios.get(`${SERVER}/api/bookings/dentist-all-bookings`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                // Only show Booked status
-                const booked = (res.data.data || []).filter(
-                    b => b.status?.toLowerCase() === 'booked'
-                );
-                setConsultations(booked);
-            } catch (err) {
-                console.log('fetchConsultations error:', err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchConsultations();
+        init();
     }, []);
+
+    // After consultations load, check chat status for each booking
+    useEffect(() => {
+        if (!consultations.length) return;
+        const checkChats = async () => {
+            const statuses = {};
+            await Promise.all(
+                consultations.map(async (c) => {
+                    try {
+                        const res = await axios.get(`${SERVER}/api/chat/${c.id}/status`, { headers: authHeader });
+                        statuses[c.id] = res.data;
+                    } catch (_) {
+                        statuses[c.id] = { exists: false };
+                    }
+                })
+            );
+            setChatStatuses(statuses);
+        };
+        checkChats();
+    }, [consultations]);
 
     const isWithinAppointmentTime = (c) => {
         const now = new Date();
@@ -45,8 +76,8 @@ const UpcomingConsultations = () => {
             String(now.getMonth() + 1).padStart(2, '0') + '-' +
             String(now.getDate()).padStart(2, '0');
         if (c.date !== today) return false;
-        const [sh, sm] = c.start.split(':').map(Number);
-        const [eh, em] = c.end.split(':').map(Number);
+        const [sh, sm] = (c.start || '00:00').split(':').map(Number);
+        const [eh, em] = (c.end || '00:00').split(':').map(Number);
         const start = new Date(); start.setHours(sh, sm, 0, 0);
         const end = new Date(); end.setHours(eh, em, 0, 0);
         return now >= start && now <= end;
@@ -54,34 +85,59 @@ const UpcomingConsultations = () => {
 
     const filtered = consultations.filter(c => {
         const q = search.toLowerCase();
-        return (
+        const matchSearch =
             c.patient?.name?.toLowerCase().includes(q) ||
             c.patient?.email?.toLowerCase().includes(q) ||
-            c.date?.includes(q)
-        );
+            c.date?.includes(q);
+        const matchStatus =
+            statusFilter === 'all' ||
+            c.status?.toLowerCase() === statusFilter.toLowerCase();
+        return matchSearch && matchStatus;
     });
+
+    const statusColors = {
+        booked: 'bg-amber-100 text-amber-700',
+        completed: 'bg-green-100 text-green-700',
+        cancelled: 'bg-red-100 text-red-700',
+    };
 
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-emerald-900">Upcoming Consultations</h2>
+                    <h2 className="text-2xl font-bold text-emerald-900">Consultations</h2>
                     <p className="text-emerald-600 text-sm mt-1">
-                        {loading ? '...' : `${consultations.length} booked appointment${consultations.length !== 1 ? 's' : ''}`}
+                        {loading ? '...' : `${consultations.length} total appointment${consultations.length !== 1 ? 's' : ''}`}
                     </p>
                 </div>
 
-                {/* Search */}
-                <div className="relative w-full sm:w-72">
-                    <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400" />
-                    <input
-                        type="text"
-                        placeholder="Search by name, email or date..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-emerald-200 bg-white text-sm text-emerald-900 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-300"
-                    />
+                <div className="flex gap-3 w-full sm:w-auto">
+                    {/* Status filter */}
+                    {/* <div className="relative">
+                        <FunnelIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400" />
+                        <select
+                            value={statusFilter}
+                            onChange={e => setStatusFilter(e.target.value)}
+                            className="pl-9 pr-4 py-2.5 rounded-xl border border-emerald-200 bg-white text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                        >
+                            <option value="all">All</option>
+                            <option value="booked">Booked</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div> */}
+
+                    {/* Search */}
+                    <div className="relative flex-1 sm:w-64">
+                        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400" />
+                        <input
+                            type="text"
+                            placeholder="Search by name, email or date..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-emerald-200 bg-white text-sm text-emerald-900 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -96,7 +152,7 @@ const UpcomingConsultations = () => {
                         <CalendarDaysIcon className="w-8 h-8 text-emerald-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-emerald-900 mb-1">
-                        {search ? 'No results found' : 'No upcoming consultations'}
+                        {search ? 'No results found' : 'No consultations'}
                     </h3>
                     <p className="text-emerald-500 text-sm">
                         {search ? 'Try a different search term.' : 'New bookings will appear here.'}
@@ -106,6 +162,10 @@ const UpcomingConsultations = () => {
                 <div className="space-y-3">
                     {filtered.map(c => {
                         const withinTime = isWithinAppointmentTime(c);
+                        const statusKey = c.status?.toLowerCase();
+                        const chatInfo = chatStatuses[c.id];
+                        const hasChat = chatInfo?.exists && chatInfo?.hasMessages;
+
                         return (
                             <div
                                 key={c.id}
@@ -140,19 +200,47 @@ const UpcomingConsultations = () => {
                                         </div>
                                     </div>
 
-                                    {/* Chat button */}
-                                    <button
-                                        onClick={() => navigate(`/dentist-dashboard/chat/${c.id}`)}
-                                        disabled={!withinTime}
-                                        title={withinTime ? 'Open Chat' : 'Chat available only during appointment time'}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all shrink-0 ${withinTime
-                                                ? 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm shadow-emerald-200'
-                                                : 'bg-emerald-50 text-emerald-300 cursor-not-allowed'
-                                            }`}
-                                    >
-                                        <ChatBubbleLeftRightIcon className="w-4 h-4" />
-                                        Chat
-                                    </button>
+                                    {/* Status badge */}
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium shrink-0 ${statusColors[statusKey] || 'bg-gray-100 text-gray-700'}`}>
+                                        {c.status?.charAt(0).toUpperCase() + c.status?.slice(1)}
+                                    </span>
+
+                                    {/* Action buttons */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        {/* Active chat during appointment time */}
+                                        {statusKey === 'booked' && withinTime && (
+                                            <button
+                                                onClick={() => navigate(`/dentist-dashboard/chat/${c.id}`)}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm shadow-emerald-200 transition-all"
+                                            >
+                                                <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                                                Open Chat
+                                            </button>
+                                        )}
+
+                                        {/* Booked but not yet time and no chat yet */}
+                                        {statusKey === 'booked' && !withinTime && !hasChat && (
+                                            <button
+                                                disabled
+                                                title="Chat available only during appointment time"
+                                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-50 text-emerald-300 cursor-not-allowed"
+                                            >
+                                                <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                                                Chat
+                                            </button>
+                                        )}
+
+                                        {/* View Chat — shown whenever a chat with messages exists */}
+                                        {hasChat && (
+                                            <button
+                                                onClick={() => navigate(`/dentist-dashboard/chat/${c.id}`)}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all"
+                                            >
+                                                <EyeIcon className="w-4 h-4" />
+                                                View Chat
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         );

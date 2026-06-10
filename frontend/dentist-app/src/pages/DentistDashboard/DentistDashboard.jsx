@@ -156,7 +156,7 @@ const DentistDashboard = () => {
                                             <p className="text-sm text-emerald-600">{patient.email}</p>
                                         </div>
                                     </div>
-                                    <p className="text-xs font-medium text-emerald-600">{patient.totalVisits} visit{patient.totalVisits !== 1 ? 's' : ''}</p>
+                                    <p className="text-xs font-medium text-emerald-600">{patient.totalVisits} session{patient.totalVisits !== 1 ? 's' : ''}</p>
                                 </div>
                             ))
                         ) : (

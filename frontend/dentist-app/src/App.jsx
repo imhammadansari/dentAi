@@ -14,6 +14,7 @@ import DentistAccount from './pages/DentistAccount/DentistAccount';
 import Chat from './pages/Chat/Chat';
 import { Toaster } from 'react-hot-toast';
 import UpcomingConsultations from './pages/UpcomingConsultaions/UpcomingConsultations';
+import DentistUploadXRay from './pages/DentistUploadXRay/DentistUploadXray';
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<DentistDashboard />} />
                     <Route path="patients" element={<DentistAllPatients />} />
+                    <Route path="upload-xray" element={<DentistUploadXRay />} />
                     <Route path="add-slots" element={<AddSlots />} />
                     <Route path="slots" element={<DentistAllSlots />} />
                     <Route path="upcoming" element={<UpcomingConsultations />} />

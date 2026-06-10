@@ -149,7 +149,7 @@ const AdminPatients = () => {
                         <h3 className="text-3xl font-bold text-primary-900 mt-2">{statusCounts.active || 0}</h3>
                     </div>
                     <div className="bg-white rounded-2xl border border-primary-100 p-6 shadow-sm">
-                        <p className="text-primary-600 font-medium">Avg. Visits</p>
+                        <p className="text-primary-600 font-medium">Avg. Sessions</p>
                         <h3 className="text-3xl font-bold text-primary-900 mt-2">
                             {(patients.reduce((sum, p) => sum + p.totalVisits, 0) / patients.length).toFixed(1)}
                         </h3>
@@ -216,7 +216,7 @@ const AdminPatients = () => {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm text-primary-600">Total Visits</p>
+                                        <p className="text-sm text-primary-600">Total Sessions</p>
                                         <p className="text-xl font-bold text-primary-900">{patient.totalVisits}</p>
                                     </div>
                                 </div>
