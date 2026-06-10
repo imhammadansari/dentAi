@@ -159,7 +159,7 @@ async def predict(file: UploadFile = File(...)):
         "pulp_involvement": (50, 0, 130)   
     }
 
-    if results[0].boxes:
+    if len(results) > 0 and results[0].boxes is not None:
         for box in results[0].boxes:
             cls_id = int(box.cls[0])
             label  = model.names[cls_id]
@@ -222,4 +222,6 @@ async def predict(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=5000)
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
