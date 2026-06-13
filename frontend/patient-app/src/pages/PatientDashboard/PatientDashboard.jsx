@@ -21,7 +21,6 @@ const PatientDashboard = () => {
   const authHeader = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
-    // Fetch consultations
     const fetchConsultations = async () => {
       try {
         const res = await axios.get(`${API}/api/bookings/my-consultations`, { headers: authHeader });
@@ -33,7 +32,6 @@ const PatientDashboard = () => {
       }
     };
 
-    // Fetch reports
     const fetchReports = async () => {
       try {
         const res = await axios.get(`${API}/api/reports/my`, { headers: authHeader });
@@ -85,12 +83,15 @@ const PatientDashboard = () => {
     return 'text-red-600 bg-red-50';
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="lg:p-4 space-y-6">
 
-      {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Total Reports */}
+
         <div className="bg-gradient-to-br from-white to-emerald-50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -111,7 +112,7 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        {/* Consultations */}
+
         <div className="bg-gradient-to-br from-white to-emerald-50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -130,7 +131,7 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        {/* Issues Found */}
+
         <div className="bg-gradient-to-br from-white to-emerald-50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -147,7 +148,7 @@ const PatientDashboard = () => {
         </div>
       </div>
 
-      {/* Recent Reports */}
+
       <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-xl font-bold text-emerald-900">Recent Reports</h3>
@@ -215,7 +216,7 @@ const PatientDashboard = () => {
         )}
       </div>
 
-      {/* Upcoming Consultations */}
+
       <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 p-4 shadow-sm">
         <h3 className="text-xl font-bold text-emerald-900 mb-4">Upcoming Consultations</h3>
         {loadingConsult ? (

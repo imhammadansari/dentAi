@@ -1,81 +1,110 @@
-import React from 'react'
-import {
-    SparklesIcon,
-} from '@heroicons/react/24/outline';
+import React from 'react';
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-const Footer = () => {
+const navigateLinks = ['Home', 'About', 'How It Works', 'Features', 'Contact'];
+
+const patientLinks = [
+    { label: 'Upload X-Ray', path: '/patient-dashboard/upload' },
+    { label: 'View Reports', path: '/patient-dashboard/reports' },
+    { label: 'Book Consultation', path: '/patient-dashboard/book' },
+    { label: 'My Consultations', path: '/patient-dashboard/consultations' },
+];
+
+const supportLinks = [
+    { label: 'Privacy Policy', path: '/privacy-policy' },
+    { label: 'Terms of Service', path: '/terms-of-service' },
+    { label: 'Cookie Policy', path: '/cookie-policy' },
+    { label: 'Help Center', path: '/help-center' },
+    { label: 'Contact Us', path: '/contact-us' },
+];
+
+export const Footer = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    const scrollToSection = (id) => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // If logged in, go straight to the dashboard page.
+    // If not, send them to login — and remember where they wanted to go
+    // so the login page can redirect back after success.
+    const handlePatientLinkClick = (path) => {
+        if (isAuthenticated()) {
+            navigate(path);
+        } else {
+            navigate('/patient-login', { state: { from: { pathname: path } } });
+        }
+    };
+
     return (
-        <footer className="bg-emerald-900 text-white py-16 px-[40px]">
-            <div className="container mx-auto max-w-[1440px]">
-                <div className="grid md:grid-cols-4 gap-8 mb-12">
+        <footer className="bg-emerald-950 text-white py-16 px-6 lg:px-18">
+            <div className="max-w-7xl mx-auto">
+                <div className="grid md:grid-cols-4 gap-10 mb-12">
                     <div>
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-gradient-dent rounded-xl flex items-center justify-center">
-                                <SparklesIcon className="w-6 h-6 text-white" />
+                        <div className="flex items-center gap-2.5 mb-5">
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)' }}>
+                                <ShieldCheckIcon className="w-5 h-5 text-white" />
                             </div>
-                            <h3 className="text-2xl font-bold">Dent AI</h3>
+                            <span className="text-xl font-bold">Dent<span className="text-emerald-400">AI</span></span>
                         </div>
-                        <p className="text-emerald-300 mb-4">
-                            Revolutionizing dental care through artificial intelligence and expert connectivity.
+                        <p className="text-emerald-400 text-sm leading-relaxed">
+                            Revolutionizing dental care through AI-powered analysis and expert connectivity.
                         </p>
-                        {/* <div className="flex gap-4">
-                            {['facebook', 'twitter', 'linkedin', 'instagram'].map((social) => (
-                                <div key={social} className="w-10 h-10 bg-emerald-800 rounded-lg flex items-center justify-center hover:bg-emerald-700 transition-colors cursor-pointer">
-                                    <span className="text-sm">{social[0].toUpperCase()}</span>
-                                </div>
-                            ))}
-                        </div> */}
                     </div>
+
                     <div>
-                        <h4 className="text-lg font-bold mb-6">Quick Links</h4>
+                        <h4 className="font-bold text-white mb-5 text-sm uppercase tracking-wider">Navigate</h4>
                         <ul className="space-y-3">
-                            {['Home', 'About', 'How It Works', 'Why Us', 'Contact'].map((link) => (
-                                <li key={link}>
-                                    <button className="text-emerald-300 hover:text-white transition-colors">
-                                        {link}
+                            {navigateLinks.map(l => (
+                                <li key={l}>
+                                    <button
+                                        onClick={() => scrollToSection(l.toLowerCase().replace(/\s+/g, '-'))}
+                                        className="text-emerald-400 hover:text-white text-sm transition-colors">
+                                        {l}
                                     </button>
                                 </li>
                             ))}
                         </ul>
                     </div>
+
                     <div>
-                        <h4 className="text-lg font-bold mb-6">For Patients</h4>
+                        <h4 className="font-bold text-white mb-5 text-sm uppercase tracking-wider">For Patients</h4>
                         <ul className="space-y-3">
-                            {['Upload X-Ray', 'View Reports', 'Book Consultation', 'Find Dentist', 'FAQs'].map((link) => (
-                                <li key={link}>
-                                    <button className="text-emerald-300 hover:text-white transition-colors">
-                                        {link}
+                            {patientLinks.map(l => (
+                                <li key={l.label}>
+                                    <button
+                                        onClick={() => handlePatientLinkClick(l.path)}
+                                        className="text-emerald-400 hover:text-white text-sm transition-colors">
+                                        {l.label}
                                     </button>
                                 </li>
                             ))}
                         </ul>
                     </div>
+
                     <div>
-                        <h4 className="text-lg font-bold mb-6">For Dentists</h4>
+                        <h4 className="font-bold text-white mb-5 text-sm uppercase tracking-wider">Support</h4>
                         <ul className="space-y-3">
-                            {['Join as Dentist', 'Partner Program', 'Resources', 'Support', 'Terms'].map((link) => (
-                                <li key={link}>
-                                    <button className="text-emerald-300 hover:text-white transition-colors">
-                                        {link}
+                            {supportLinks.map(l => (
+                                <li key={l.label}>
+                                    <button
+                                        onClick={() => navigate(l.path)}
+                                        className="text-emerald-400 hover:text-white text-sm transition-colors">
+                                        {l.label}
                                     </button>
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </div>
-                <div className="pt-8 border-t border-emerald-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-emerald-300 text-sm">
-                        © 2024 Dent AI. All rights reserved.
-                    </p>
-                    <div className="flex gap-6">
-                        <button className="text-emerald-300 hover:text-white text-sm">Privacy Policy</button>
-                        <button className="text-emerald-300 hover:text-white text-sm">Terms of Service</button>
-                        <button className="text-emerald-300 hover:text-white text-sm">Cookie Policy</button>
-                    </div>
+
+                <div className="pt-8 border-t border-emerald-800 flex flex-col md:flex-row justify-center items-center gap-4">
+                    <p className="text-emerald-500 text-sm">© 2025 Dent AI. All rights reserved.</p>
                 </div>
             </div>
         </footer>
-    )
-}
-
-export default Footer
+    );
+};

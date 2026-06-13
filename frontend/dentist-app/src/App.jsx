@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import DentistLayout from './components/DentistLayout/DentistLayout';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import PublicRoute from './components/PublicRoute/PublicRoute';
 import DentistDashboard from './pages/DentistDashboard/DentistDashboard';
 import DentistAllPatients from './pages/DentistAllPatients/DentistAllPatients';
 import AddSlots from './pages/AddSlots/AddSlots';
@@ -15,14 +16,16 @@ import Chat from './pages/Chat/Chat';
 import { Toaster } from 'react-hot-toast';
 import UpcomingConsultations from './pages/UpcomingConsultaions/UpcomingConsultations';
 import DentistUploadXRay from './pages/DentistUploadXRay/DentistUploadXRay';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 
 function App() {
     return (
         <>
             <Toaster />
+            <ScrollToTop />
             <Routes>
-                <Route path="/dentist-login" element={<DentistLogin isLogin={true} />} />
-                <Route path="/dentist-signup" element={<DentistLogin isLogin={false} />} />
+                <Route path="/dentist-login" element={<PublicRoute><DentistLogin isLogin={true} /></PublicRoute>} />
+                <Route path="/dentist-signup" element={<PublicRoute><DentistLogin isLogin={false} /></PublicRoute>} />
 
                 <Route path="/dentist-dashboard" element={
                     <ProtectedRoute allowedRoles={['dentist']}>

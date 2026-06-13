@@ -13,7 +13,7 @@ const PatientAllReports = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
-  const [downloading, setDownloading] = useState(null); // report id being downloaded
+  const [downloading, setDownloading] = useState(null);
 
   const token = localStorage.getItem('accessToken');
   const authHeader = { Authorization: `Bearer ${token}` };
@@ -37,6 +37,10 @@ const PatientAllReports = () => {
     if (filter === 'saved') return r.status === 'saved';
     return true;
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const stats = {
     total: reports.length,
@@ -76,7 +80,6 @@ const PatientAllReports = () => {
   return (
     <div className="lg:p-4">
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
           <p className="text-2xl font-bold text-emerald-700">{stats.total}</p>
@@ -94,11 +97,9 @@ const PatientAllReports = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Reports List */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
 
-            {/* Header + Filter */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
               <h3 className="text-xl font-bold text-emerald-900">My Reports</h3>
               <div className="flex items-center gap-2">
@@ -108,8 +109,8 @@ const PatientAllReports = () => {
                     key={f}
                     onClick={() => setFilter(f)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${filter === f
-                        ? 'bg-emerald-500 text-white shadow-sm'
-                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       }`}
                   >
                     {f}
@@ -118,7 +119,6 @@ const PatientAllReports = () => {
               </div>
             </div>
 
-            {/* Content */}
             {loading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
@@ -146,7 +146,6 @@ const PatientAllReports = () => {
                     key={report._id}
                     className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 hover:border-emerald-300 hover:shadow-sm transition-all"
                   >
-                    {/* Left: icon + info */}
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${report.status === 'generated' ? 'bg-blue-100' : 'bg-emerald-100'
                         }`}>
@@ -181,11 +180,10 @@ const PatientAllReports = () => {
                       </div>
                     </div>
 
-                    {/* Right: status badge + download */}
                     <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                       <span className={`hidden sm:inline px-2 py-1 rounded-full text-xs font-medium ${report.status === 'generated'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-emerald-100 text-emerald-700'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-emerald-100 text-emerald-700'
                         }`}>
                         {report.status.toUpperCase()}
                       </span>
@@ -212,10 +210,8 @@ const PatientAllReports = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-5">
 
-          {/* Insights */}
           <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 p-5">
             <div className="flex items-center gap-2 mb-4">
               <ChartBarIcon className="w-5 h-5 text-emerald-600" />
@@ -253,7 +249,6 @@ const PatientAllReports = () => {
             </div>
           </div>
 
-          {/* Quick Actions */}
           <div className="bg-white rounded-2xl border border-emerald-100 p-5">
             <h4 className="font-bold text-emerald-900 mb-3">Quick Actions</h4>
             <div className="space-y-3">
@@ -266,7 +261,6 @@ const PatientAllReports = () => {
             </div>
           </div>
 
-          {/* Latest comparison snippet */}
           {reports.length > 0 && reports[0].comparisonReport && (
             <div className="bg-blue-50 rounded-2xl border border-blue-100 p-5">
               <h4 className="font-bold text-blue-900 mb-2 text-sm">Latest AI Comparison</h4>

@@ -8,6 +8,10 @@ const PatientBookConsultation = () => {
   const [dentists, setDentists] = useState([]);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const getDentists = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/dentists/get-dentists`);

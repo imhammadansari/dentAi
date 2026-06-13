@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
     UserCircleIcon,
     ArrowRightOnRectangleIcon,
@@ -27,7 +27,6 @@ const PatientSidebar = ({ userData, setMobileSidebar }) => {
     const { handleLogout } = useAuth();
     const location = useLocation();
 
-    // Derive active tab directly from URL — no state lag, no flash
     const getActiveId = (pathname) => {
         if (pathname.includes('upload')) return 'upload';
         if (pathname.includes('reports')) return 'reports';
@@ -43,7 +42,7 @@ const PatientSidebar = ({ userData, setMobileSidebar }) => {
         <div className="w-64 h-screen flex flex-col" style={{ backgroundColor: '#f0fdf4', borderRight: '1px solid #d1fae5' }}>
             <div className="p-6">
                 <div className="flex items-center justify-between lg:justify-normal lg:gap-3 mb-6">
-                    <div className='flex gap-2 items-center'>
+                    <Link to='/' className='flex gap-2 items-center'>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                             <ShieldCheckIcon className="w-6 h-6 text-white" />
                         </div>
@@ -53,7 +52,7 @@ const PatientSidebar = ({ userData, setMobileSidebar }) => {
                             </h1>
                             <p className="text-xs font-medium" style={{ color: '#16a34a' }}>Patient Portal</p>
                         </div>
-                    </div>
+                    </Link>
                     <IoMenuSharp
                         onClick={() => setMobileSidebar && setMobileSidebar(false)}
                         className='text-emerald-900 w-6 h-6 cursor-pointer lg:hidden'

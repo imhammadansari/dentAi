@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
     UserCircleIcon,
@@ -55,6 +55,10 @@ const PatientDetails = () => {
         { id: 3, date: '2024-01-25', time: '11:15 AM', dentist: 'Dr. Emily Wilson', type: 'Tooth Filling', status: 'completed' },
         { id: 4, date: '2023-12-15', time: '9:45 AM', dentist: 'Dr. Robert Kim', type: 'Cleaning', status: 'completed' },
     ];
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const renderContent = () => {
         switch (activeTab) {

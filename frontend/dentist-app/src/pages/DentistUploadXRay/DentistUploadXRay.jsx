@@ -139,14 +139,14 @@ const DentistUploadXRay = () => {
                                     <div key={i} className="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-lg">
                                         <div className="font-bold text-emerald-800 mb-1 capitalize">{d.stage?.replace(/_/g, ' ')}</div>
                                         <p className="text-sm text-gray-700"><b>Diagnosis:</b> {d.explanation}</p>
-                                        <p className="text-sm text-gray-500"><b>Confidence:</b> {d.confidence}</p>
+                                        {/* <p className="text-sm text-gray-500"><b>Confidence:</b> {d.confidence}</p> */}
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mb-6">
+                            {/* <div className="mb-6">
                                 <label className="block text-sm font-semibold text-emerald-800 mb-2">
-                                    Add Notes / Comments (optional)
+                                    Add Recommendations / Comments (optional)
                                 </label>
                                 <textarea
                                     value={comments}
@@ -155,7 +155,7 @@ const DentistUploadXRay = () => {
                                     placeholder="E.g. Patient reported sensitivity in lower left molar..."
                                     className="w-full border border-emerald-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300 resize-none"
                                 />
-                            </div>
+                            </div> */}
 
                             {saved && (
                                 <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-xl p-3 mb-4">
@@ -164,14 +164,14 @@ const DentistUploadXRay = () => {
                                 </div>
                             )}
 
-                            <button
+                            {/* <button
                                 onClick={handleSaveReport}
                                 disabled={saving || saved}
                                 className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 transition-all disabled:opacity-50"
                             >
                                 <BookmarkIcon className="w-5 h-5" />
                                 {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save Report'}
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 )}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CalendarDaysIcon, ArrowLeftIcon, UserIcon, ClockIcon } from '@heroicons/react/24/outline';
 
@@ -21,6 +21,10 @@ const PatientConsultationDetail = () => {
         );
     }
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const statusColors = {
         completed: 'bg-green-100 text-green-700',
         booked: 'bg-amber-100 text-amber-700',
@@ -39,7 +43,6 @@ const PatientConsultationDetail = () => {
             </button>
 
             <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
-                {/* Header */}
                 <div className="bg-gradient-to-r from-emerald-500 to-green-400 p-6 text-white">
                     <div className="flex items-center gap-4">
                         <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
@@ -52,7 +55,6 @@ const PatientConsultationDetail = () => {
                     </div>
                 </div>
 
-                {/* Body */}
                 <div className="p-6 space-y-4">
                     <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-xl">
                         <div className="flex items-center gap-3">

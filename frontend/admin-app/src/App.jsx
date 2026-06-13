@@ -9,19 +9,12 @@ import AdminAllReports from './pages/AdminAllReports/AdminAllReports';
 import AdminDentistRequests from './pages/AdminDentistRequests/AdminDentistRequests';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from './context/AuthContext';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 
 const ProtectedAdminRoute = ({ children }) => {
-    const { loading, isAuthenticated } = useAuth();
-
-    // While verifyUser is running, check localStorage directly to avoid flash redirect
-    const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
-    const storedToken = localStorage.getItem("accessToken");
+    const { loading, isAuthenticated, hasRole } = useAuth();
 
     if (loading) {
-        // Show spinner only if there is no stored session at all
-        if (!storedUser || !storedToken) {
-            return <Navigate to="/admin-login" replace />;
-        }
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="w-16 h-16 border-4 border-t-emerald-500 border-emerald-200 rounded-full animate-spin" />
@@ -29,8 +22,26 @@ const ProtectedAdminRoute = ({ children }) => {
         );
     }
 
-    if (!isAuthenticated() || storedUser?.role?.toLowerCase() !== 'admin') {
+    if (!isAuthenticated() || !hasRole('admin')) {
         return <Navigate to="/admin-login" replace />;
+    }
+
+    return children;
+};
+
+const PublicAdminRoute = ({ children }) => {
+    const { loading, isAuthenticated, hasRole } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="w-16 h-16 border-4 border-t-emerald-500 border-emerald-200 rounded-full animate-spin" />
+            </div>
+        );
+    }
+
+    if (isAuthenticated() && hasRole('admin')) {
+        return <Navigate to="/admin-dashboard/home" replace />;
     }
 
     return children;
@@ -40,8 +51,9 @@ function App() {
     return (
         <>
             <Toaster />
+            <ScrollToTop />
             <Routes>
-                <Route path="/admin-login" element={<AdminLogin />} />
+                <Route path="/admin-login" element={<PublicAdminRoute><AdminLogin /></PublicAdminRoute>} />
 
                 <Route path="/admin-dashboard" element={
                     <ProtectedAdminRoute>

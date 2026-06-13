@@ -38,6 +38,10 @@ const PatientAccount = () => {
         fetchProfile();
     }, []);
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const isProfileComplete = form.phone && form.gender && form.age;
 
     const handleSave = async () => {
@@ -55,7 +59,6 @@ const PatientAccount = () => {
             if (res.data.success) {
                 toast.success('Profile updated successfully!');
                 setEditing(false);
-                // Update local user data
                 const updatedUser = { ...user, phone: form.phone, gender: form.gender, age: form.age };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
             }
@@ -81,7 +84,6 @@ const PatientAccount = () => {
                 <p className="text-emerald-600">Manage your profile information</p>
             </div>
 
-            {/* Profile Complete Banner */}
             {!isProfileComplete && (
                 <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
                     <ExclamationCircleIcon className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -99,9 +101,7 @@ const PatientAccount = () => {
                 </div>
             )}
 
-            {/* Profile Card */}
             <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
-                {/* Header */}
                 <div className="bg-gradient-to-r from-emerald-500 to-green-400 p-6">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-white text-2xl font-bold">
@@ -115,7 +115,6 @@ const PatientAccount = () => {
                 </div>
 
                 <div className="p-6 space-y-5">
-                    {/* Read-only fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 bg-emerald-50 rounded-xl">
                             <label className="text-xs font-semibold text-emerald-600 uppercase tracking-wide">Full Name</label>

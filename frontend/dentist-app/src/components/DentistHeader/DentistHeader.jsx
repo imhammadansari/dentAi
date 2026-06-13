@@ -54,14 +54,14 @@ const DentistHeader = ({ activeTab, userData, toggleSidebar }) => {
             </div>
 
             <div className="flex items-center gap-4">
-                <div className="relative hidden lg:flex">
+                {/* <div className="relative hidden lg:flex">
                     <MagnifyingGlassIcon className="w-5 h-5 text-emerald-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                     <input
                         type="text"
                         placeholder="Search patients, appointments..."
                         className="pl-10 pr-4 py-2 w-64 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-900 placeholder-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
-                </div>
+                </div> */}
 
                 {/* Account dropdown */}
                 <div className="relative hidden lg:block" ref={dropdownRef}>

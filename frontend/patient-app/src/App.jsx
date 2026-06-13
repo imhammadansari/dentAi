@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import PatientLayout from './components/PatientLayout/PatientLayout';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import PublicRoute from './components/PublicRoute/PublicRoute';
 import LandingPage from './pages/LandingPage/LandingPage';
 import PatientLogin from './pages/PatientLogin/PatientLogin';
 import PatientDashboard from './pages/PatientDashboard/PatientDashboard';
@@ -17,15 +18,17 @@ import Chat from './pages/Chat/Chat';
 import { Toaster } from 'react-hot-toast';
 import PatientUploadXray from './pages/PatientUploadXRay/PatientUploadXRay';
 import BookSlot from './pages/PatientBookSlot/PatientBookSlot';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 
 function App() {
     return (
         <>
             <Toaster />
+            <ScrollToTop />
             <Routes>
                 <Route path="/" element={<LandingPage />} />
-                <Route path="/patient-login" element={<PatientLogin isLogin={true} />} />
-                <Route path="/patient-signup" element={<PatientLogin isLogin={false} />} />
+                <Route path="/patient-login" element={<PublicRoute><PatientLogin isLogin={true} /></PublicRoute>} />
+                <Route path="/patient-signup" element={<PublicRoute><PatientLogin isLogin={false} /></PublicRoute>} />
 
                 <Route path="/patient-dashboard" element={
                     <ProtectedRoute allowedRoles={['patient']}>

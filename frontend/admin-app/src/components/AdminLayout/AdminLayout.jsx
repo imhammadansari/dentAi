@@ -13,18 +13,16 @@ const AdminLayout = () => {
 
     return (
         <div className="flex h-screen bg-gradient-to-br from-white to-emerald-50 overflow-hidden">
-            {/* Desktop sidebar — always rendered */}
+
             <div className="hidden lg:flex h-screen">
                 <AdminSidebar userData={user || {}} />
             </div>
 
-            {/* Mobile sidebar */}
             <div className={`absolute z-20 top-0 left-0 lg:hidden transform transition-transform duration-300
                 ${mobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
                 <AdminSidebar userData={user || {}} setMobileSidebar={setMobileSidebar} />
             </div>
 
-            {/* Mobile sidebar backdrop */}
             {mobileSidebar && (
                 <div
                     className="absolute inset-0 z-10 bg-black/30 lg:hidden"
@@ -33,11 +31,9 @@ const AdminLayout = () => {
             )}
 
             <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
-                {/* Header — always rendered */}
                 <AdminHeader userData={user} toggleSidebar={toggleSidebar} />
 
-                {/* Main outlet area */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
+                <main id="main-scroll" className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
                     {pageLoading && (
                         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
                             <div className="text-center">

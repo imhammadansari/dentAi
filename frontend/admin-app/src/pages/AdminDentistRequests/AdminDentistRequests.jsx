@@ -15,8 +15,6 @@ const AdminRequests = () => {
     const [selectedStatus, setSelectedStatus] = useState('All');
     const [processingId, setProcessingId] = useState(null);
 
-    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
-
     useEffect(() => { fetchDentists(); }, []);
 
     useEffect(() => {
@@ -38,14 +36,12 @@ const AdminRequests = () => {
     const fetchDentists = async () => {
         setLoading(true);
         try {
-            // Fetch ALL dentists (not just pending) so admin can see full picture
             const res = await axios.get(
                 `${import.meta.env.VITE_SERVER_URL}/api/dentists/admin/all`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
             setDentists(res.data.data || []);
         } catch (err) {
-            console.log(err.message);
             toast.error('Failed to load dentist requests');
         } finally {
             setLoading(false);
@@ -58,7 +54,7 @@ const AdminRequests = () => {
             await axios.put(
                 `${import.meta.env.VITE_SERVER_URL}/api/dentists/${dentistId}/status`,
                 { status: newStatus },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
             toast.success(`Dentist ${newStatus.toLowerCase()} successfully`);
             setDentists(prev =>
@@ -76,15 +72,6 @@ const AdminRequests = () => {
         approved: dentists.filter(d => d.approvalStatus === 'Approved').length,
         rejected: dentists.filter(d => d.approvalStatus === 'Rejected').length,
         total: dentists.length
-    };
-
-    const statusColor = (status) => {
-        switch (status) {
-            case 'Pending': return 'bg-amber-100 text-amber-700';
-            case 'Approved': return 'bg-emerald-100 text-emerald-700';
-            case 'Rejected': return 'bg-red-100 text-red-700';
-            default: return 'bg-gray-100 text-gray-700';
-        }
     };
 
     return (
@@ -169,9 +156,8 @@ const AdminRequests = () => {
                                     <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Dentist</th>
                                     <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Contact</th>
                                     <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Professional Info</th>
-                                    <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Status</th>
                                     <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Date</th>
-                                    <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Actions</th>
+                                    <th className="py-3 px-5 text-left text-sm font-semibold text-gray-700">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -215,49 +201,63 @@ const AdminRequests = () => {
                                             </div>
                                         </td>
                                         <td className="py-4 px-5">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${statusColor(dentist.approvalStatus)}`}>
-                                                {dentist.approvalStatus === 'Pending' && <ClockIcon className="w-3.5 h-3.5" />}
-                                                {dentist.approvalStatus === 'Approved' && <CheckCircleIcon className="w-3.5 h-3.5" />}
-                                                {dentist.approvalStatus === 'Rejected' && <XCircleIcon className="w-3.5 h-3.5" />}
-                                                {dentist.approvalStatus}
-                                            </span>
-                                        </td>
-                                        <td className="py-4 px-5">
                                             <p className="text-sm text-gray-600">{new Date(dentist.createdAt).toLocaleDateString()}</p>
                                             <p className="text-xs text-gray-400">{new Date(dentist.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                         </td>
+
+                                        {/* Status column — shows badge + action buttons for pending, new requests highlighted */}
                                         <td className="py-4 px-5">
-                                            <div className="flex gap-2">
+                                            <div className="flex flex-col gap-2">
+                                                {/* Badge */}
+                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium w-fit
+                                                    ${dentist.approvalStatus === 'Pending' ? 'bg-amber-100 text-amber-700' : ''}
+                                                    ${dentist.approvalStatus === 'Approved' ? 'bg-emerald-100 text-emerald-700' : ''}
+                                                    ${dentist.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' : ''}
+                                                `}>
+                                                    {dentist.approvalStatus === 'Pending' && <ClockIcon className="w-3.5 h-3.5" />}
+                                                    {dentist.approvalStatus === 'Approved' && <CheckCircleIcon className="w-3.5 h-3.5" />}
+                                                    {dentist.approvalStatus === 'Rejected' && <XCircleIcon className="w-3.5 h-3.5" />}
+                                                    {dentist.approvalStatus}
+                                                    {/* New request indicator */}
+                                                    {dentist.approvalStatus === 'Pending' && (() => {
+                                                        const hoursSince = (Date.now() - new Date(dentist.createdAt)) / 36e5;
+                                                        return hoursSince < 24 ? (
+                                                            <span className="ml-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">NEW</span>
+                                                        ) : null;
+                                                    })()}
+                                                </span>
+
+                                                {/* Action buttons inside status column */}
                                                 {dentist.approvalStatus === 'Pending' && (
-                                                    <>
+                                                    <div className="flex gap-1.5">
                                                         <button
                                                             onClick={() => handleStatusChange(dentist._id, 'Approved')}
                                                             disabled={processingId === dentist._id}
-                                                            className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                                            className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
                                                         >
-                                                            <CheckCircleIcon className="w-4 h-4" />
+                                                            <CheckCircleIcon className="w-3.5 h-3.5" />
                                                             Approve
                                                         </button>
                                                         <button
                                                             onClick={() => handleStatusChange(dentist._id, 'Rejected')}
                                                             disabled={processingId === dentist._id}
-                                                            className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                                            className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
                                                         >
-                                                            <XCircleIcon className="w-4 h-4" />
+                                                            <XCircleIcon className="w-3.5 h-3.5" />
                                                             Reject
                                                         </button>
-                                                    </>
+                                                    </div>
                                                 )}
-                                                {(dentist.approvalStatus === 'Approved' || dentist.approvalStatus === 'Rejected') && (
+                                                {/* {(dentist.approvalStatus === 'Approved' || dentist.approvalStatus === 'Rejected') && (
                                                     <button
                                                         onClick={() => handleStatusChange(dentist._id, 'Pending')}
                                                         disabled={processingId === dentist._id}
-                                                        className="flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                                        className="flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 w-fit"
                                                     >
-                                                        <ClockIcon className="w-4 h-4" />
-                                                        Reset to Pending
+                                                        <ClockIcon className="w-3.5 h-3.5" />
+                                                        Reset
                                                     </button>
-                                                )}
+                                                )} */}
                                             </div>
                                         </td>
                                     </tr>
