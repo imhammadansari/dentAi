@@ -1,0 +1,34 @@
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
+// Guest-only route: if the user is already logged in, redirect them away
+// from login/signup pages to their dashboard.
+const PublicRoute = ({ children }) => {
+    const { user, loading, isAuthenticated } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto border-4 border-t-transparent border-green-500 rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
+    if (isAuthenticated()) {
+        switch (user?.role?.toLowerCase()) {
+            case 'patient':
+                return <Navigate to="/patient-dashboard/home" replace />;
+            case 'dentist':
+                return <Navigate to="/dentist-dashboard/home" replace />;
+            case 'admin':
+                return <Navigate to="/admin-dashboard/home" replace />;
+            default:
+                return children;
+        }
+    }
+
+    return children;
+};
+
+export default PublicRoute;

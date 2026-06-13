@@ -1,4 +1,5 @@
 const patientModel = require("../models/patientModel");
+const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const bookingModel = require("../models/bookingModel");
@@ -68,23 +69,13 @@ const userLogin = async (req, res) => {
                 let accessToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.JWT_TOKEN,
                     { expiresIn: "10h" });
 
-                res.cookie("accessToken", accessToken, {
-                    httpOnly: true,
-                    sameSite: 'None',
-                    secure: true,
-                    maxAge: 10 * 60 * 60 * 1000
-                });
+                res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
                 let refreshToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.REFRESH_TOKEN, { expiresIn: "7days" });
 
                 user.refreshToken = refreshToken;
                 await user.save();
-                res.cookie("refreshToken", refreshToken, {
-                    httpOnly: true,
-                    sameSite: 'None',
-                    secure: true,
-                    maxAge: 7 * 24 * 60 * 60 * 1000
-                });
+                res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
                 res.status(200).json({
                     success: true,
@@ -124,12 +115,7 @@ const refreshTokenGenerate = async (req, res) => {
             const newAccessToken = jwt.sign({ id: decoded.id, email: decoded.email, role: decoded.role }, process.env.JWT_TOKEN,
                 { expiresIn: '10h' });
 
-            res.cookie("accessToken", newAccessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'None',
-                maxAge: 10 * 60 * 60 * 1000
-            })
+            res.cookie("accessToken", newAccessToken, accessTokenCookieOptions)
 
             res.status(200).json({
                 success: true,
@@ -214,28 +200,15 @@ const userLogout = async (req, res) => {
         const user = await patientModel.findOne({ refreshToken });
         if (!user) {
 
-            res.clearCookie("refreshToken", {
-                httpOnly: true,
-                sameSite: 'None'
-            })
+            res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure })
         }
 
         user.refreshToken = null;
         await user.save();
 
-        res.clearCookie("accessToken", {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: true,
-            path: '/'
-        })
+        res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' })
 
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: true,
-            path: '/'
-        })
+        res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' })
 
         res.status(200).send("User Loggedout")
 

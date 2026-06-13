@@ -25,7 +25,6 @@ const BookSlot = () => {
             const allSlots = slotsRes.data.data || [];
             setSlots(allSlots);
 
-            // Fetch all bookings for this dentist to find which slots are taken
             const bookingsRes = await axios.get(
                 `${import.meta.env.VITE_SERVER_URL}/api/bookings/dentist-slot-bookings/${dentistId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -41,7 +40,6 @@ const BookSlot = () => {
 
         } catch (error) {
             console.log(error.message);
-            // Fallback: try to load slots even if bookings endpoint fails
             try {
                 const token = localStorage.getItem("token");
                 const slotsRes = await axios.get(
@@ -56,6 +54,10 @@ const BookSlot = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const bookSlot = async (slotId) => {
         if (!window.confirm("Are you sure you want to book this slot?")) return;
@@ -84,7 +86,6 @@ const BookSlot = () => {
         fetchData();
     }, [dentistId]);
 
-    // Group slots by date
     const groupedSlots = slots.reduce((acc, slot) => {
         const dateKey = new Date(slot.date).toLocaleDateString('en-US', {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -96,7 +97,6 @@ const BookSlot = () => {
 
     const today = new Date().toISOString().split('T')[0];
 
-    // Only show future/today slots
     const upcomingGroups = Object.entries(groupedSlots).filter(([, dateSlots]) => {
         const rawDate = new Date(dateSlots[0].date).toISOString().split('T')[0];
         return rawDate >= today;
@@ -144,8 +144,8 @@ const BookSlot = () => {
                                             <div
                                                 key={slotId}
                                                 className={`flex items-center justify-between p-4 rounded-xl border transition-all ${isFull
-                                                        ? 'bg-gray-50 border-gray-200'
-                                                        : 'bg-emerald-50 border-emerald-100 hover:border-emerald-300'
+                                                    ? 'bg-gray-50 border-gray-200'
+                                                    : 'bg-emerald-50 border-emerald-100 hover:border-emerald-300'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">

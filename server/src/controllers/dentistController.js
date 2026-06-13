@@ -1,4 +1,5 @@
 const dentistModel = require("../models/dentistModel");
+const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
@@ -150,19 +151,9 @@ const dentistLogin = async (req, res) => {
             dentist.refreshToken = refreshToken;
             await dentist.save();
 
-            res.cookie("accessToken", accessToken, {
-                httpOnly: true,
-                sameSite: 'None',
-                secure: true,
-                maxAge: 10 * 60 * 60 * 1000
-            });
+            res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                sameSite: 'None',
-                secure: true,
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            });
+            res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
             res.status(200).json({
                 success: true,
@@ -236,19 +227,9 @@ const dentistLogout = async (req, res) => {
             }
         }
 
-        res.clearCookie("accessToken", {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: true,
-            path: '/'
-        });
+        res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
 
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: true,
-            path: '/'
-        });
+        res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
 
         res.status(200).json({
             success: true,

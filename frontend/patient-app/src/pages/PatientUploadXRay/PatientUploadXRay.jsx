@@ -20,12 +20,17 @@ const PatientUploadXray = () => {
   const [comparisonResult, setComparisonResult] = useState(null);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savedReportId, setSavedReportId] = useState(null);
   const [hasPrevious, setHasPrevious] = useState(false);
 
   const token = localStorage.getItem('accessToken');
   const authHeader = { Authorization: `Bearer ${token}` };
 
-  // Check if patient has previous reports (to enable Compare button)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
   useEffect(() => {
     const check = async () => {
       try {
@@ -42,6 +47,7 @@ const PatientUploadXray = () => {
     setResult(null);
     setComparisonResult(null);
     setSaved(false);
+    setSavedReportId(null);
     if (file) setPreview(URL.createObjectURL(file));
   };
 
@@ -69,13 +75,14 @@ const PatientUploadXray = () => {
     if (!result) return;
     setSaving(true);
     try {
-      await axios.post(
+      const saveRes = await axios.post(
         `${API}/api/reports/save`,
         { totalFound: result.total_found, detections: result.detections, annotatedImage: result.image, comments },
         { headers: authHeader }
       );
       setSaved(true);
-      setHasPrevious(true); // now they have a report
+      setSavedReportId(saveRes.data?.data?._id || null);
+      setHasPrevious(true);
       toast.success('Report saved successfully!');
     } catch (err) {
       toast.error('Failed to save report');
@@ -84,7 +91,6 @@ const PatientUploadXray = () => {
     }
   };
 
-  // Downloads PDF as a file directly from the server stream
   const downloadPdfBlob = async (endpoint, payload, filename) => {
     const res = await axios.post(endpoint, payload, {
       headers: authHeader,
@@ -137,7 +143,10 @@ const PatientUploadXray = () => {
     try {
       const res = await axios.post(
         `${API}/api/reports/compare`,
-        { currentScan: { totalFound: result.total_found, detections: result.detections, comments } },
+        {
+          currentScan: { totalFound: result.total_found, detections: result.detections, comments },
+          excludeReportId: savedReportId
+        },
         { headers: authHeader }
       );
       if (res.data.success) {
@@ -155,7 +164,6 @@ const PatientUploadXray = () => {
     <div className="lg:p-6">
       <div className="max-w-4xl mx-auto">
 
-        {/* Upload Card */}
         <div className="bg-gradient-to-br from-white to-emerald-50 border-2 border-dashed border-emerald-200 rounded-3xl p-6 text-center mb-8">
           <div className={`${!preview ? 'w-20 h-20 lg:w-24 lg:h-24 rounded-full' : 'w-32 h-32 lg:w-52 lg:h-52'} overflow-hidden mx-auto mb-4 flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-100`}>
             {preview
@@ -188,7 +196,7 @@ const PatientUploadXray = () => {
           <p className="text-xs text-emerald-400 mt-3">Supports JPG, PNG, DICOM • Max 50MB</p>
         </div>
 
-        {/* Results */}
+
         {result && (
           <div className="bg-white rounded-2xl border border-emerald-100 shadow-md overflow-hidden">
             <div className="bg-gradient-to-r from-emerald-500 to-green-400 p-5">
@@ -214,12 +222,12 @@ const PatientUploadXray = () => {
                   <div key={i} className="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-lg">
                     <div className="font-bold text-emerald-800 mb-1 capitalize">{d.stage?.replace(/_/g, ' ')}</div>
                     <p className="text-sm text-gray-700"><b>Diagnosis:</b> {d.explanation}</p>
-                    <p className="text-sm text-gray-500"><b>Confidence:</b> {d.confidence}</p>
+                    {/* <p className="text-sm text-gray-500"><b>Confidence:</b> {d.confidence}</p> */}
                   </div>
                 ))}
               </div>
 
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <label className="block text-sm font-semibold text-emerald-800 mb-2">
                   Add Comments / Notes (optional)
                 </label>
@@ -230,7 +238,7 @@ const PatientUploadXray = () => {
                   placeholder="E.g. Patient reported sensitivity in lower left molar..."
                   className="w-full border border-emerald-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300 resize-none"
                 />
-              </div>
+              </div> */}
 
               {saved && (
                 <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-xl p-3 mb-4">
@@ -239,9 +247,9 @@ const PatientUploadXray = () => {
                 </div>
               )}
 
-              {/* Action Buttons */}
+
               <div className="flex flex-col sm:flex-row gap-3">
-                {/* Save Report */}
+
                 <button
                   onClick={handleSaveReport}
                   disabled={saving}
@@ -251,7 +259,7 @@ const PatientUploadXray = () => {
                   {saving ? 'Saving...' : 'Save Report'}
                 </button>
 
-                {/* Generate Report → downloads PDF */}
+
                 <button
                   onClick={() => handleGenerateReport(false)}
                   disabled={generating}
@@ -261,7 +269,7 @@ const PatientUploadXray = () => {
                   {generating ? 'Generating...' : 'Generate Report'}
                 </button>
 
-                {/* Compare — only active if patient has a previous report */}
+
                 <button
                   onClick={handleCompare}
                   disabled={comparing || !hasPrevious}
@@ -287,7 +295,7 @@ const PatientUploadXray = () => {
         )}
       </div>
 
-      {/* Comparison Modal */}
+
       {showCompareModal && comparisonResult && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">

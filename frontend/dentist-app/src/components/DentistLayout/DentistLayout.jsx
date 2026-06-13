@@ -37,7 +37,7 @@ const DentistLayout = () => {
                 <DentistHeader userData={user} toggleSidebar={toggleSidebar} />
 
                 {/* Main outlet area */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
+                <main id="main-scroll" className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
                     {pageLoading && (
                         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
                             <div className="text-center">

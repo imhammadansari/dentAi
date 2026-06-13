@@ -9,17 +9,16 @@ const PatientAllConsultations = () => {
     const [consultations, setConsultations] = useState([]);
     const [totalVisits, setTotalVisits] = useState(0);
     const [activeTab, setActiveTab] = useState('Booked');
-    const [chatStatuses, setChatStatuses] = useState({}); // bookingId -> { exists, hasMessages, status }
+    const [chatStatuses, setChatStatuses] = useState({});
     const navigate = useNavigate();
 
     const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const authHeader = { Authorization: `Bearer ${token}` };
 
-    // Auto-complete past bookings on load
     const autoComplete = useCallback(async () => {
         try {
             await axios.post(`${SERVER}/api/chat/auto-complete-bookings`, {}, { headers: authHeader });
-        } catch (_) {}
+        } catch (_) { }
     }, []);
 
     const fetchData = useCallback(async () => {
@@ -33,6 +32,10 @@ const PatientAllConsultations = () => {
     }, []);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
         const init = async () => {
             await autoComplete();
             await fetchData();
@@ -40,7 +43,6 @@ const PatientAllConsultations = () => {
         init();
     }, []);
 
-    // After consultations load, check chat status for each booking
     useEffect(() => {
         if (!consultations.length) return;
         const checkChats = async () => {
@@ -107,11 +109,10 @@ const PatientAllConsultations = () => {
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    activeTab === tab
-                                        ? 'bg-emerald-500 text-white'
-                                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                }`}
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === tab
+                                    ? 'bg-emerald-500 text-white'
+                                    : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                    }`}
                             >
                                 {tab}
                             </button>
@@ -134,11 +135,10 @@ const PatientAllConsultations = () => {
                             return (
                                 <div
                                     key={consultation.id}
-                                    className={`p-4 rounded-xl ${
-                                        statusKey === 'booked'
-                                            ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-100'
-                                            : 'bg-white border border-emerald-100'
-                                    }`}
+                                    className={`p-4 rounded-xl ${statusKey === 'booked'
+                                        ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-100'
+                                        : 'bg-white border border-emerald-100'
+                                        }`}
                                 >
                                     <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-4 lg:gap-0">
                                         <div className="flex items-center gap-4">
@@ -161,7 +161,6 @@ const PatientAllConsultations = () => {
 
                                         <div className="flex items-center justify-center gap-3 flex-wrap">
 
-                                            {/* During appointment time: active Chat button */}
                                             {statusKey === 'booked' && withinTime && (
                                                 <button
                                                     onClick={() => navigate(`/patient-dashboard/chat/${consultation.id}`)}
@@ -172,7 +171,6 @@ const PatientAllConsultations = () => {
                                                 </button>
                                             )}
 
-                                            {/* Booked but not yet time: disabled chat */}
                                             {statusKey === 'booked' && !withinTime && !hasChat && (
                                                 <button
                                                     disabled
@@ -184,7 +182,6 @@ const PatientAllConsultations = () => {
                                                 </button>
                                             )}
 
-                                            {/* View Chat — shown whenever a chat with messages exists */}
                                             {hasChat && (
                                                 <button
                                                     onClick={() => navigate(`/patient-dashboard/chat/${consultation.id}`)}

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ShieldCheckIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { IoMenuSharp } from "react-icons/io5";
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PatientHeader = ({ activeTab, userData, toggleSidebar }) => {
     const user = userData || { name: 'Patient User' };
@@ -41,7 +41,7 @@ const PatientHeader = ({ activeTab, userData, toggleSidebar }) => {
                 <p className="text-emerald-600 mt-1">{headerInfo.subtitle}</p>
             </div>
 
-            <div className='flex lg:hidden gap-2 items-center'>
+            <Link to='/' className='flex lg:hidden gap-2 items-center'>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                     <ShieldCheckIcon className="w-6 h-6 text-white" />
                 </div>
@@ -51,7 +51,7 @@ const PatientHeader = ({ activeTab, userData, toggleSidebar }) => {
                     </h1>
                     <p className="text-xs font-medium" style={{ color: '#16a34a' }}>Patient Portal</p>
                 </div>
-            </div>
+            </Link>
 
             <div className="flex items-center gap-4">
                 <div className="hidden lg:flex items-center gap-3 relative" ref={dropdownRef}>

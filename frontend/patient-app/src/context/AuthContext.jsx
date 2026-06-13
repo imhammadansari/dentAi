@@ -1,7 +1,7 @@
 import axios from "axios";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -10,122 +10,72 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-    // Initialise from localStorage so user is never null on first render
-    const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem("user");
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
+    const [user, setUser] = useState(null);
 
-    const navigate = useNavigate();
-
-    const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken") || null);
-
-    // loading = true only during the very first silent verify call.
-    // Once that resolves, it stays false — page navigation never triggers it again.
+    // loading = true while we silently verify the session via cookies on app boot
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // Guard so we don't set up interceptors more than once
-    const interceptorsSet = useRef(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const _clearSession = () => {
+        setUser(null);
+    };
 
     useEffect(() => {
-        if (interceptorsSet.current) return;
-        interceptorsSet.current = true;
-
         axios.defaults.withCredentials = true;
         axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
 
-        // ── Request interceptor: attach latest tokens on every request
-        const reqInterceptor = axios.interceptors.request.use((config) => {
-            const token = localStorage.getItem('accessToken');
-            const refresh = localStorage.getItem('refreshToken');
-            if (token) config.headers['Authorization'] = `Bearer ${token}`;
-            if (refresh) config.headers['X-Refresh-Token'] = refresh;
-            return config;
-        });
-
-        // ── Response interceptor:
-        //    1. If server issued a new access token in the header, save it.
-        //    2. If we got a 401 and we still have a refreshToken, retry once.
         let isRefreshing = false;
         let failedQueue = [];
 
-        const processQueue = (error, token = null) => {
+        const processQueue = (error) => {
             failedQueue.forEach(({ resolve, reject, config }) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    config.headers['Authorization'] = `Bearer ${token}`;
-                    resolve(axios(config));
-                }
+                if (error) reject(error);
+                else resolve(axios(config));
             });
             failedQueue = [];
         };
 
+        // If a request fails with 401/403 (e.g. accessToken cookie missing/expired),
+        // try hitting /verify once — the verifyToken middleware will use the
+        // refreshToken cookie to issue a new accessToken cookie. If that
+        // succeeds, retry the original request. If it also fails, both tokens
+        // are dead — clear session and send the user to the home page.
         const resInterceptor = axios.interceptors.response.use(
-            (response) => {
-                // Pick up a silently refreshed token from any successful response
-                const newToken = response.headers['x-new-access-token'];
-                if (newToken) {
-                    localStorage.setItem('accessToken', newToken);
-                    setAccessToken(newToken);
-                }
-                return response;
-            },
+            (response) => response,
             async (error) => {
                 const originalRequest = error.config;
+                const status = error.response?.status;
 
-                // Only attempt refresh on 401, and only once per request
-                if (
-                    error.response?.status === 401 &&
-                    !originalRequest._retry
-                ) {
-                    const refreshToken = localStorage.getItem('refreshToken');
+                // Don't intercept the /verify call itself — that path is
+                // handled directly by verifyUser() to avoid double-calls
+                // and redirect loops.
+                const isVerifyCall = originalRequest?.url?.includes('/api/users/verify');
 
-                    if (!refreshToken) {
-                        // No refresh token — log user out
-                        _clearSession();
-                        navigate('/');
-                        return Promise.reject(error);
-                    }
+                if ((status === 401 || status === 403) && originalRequest && !originalRequest._retried && !isVerifyCall) {
+                    originalRequest._retried = true;
 
                     if (isRefreshing) {
-                        // Queue this request until refresh resolves
                         return new Promise((resolve, reject) => {
                             failedQueue.push({ resolve, reject, config: originalRequest });
                         });
                     }
 
-                    originalRequest._retry = true;
                     isRefreshing = true;
 
                     try {
-                        // Hit any protected endpoint with the refresh token header;
-                        // verifyToken middleware will issue a new access token.
-                        const refreshRes = await axios.get('/api/users/verify', {
-                            headers: {
-                                'X-Refresh-Token': refreshToken,
-                                'Authorization': '' // force the middleware to use X-Refresh-Token
-                            }
-                        });
-
-                        const newToken =
-                            refreshRes.headers['x-new-access-token'] ||
-                            localStorage.getItem('accessToken');
-
-                        if (newToken) {
-                            localStorage.setItem('accessToken', newToken);
-                            setAccessToken(newToken);
-                            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-                            processQueue(null, newToken);
-                            return axios(originalRequest);
-                        }
+                        const verifyRes = await axios.get('/api/users/verify', { withCredentials: true });
+                        if (verifyRes.data?.success) setUser(verifyRes.data.user);
+                        processQueue(null);
+                        return axios(originalRequest);
                     } catch (refreshError) {
-                        processQueue(refreshError, null);
+                        processQueue(refreshError);
                         _clearSession();
-                        navigate('/');
-                        return Promise.reject(refreshError);
+                        navigate('/', { replace: true });
+                        return Promise.reject(error);
                     } finally {
                         isRefreshing = false;
                     }
@@ -135,51 +85,25 @@ const AuthProvider = ({ children }) => {
             }
         );
 
-        return () => {
-            axios.interceptors.request.eject(reqInterceptor);
-            axios.interceptors.response.eject(resInterceptor);
-        };
+        return () => axios.interceptors.response.eject(resInterceptor);
     }, []);
 
-    const _clearSession = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setUser(null);
-        setAccessToken(null);
-    };
-
     // Silent background verify — runs once on app boot.
-    // Does NOT block the UI; if it fails we keep the cached user from localStorage.
+    // The accessToken (and refreshToken) httpOnly cookies are sent automatically.
+    // If the accessToken is expired, the verifyToken middleware transparently
+    // issues a new one using the refreshToken cookie before this call returns.
     const verifyUser = async () => {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            setLoading(false);
-            return;
-        }
-
         try {
-            let endpoint = '/api/users/verify';
-            const savedUser = localStorage.getItem("user");
-            if (savedUser) {
-                const parsedUser = JSON.parse(savedUser);
-                if (parsedUser.role === 'admin') endpoint = '/api/admin/verify';
-                else if (parsedUser.role === 'dentist') endpoint = '/api/dentists/verify';
-            }
-
-            const response = await axios.get(endpoint, { withCredentials: true });
+            const response = await axios.get('/api/users/verify', { withCredentials: true });
 
             if (response.data.success) {
-                const userData = response.data.user;
-                setUser(userData);
-                localStorage.setItem("user", JSON.stringify(userData));
-                const storedToken = localStorage.getItem("accessToken");
-                if (storedToken) setAccessToken(storedToken);
+                setUser(response.data.user);
+            } else {
+                _clearSession();
             }
         } catch (err) {
             console.log("Background verify error:", err.message);
-            // Don't clear the session here — the response interceptor handles 401 retry.
-            // If verify truly fails (network), keep the cached user so the layout stays intact.
+            _clearSession();
         } finally {
             setLoading(false);
         }
@@ -189,83 +113,17 @@ const AuthProvider = ({ children }) => {
         verifyUser();
     }, []);
 
-    const handleAdminLogin = async (email, password) => {
-        try {
-            setLoading(true);
-            setError('');
-            setSuccess('');
+    // If verification finished, there's no user, and we're on a protected
+    // (non-login/signup/landing) page, kick the user back to the home page.
+    useEffect(() => {
+        if (loading) return;
+        if (user) return;
 
-            const response = await axios.post('/api/admin/login', { email, password });
-
-            if (response.data.success) {
-                setSuccess('Login successful! Redirecting...');
-                toast.success('Login successful!');
-
-                const userData = {
-                    id: response.data.data.id,
-                    name: response.data.data.name,
-                    email: response.data.data.email,
-                    role: 'admin',
-                    permissions: response.data.data.permissions
-                };
-
-                setUser(userData);
-                setAccessToken(response.data.data.accessToken);
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                return { success: true };
-            }
-        } catch (error) {
-            if (error.response?.status === 404) toast.error("Email or Password Incorrect");
-            const errorMessage = error.response?.data?.message || error.message || 'Login failed.';
-            setError(errorMessage);
-            return { success: false, error: errorMessage };
-        } finally {
-            setLoading(false);
+        const publicPaths = ['/', '/patient-login', '/patient-signup'];
+        if (!publicPaths.includes(location.pathname)) {
+            navigate('/', { replace: true });
         }
-    };
-
-    const handleDentistLogin = async (email, password) => {
-        try {
-            setLoading(true);
-            setError('');
-            setSuccess('');
-
-            const response = await axios.post('/api/dentists/login', { email, password });
-
-            if (response.data.success) {
-                setSuccess('Login successful! Redirecting...');
-                toast.success('Login successful!');
-
-                const userData = {
-                    id: response.data.data.id,
-                    name: response.data.data.name,
-                    email: response.data.data.email,
-                    role: 'dentist',
-                    specialty: response.data.data.specialty,
-                    approvalStatus: response.data.data.approvalStatus
-                };
-
-                setUser(userData);
-                setAccessToken(response.data.data.accessToken);
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                setTimeout(() => navigate('/dentist-dashboard/home'), 1000);
-                return { success: true };
-            }
-        } catch (error) {
-            if (error.response?.status === 404) toast.error("Email or Password Incorrect");
-            const errorMessage = error.response?.data?.message || error.message || 'Login failed.';
-            setError(errorMessage);
-            return { success: false, error: errorMessage };
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [loading, user, location.pathname]);
 
     const handlePatientLogin = async (email, password) => {
         try {
@@ -273,7 +131,7 @@ const AuthProvider = ({ children }) => {
             setError('');
             setSuccess('');
 
-            const response = await axios.post('/api/users/login', { email, password });
+            const response = await axios.post('/api/users/login', { email, password }, { withCredentials: true });
 
             if (response.data.success) {
                 setSuccess('Login successful! Redirecting...');
@@ -287,10 +145,6 @@ const AuthProvider = ({ children }) => {
                 };
 
                 setUser(userData);
-                setAccessToken(response.data.data.accessToken);
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
 
                 setTimeout(() => navigate('/patient-dashboard/home'), 1000);
                 return { success: true };
@@ -306,7 +160,7 @@ const AuthProvider = ({ children }) => {
     };
 
     const isAuthenticated = () => {
-        return !!user && (!!accessToken || !!localStorage.getItem("accessToken"));
+        return !!user;
     };
 
     const hasRole = (requiredRole) => {
@@ -315,12 +169,7 @@ const AuthProvider = ({ children }) => {
 
     const handleLogout = async () => {
         try {
-            const role = user?.role;
-            let endpoint = '/api/users/logout';
-            if (role === 'admin') endpoint = '/api/admin/logout';
-            else if (role === 'dentist') endpoint = '/api/dentists/logout';
-
-            await axios.post(endpoint, {}, { withCredentials: true });
+            await axios.post('/api/users/logout', {}, { withCredentials: true });
             toast.success("Logged out successfully");
         } catch (error) {
             console.error('Logout API error:', error);
@@ -335,14 +184,11 @@ const AuthProvider = ({ children }) => {
     return (
         <AuthContext.Provider value={{
             user,
-            accessToken,
             loading,
             error,
             success,
             setError,
             setSuccess,
-            handleAdminLogin,
-            handleDentistLogin,
             handlePatientLogin,
             handleLogout,
             isAuthenticated,

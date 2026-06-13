@@ -11,7 +11,6 @@ import { useAuth } from "../../context/AuthContext";
 
 const SERVER = import.meta.env.VITE_SERVER_URL;
 
-// Detect the base path for navigation (patient vs dentist)
 const getBasePath = (role) =>
     role === "dentist" ? "/dentist-dashboard" : "/patient-dashboard";
 
@@ -40,6 +39,10 @@ const Chat = () => {
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     useEffect(() => {
         let mounted = true;
@@ -109,7 +112,6 @@ const Chat = () => {
             text: text.trim(), fileUrl: null, fileName: null, fileType: null,
         };
         setText("");
-        // Reset textarea height
         if (textareaRef.current) textareaRef.current.style.height = "44px";
         const optimistic = { ...payload, timestamp: new Date().toISOString() };
         setMessages(prev => [...prev, optimistic]);
@@ -167,14 +169,12 @@ const Chat = () => {
     };
 
     const handleKeyDown = (e) => {
-        // On mobile (touch devices) Enter should insert newline, not send
         if (e.key === "Enter" && !e.shiftKey && window.innerWidth >= 768) {
             e.preventDefault();
             sendMessage();
         }
     };
 
-    // Auto-grow textarea
     const handleTextChange = (e) => {
         setText(e.target.value);
         const ta = e.target;
@@ -185,7 +185,6 @@ const Chat = () => {
     const isImage = (type) => type?.startsWith("image/");
     const isPdf = (type) => type === "application/pdf" || type?.includes("pdf");
 
-    // Google Docs Viewer — works around Cloudinary CORS for PDFs
     const openPdf = (url) => {
         const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=false`;
         window.open(viewerUrl, "_blank", "noopener,noreferrer");
@@ -209,10 +208,8 @@ const Chat = () => {
     }
 
     return (
-        /* 100dvh accounts for mobile browser chrome (address bar) */
         <div className="flex flex-col bg-gray-50" style={{ height: "100dvh" }}>
 
-            {/* ── Header ── */}
             <div className="bg-white border-b border-gray-100 px-3 py-2.5 flex items-center justify-between shadow-sm flex-shrink-0">
                 <div className="flex items-center gap-2 min-w-0">
                     <button
@@ -255,14 +252,12 @@ const Chat = () => {
                 </div>
             </div>
 
-            {/* Ended banner */}
             {chatEnded && (
                 <div className="bg-red-50 border-b border-red-200 px-3 py-2 text-center text-xs text-red-600 flex-shrink-0">
                     Chat ended by <strong>{endedBy}</strong> — history is read-only
                 </div>
             )}
 
-            {/* ── Messages ── */}
             <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
                 {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 pb-10">
@@ -287,11 +282,10 @@ const Chat = () => {
                                 )}
 
                                 <div className={`max-w-[78%] sm:max-w-[65%] flex flex-col gap-0.5 ${isOwn ? "items-end" : "items-start"}`}>
-                                    <div className={`rounded-2xl px-3 py-2 ${
-                                        isOwn
-                                            ? "bg-gradient-to-br from-emerald-500 to-green-400 text-white rounded-br-sm"
-                                            : "bg-white text-gray-800 border border-gray-100 shadow-sm rounded-bl-sm"
-                                    }`}>
+                                    <div className={`rounded-2xl px-3 py-2 ${isOwn
+                                        ? "bg-gradient-to-br from-emerald-500 to-green-400 text-white rounded-br-sm"
+                                        : "bg-white text-gray-800 border border-gray-100 shadow-sm rounded-bl-sm"
+                                        }`}>
                                         {msg.fileUrl && (
                                             <>
                                                 {isImage(msg.fileType) ? (
@@ -347,7 +341,6 @@ const Chat = () => {
                 <div ref={bottomRef} />
             </div>
 
-            {/* ── Input ── */}
             {!chatEnded ? (
                 <div className="bg-white border-t border-gray-100 px-3 py-2.5 flex-shrink-0 safe-area-bottom">
                     <div className="flex items-end gap-2">
@@ -371,7 +364,6 @@ const Chat = () => {
                             onChange={e => { if (e.target.files[0]) sendFile(e.target.files[0]); e.target.value = ""; }}
                         />
 
-                        {/* Text input */}
                         <textarea
                             ref={textareaRef}
                             value={text}
@@ -383,7 +375,6 @@ const Chat = () => {
                             style={{ height: "44px", maxHeight: "120px" }}
                         />
 
-                        {/* Send */}
                         <button
                             onClick={sendMessage}
                             disabled={!text.trim() || sending}
@@ -396,7 +387,6 @@ const Chat = () => {
                         </button>
                     </div>
 
-                    {/* Mobile send hint */}
                     <p className="text-[10px] text-gray-300 text-center mt-1 md:hidden">
                         Tap the arrow to send
                     </p>
@@ -413,7 +403,6 @@ const Chat = () => {
                 </div>
             )}
 
-            {/* ── End Chat Confirm Modal ── */}
             {endConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">

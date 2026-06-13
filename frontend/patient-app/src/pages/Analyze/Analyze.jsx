@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Analyze = () => {
@@ -6,24 +6,25 @@ const Analyze = () => {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // Jab user file select kare
     const onFileChange = (e) => {
         setSelectedFile(e.target.files[0]);
-        setResult(null); // Purana result clear kar dein
+        setResult(null);
     };
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const onUpload = async () => {
         if (!selectedFile) return;
 
         setLoading(true);
         const formData = new FormData();
-        // Node.js backend isi 'file' key ka intezar karega
         formData.append('file', selectedFile);
 
         try {
-            // Node.js backend ka endpoint call karna
             const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/analysis/predict`, formData);
-            setResult(res.data); // Python AI se aya hua report
+            setResult(res.data);
         } catch (err) {
             console.error(err);
             alert("Error: AI server se rabta nahi ho saka!");
@@ -51,7 +52,6 @@ const Analyze = () => {
                 <div style={styles.resultsContainer}>
                     <h3>Scan Results: {result.total_found} Issues Detected</h3>
 
-                    {/* Annotated Image: Base64 string ko image mein convert karna */}
                     <div style={styles.imageWrapper}>
                         <img
                             src={`data:image/jpeg;base64,${result.image}`}
@@ -66,7 +66,7 @@ const Analyze = () => {
                             <div key={i} style={styles.reportCard}>
                                 <div style={styles.badge}>{d.stage.replace('_', ' ')}</div>
                                 <p><strong>Diagnosis:</strong> {d.explanation}</p>
-                                <p><strong>Confidence:</strong> {d.confidence}</p>
+                                {/* <p><strong>Confidence:</strong> {d.confidence}</p> */}
                             </div>
                         ))}
                     </div>
@@ -76,7 +76,6 @@ const Analyze = () => {
     );
 };
 
-// Simple Styles for Professional Look
 const styles = {
     container: { padding: '40px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial' },
     title: { textAlign: 'center', color: '#2c3e50' },

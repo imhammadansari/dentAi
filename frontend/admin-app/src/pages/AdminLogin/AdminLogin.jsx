@@ -66,7 +66,7 @@ const AdminLogin = () => {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden" style={{ border: '1px solid #f3e8ff' }}>
-                    <div className="px-6 py-2">
+                    <div className="px-6 py-6">
                         {error && (
                             <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
                                 <p className="text-sm font-medium text-center" style={{ color: '#dc2626' }}>
