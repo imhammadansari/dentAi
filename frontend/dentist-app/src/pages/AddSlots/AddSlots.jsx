@@ -12,6 +12,21 @@ const timeSlots = [
     '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'
 ];
 
+const getCurrentTime = () => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+};
+
+const isToday = (date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+};
+
+const isPastTime = (time, date) => {
+    if (!isToday(date)) return false;
+    return time <= getCurrentTime();
+};
+
 const AddSlots = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [newSlot, setNewSlot] = useState({ startTime: '09:00', endTime: '09:30' });
@@ -48,13 +63,20 @@ const AddSlots = () => {
     };
 
     const isStartTimeTaken = (time) => existingSlots.some(s => s.start === time);
-
     const isTimeOverlapping = (time) => existingSlots.some(s => time > s.start && time <= s.end);
 
-    const isStartDisabled = (time) => isStartTimeTaken(time);
+    const isStartDisabled = (time) => isStartTimeTaken(time) || isPastTime(time, selectedDate);
     const isEndDisabled = (time) => {
         if (time <= newSlot.startTime) return true;
+        if (isPastTime(time, selectedDate)) return true;
         return isTimeOverlapping(time);
+    };
+
+    // Disable past dates on calendar
+    const tileDisabled = ({ date }) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date < today;
     };
 
     const addSlot = async () => {
@@ -67,13 +89,17 @@ const AddSlots = () => {
             toast.error('This start time is already added for the selected date');
             return;
         }
+        if (isPastTime(newSlot.startTime, selectedDate)) {
+            toast.error('Cannot add a slot in the past');
+            return;
+        }
 
         setAdding(true);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_SERVER_URL}/api/slots/add-slot`,
                 {
-                    date: selectedDate.toISOString().split('T')[0],
+                    date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
                     start: newSlot.startTime,
                     end: newSlot.endTime,
                 },
@@ -104,13 +130,15 @@ const AddSlots = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6">
-                    {/* Calendar */}
                     <div className="flex flex-col gap-6">
                         <div className="calendar-wrapper">
-                            <Calendar onChange={setSelectedDate} value={selectedDate} />
+                            <Calendar
+                                onChange={setSelectedDate}
+                                value={selectedDate}
+                                tileDisabled={tileDisabled}
+                            />
                         </div>
 
-                        {/* Slots already added for this date */}
                         <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm lg:mt-16">
                             <h4 className="text-base font-bold text-black mb-3">
                                 Slots for{' '}
@@ -140,28 +168,29 @@ const AddSlots = () => {
                         </div>
                     </div>
 
-                    {/* Add Slot Form */}
                     <div className="space-y-6">
                         <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                             <h4 className="text-lg font-bold text-black mb-6">Add Time Slot</h4>
                             <div className="space-y-4">
-                                {/* Start Time */}
                                 <div>
                                     <label className="block text-sm font-medium text-black mb-2">Start Time</label>
                                     <div className="grid grid-cols-4 gap-2">
                                         {timeSlots.map((time) => {
                                             const taken = isStartDisabled(time);
+                                            const past = isPastTime(time, selectedDate);
                                             const selected = newSlot.startTime === time;
                                             return (
                                                 <button
                                                     key={time}
                                                     disabled={taken}
                                                     onClick={() => setNewSlot({ ...newSlot, startTime: time })}
-                                                    className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${taken
-                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
-                                                        : selected
-                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                    className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${past
+                                                            ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed line-through'
+                                                            : taken
+                                                                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
+                                                                : selected
+                                                                    ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                                    : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                                         }`}
                                                 >
                                                     {time}
@@ -169,14 +198,8 @@ const AddSlots = () => {
                                             );
                                         })}
                                     </div>
-                                    {isStartDisabled(newSlot.startTime) && (
-                                        <p className="text-red-500 text-xs mt-2">
-                                            This time is already added. Please select another.
-                                        </p>
-                                    )}
                                 </div>
 
-                                {/* End Time */}
                                 <div>
                                     <label className="block text-sm font-medium text-black mb-2">End Time</label>
                                     <div className="grid grid-cols-4 gap-2">
@@ -189,10 +212,10 @@ const AddSlots = () => {
                                                     disabled={disabled}
                                                     onClick={() => setNewSlot({ ...newSlot, endTime: time })}
                                                     className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${disabled
-                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                                        : selected
-                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                            : selected
+                                                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                                         }`}
                                                 >
                                                     {time}
@@ -202,7 +225,6 @@ const AddSlots = () => {
                                     </div>
                                 </div>
 
-                                {/* Preview */}
                                 {newSlot.startTime && newSlot.endTime && newSlot.endTime > newSlot.startTime && !isStartDisabled(newSlot.startTime) && (
                                     <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
                                         <ClockIcon className="w-4 h-4 text-emerald-500" />

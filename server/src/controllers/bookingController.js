@@ -22,7 +22,7 @@ const bookSlot = async (req, res) => {
             patientId,
             dentistId: slot.dentistId,
             slotId,
-            date: slot.date.toISOString().split("T")[0], // 👈 FIX HERE
+            date: slot.date,
             start: slot.start,
             end: slot.end
         });
@@ -219,9 +219,7 @@ const getTodaySchedule = async (req, res) => {
 
         // Filter slots whose date matches today
         const todaySlots = slots.filter(slot => {
-            const slotDate = slot.date instanceof Date
-                ? slot.date.toISOString().split("T")[0]
-                : new Date(slot.date).toISOString().split("T")[0];
+            const slotDate = slot.date;
             return slotDate === today;
         });
 
