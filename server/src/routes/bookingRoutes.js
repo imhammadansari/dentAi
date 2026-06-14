@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post("/book-slot", verifyToken('patient'), bookSlot);
 router.get("/dentist-slots/:dentistId", verifyToken('patient'), getSingleDentistSlots);
-router.get("/dentist-slot-bookings/:dentistId", verifyToken('dentist'), getDentistSlotBookings);
+router.get("/dentist-slot-bookings/:dentistId", verifyToken('patient'), getDentistSlotBookings);
 router.get("/dentist-patients", verifyToken('dentist'), getDentistPatients);
 router.put("/update-status/:bookingId", verifyToken('dentist'), updatePatientStatus);
 router.get("/patient-bookings/:patientId", verifyToken('dentist'), getSinglePatientBookings);
