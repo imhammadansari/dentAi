@@ -1,9 +1,5 @@
 const patientModel = require("../models/patientModel");
-<<<<<<< HEAD
-const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
-=======
 const { accessTokenCookieOptions, refreshTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
->>>>>>> final-fixes
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const bookingModel = require("../models/bookingModel");
@@ -63,30 +59,6 @@ const userLogin = async (req, res) => {
             user.refreshToken = refreshToken;
             await user.save();
 
-<<<<<<< HEAD
-                res.cookie("accessToken", accessToken, accessTokenCookieOptions);
-
-                let refreshToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.REFRESH_TOKEN, { expiresIn: "7days" });
-
-                user.refreshToken = refreshToken;
-                await user.save();
-                res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
-
-                res.status(200).json({
-                    success: true,
-                    message: "Loggedin successfully",
-                    data: {
-                        id: user._id,
-                        name: user.name,
-                        email: user.email,
-                        role: user.role,
-                        accessToken,
-                        refreshToken
-                    }
-                })
-            })
-        }
-=======
             res.cookie(COOKIE_NAMES.patient.access, accessToken, accessTokenCookieOptions);
             res.cookie(COOKIE_NAMES.patient.refresh, refreshToken, refreshTokenCookieOptions);
 
@@ -96,7 +68,6 @@ const userLogin = async (req, res) => {
                 data: { id: user._id, name: user.name, email: user.email, role: user.role }
             });
         });
->>>>>>> final-fixes
     } catch (error) {
         res.send(error.message);
     }
@@ -120,14 +91,7 @@ const refreshTokenGenerate = async (req, res) => {
                 { expiresIn: '10h' }
             );
 
-<<<<<<< HEAD
-            const newAccessToken = jwt.sign({ id: decoded.id, email: decoded.email, role: decoded.role }, process.env.JWT_TOKEN,
-                { expiresIn: '10h' });
-
-            res.cookie("accessToken", newAccessToken, accessTokenCookieOptions)
-=======
             res.cookie(COOKIE_NAMES.patient.access, newAccessToken, accessTokenCookieOptions);
->>>>>>> final-fixes
 
             res.status(200).json({
                 success: true,
@@ -186,19 +150,6 @@ const userLogout = async (req, res) => {
     try {
         const user = await patientModel.findOne({ refreshToken });
 
-<<<<<<< HEAD
-            res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure })
-        }
-
-        user.refreshToken = null;
-        await user.save();
-
-        res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' })
-
-        res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' })
-
-        res.status(200).send("User Loggedout")
-=======
         if (user) {
             user.refreshToken = null;
             await user.save();
@@ -206,7 +157,6 @@ const userLogout = async (req, res) => {
 
         res.clearCookie(COOKIE_NAMES.patient.access, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
         res.clearCookie(COOKIE_NAMES.patient.refresh, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
->>>>>>> final-fixes
 
         res.status(200).send("User Loggedout");
     } catch (error) {

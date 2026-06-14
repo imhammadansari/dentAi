@@ -1,9 +1,5 @@
 const adminModel = require("../models/adminModel");
-<<<<<<< HEAD
-const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
-=======
 const { accessTokenCookieOptions, refreshTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
->>>>>>> final-fixes
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
@@ -39,10 +35,6 @@ const adminRegister = async (req, res) => {
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
-<<<<<<< HEAD
-
-=======
->>>>>>> final-fixes
         const admin = await adminModel.create({ name, email, password: hash, role: "admin" });
 
         res.status(201).json({
@@ -63,21 +55,10 @@ const adminLogin = async (req, res) => {
         }
 
         const admin = await adminModel.findOne({ email });
-<<<<<<< HEAD
-        if (!admin) {
-            return res.status(404).json({ success: false, message: "Admin not found" });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, admin.password);
-        if (!isPasswordValid) {
-            return res.status(404).json({ success: false, message: "Invalid credentials" });
-        }
-=======
         if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
 
         const isPasswordValid = await bcrypt.compare(password, admin.password);
         if (!isPasswordValid) return res.status(404).json({ success: false, message: "Invalid credentials" });
->>>>>>> final-fixes
 
         const accessToken = jwt.sign(
             { email: admin.email, id: admin._id, role: admin.role, name: admin.name },
@@ -88,38 +69,19 @@ const adminLogin = async (req, res) => {
         const refreshToken = jwt.sign(
             { email: admin.email, id: admin._id, role: admin.role },
             process.env.REFRESH_TOKEN,
-<<<<<<< HEAD
-            { expiresIn: "7d" } // fixed: was "7days" which JWT doesn't recognise
-=======
             { expiresIn: "7d" }
->>>>>>> final-fixes
         );
 
         admin.refreshToken = refreshToken;
         await admin.save();
 
-<<<<<<< HEAD
-        res.cookie("accessToken", accessToken, accessTokenCookieOptions);
-        res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
-=======
         res.cookie(COOKIE_NAMES.admin.access, accessToken, accessTokenCookieOptions);
         res.cookie(COOKIE_NAMES.admin.refresh, refreshToken, refreshTokenCookieOptions);
->>>>>>> final-fixes
 
         res.status(200).json({
             success: true,
             message: "Login successful",
-<<<<<<< HEAD
-            data: {
-                id: admin._id,
-                name: admin.name,
-                email: admin.email,
-                role: admin.role,
-                permissions: admin.permissions
-            }
-=======
             data: { id: admin._id, name: admin.name, email: admin.email, role: admin.role, permissions: admin.permissions }
->>>>>>> final-fixes
         });
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -130,13 +92,7 @@ const getAdmin = async (req, res) => {
     try {
         const userId = req.user.id;
         const admin = await adminModel.findById(userId).select('-password');
-<<<<<<< HEAD
-        if (!admin) {
-            return res.status(404).json({ success: false, message: 'Admin not found' });
-        }
-=======
         if (!admin) return res.status(404).json({ success: false, message: 'Admin not found' });
->>>>>>> final-fixes
 
         res.json({
             success: true,
@@ -150,13 +106,7 @@ const getAdmin = async (req, res) => {
 const adminLogout = async (req, res) => {
     const refreshToken = req.cookies[COOKIE_NAMES.admin.refresh];
 
-<<<<<<< HEAD
-    if (!refreshToken) {
-        return res.status(401).json({ success: false, message: "No refresh token found" });
-    }
-=======
     if (!refreshToken) return res.status(401).json({ success: false, message: "No refresh token found" });
->>>>>>> final-fixes
 
     try {
         const admin = await adminModel.findOne({ refreshToken });
@@ -165,13 +115,8 @@ const adminLogout = async (req, res) => {
             await admin.save();
         }
 
-<<<<<<< HEAD
-        res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
-        res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
-=======
         res.clearCookie(COOKIE_NAMES.admin.access, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
         res.clearCookie(COOKIE_NAMES.admin.refresh, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
->>>>>>> final-fixes
 
         res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
@@ -194,17 +139,8 @@ const updateAdmin = async (req, res) => {
         const updateData = req.body;
         if (updateData.password) delete updateData.password;
 
-<<<<<<< HEAD
-        if (updateData.password) delete updateData.password;
-
-        const admin = await adminModel.findByIdAndUpdate(adminId, updateData, { new: true }).select('-password');
-        if (!admin) {
-            return res.status(404).json({ success: false, message: "Admin not found" });
-        }
-=======
         const admin = await adminModel.findByIdAndUpdate(adminId, updateData, { new: true }).select('-password');
         if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
->>>>>>> final-fixes
 
         res.status(200).json({ success: true, message: "Admin updated successfully", data: admin });
     } catch (error) {
@@ -215,22 +151,12 @@ const updateAdmin = async (req, res) => {
 const deleteAdmin = async (req, res) => {
     try {
         const { adminId } = req.params;
-<<<<<<< HEAD
-
-=======
->>>>>>> final-fixes
         if (req.user.id === adminId) {
             return res.status(400).json({ success: false, message: "Cannot delete your own account" });
         }
 
         const admin = await adminModel.findByIdAndDelete(adminId);
-<<<<<<< HEAD
-        if (!admin) {
-            return res.status(404).json({ success: false, message: "Admin not found" });
-        }
-=======
         if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
->>>>>>> final-fixes
 
         res.status(200).json({ success: true, message: "Admin deleted successfully" });
     } catch (error) {
@@ -250,11 +176,7 @@ const getAdminStats = async (req, res) => {
             dentistModel.countDocuments({ approvalStatus: 'Approved' }),
             bookingModel.find(),
             dentistModel.countDocuments({ approvalStatus: 'Pending' }),
-<<<<<<< HEAD
-            reportModel.countDocuments() // real report count
-=======
             reportModel.countDocuments()
->>>>>>> final-fixes
         ]);
 
         const totalAppointments = allBookings.filter(b => ['Booked', 'Completed'].includes(b.status)).length;
@@ -263,19 +185,7 @@ const getAdminStats = async (req, res) => {
 
         res.status(200).json({
             success: true,
-<<<<<<< HEAD
-            data: {
-                totalPatients,
-                totalDentists,
-                totalAppointments,
-                upcomingCount,
-                completedCount,
-                pendingDentists,
-                totalReports // real value now
-            }
-=======
             data: { totalPatients, totalDentists, totalAppointments, upcomingCount, completedCount, pendingDentists, totalReports }
->>>>>>> final-fixes
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

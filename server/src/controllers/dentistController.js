@@ -1,9 +1,5 @@
 const dentistModel = require("../models/dentistModel");
-<<<<<<< HEAD
-const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
-=======
 const { accessTokenCookieOptions, refreshTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
->>>>>>> final-fixes
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
@@ -94,14 +90,8 @@ const dentistLogin = async (req, res) => {
             dentist.refreshToken = refreshToken;
             await dentist.save();
 
-<<<<<<< HEAD
-            res.cookie("accessToken", accessToken, accessTokenCookieOptions);
-
-            res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
-=======
             res.cookie(COOKIE_NAMES.dentist.access, accessToken, accessTokenCookieOptions);
             res.cookie(COOKIE_NAMES.dentist.refresh, refreshToken, refreshTokenCookieOptions);
->>>>>>> final-fixes
 
             res.status(200).json({
                 success: true,
@@ -150,19 +140,8 @@ const dentistLogout = async (req, res) => {
             }
         }
 
-<<<<<<< HEAD
-        res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
-
-        res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
-
-        res.status(200).json({
-            success: true,
-            message: "Logged out successfully"
-        });
-=======
         res.clearCookie(COOKIE_NAMES.dentist.access, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
         res.clearCookie(COOKIE_NAMES.dentist.refresh, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
->>>>>>> final-fixes
 
         res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (err) {
