@@ -1,92 +1,12 @@
 const jwt = require('jsonwebtoken');
-<<<<<<< HEAD
-const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
-=======
 const { accessTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
->>>>>>> final-fixes
 const patientModel = require('../models/patientModel');
 const dentistModel = require('../models/dentistModel');
 const adminModel = require('../models/adminModel');
 
-<<<<<<< HEAD
-// Attempts to issue a new accessToken using the refreshToken.
-// On success: sets the accessToken cookie, sets req.user, and calls next().
-// On failure: sends the appropriate 401/403 response.
-const tryRefresh = async (req, res, next) => {
-    // Accept refresh token from cookie OR Authorization-Refresh header OR query param
-    let refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-        const refreshHeader = req.headers['x-refresh-token'];
-        if (refreshHeader) refreshToken = refreshHeader;
-    }
-    if (!refreshToken) {
-        refreshToken = req.query.refreshToken ? decodeURIComponent(req.query.refreshToken) : null;
-    }
-
-    if (!refreshToken) {
-        return res.status(401).json({
-            success: false,
-            message: 'Access token missing/expired and no refresh token available'
-        });
-    }
-
-    try {
-        const refreshDecoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
-        console.log('Refresh token decoded:', refreshDecoded);
-
-        // Validate refresh token exists in DB for the correct role
-        const role = refreshDecoded.role?.toLowerCase();
-        let dbUser = null;
-
-        if (role === 'patient') {
-            dbUser = await patientModel.findOne({ refreshToken });
-        } else if (role === 'dentist') {
-            dbUser = await dentistModel.findOne({ refreshToken });
-        } else if (role === 'admin') {
-            dbUser = await adminModel.findOne({ refreshToken });
-        }
-
-        if (!dbUser) {
-            return res.status(403).json({
-                success: false,
-                message: 'Refresh token revoked or not found'
-            });
-        }
-
-        const newAccessToken = jwt.sign(
-            {
-                id: refreshDecoded.id,
-                email: refreshDecoded.email,
-                role: refreshDecoded.role
-            },
-            process.env.JWT_TOKEN,
-            { expiresIn: '10h' }
-        );
-
-        // Set new access token as cookie
-        res.cookie("accessToken", newAccessToken, accessTokenCookieOptions);
-
-        // Also send it in response header so localStorage-based clients can pick it up
-        res.setHeader('X-New-Access-Token', newAccessToken);
-
-        req.user = refreshDecoded;
-        console.log('New user from refresh token:', req.user);
-        next();
-    } catch (refreshError) {
-        console.error('Refresh token error:', refreshError.message);
-        return res.status(403).json({
-            success: false,
-            message: 'Refresh token invalid or expired'
-        });
-    }
-};
-
-const verifyToken = async (req, res, next) => {
-=======
 const tryRefresh = async (req, res, next, expectedRole) => {
     const role = expectedRole;
     const names = COOKIE_NAMES[role];
->>>>>>> final-fixes
 
     let refreshToken = names ? req.cookies[names.refresh] : null;
 
@@ -96,7 +16,6 @@ const tryRefresh = async (req, res, next, expectedRole) => {
         if (refreshHeader) refreshToken = refreshHeader;
     }
 
-<<<<<<< HEAD
     if (!accessToken) {
         accessToken = req.query.token ? decodeURIComponent(req.query.token) : null;
     }
@@ -106,13 +25,6 @@ const tryRefresh = async (req, res, next, expectedRole) => {
     if (!accessToken) {
         console.log('No access token, checking for refresh token');
         return tryRefresh(req, res, next);
-=======
-    if (!refreshToken) {
-        return res.status(401).json({
-            success: false,
-            message: 'Access token missing/expired and no refresh token available'
-        });
->>>>>>> final-fixes
     }
 
     try {
@@ -139,24 +51,6 @@ const tryRefresh = async (req, res, next, expectedRole) => {
 
         req.user = refreshDecoded;
         next();
-<<<<<<< HEAD
-    } catch (error) {
-        console.error('Token verification error:', error.message);
-
-        if (error.name === 'TokenExpiredError') {
-            console.log('Access token expired, checking for refresh token');
-            return tryRefresh(req, res, next);
-        } else {
-            return res.status(403).json({
-                success: false,
-                message: 'Invalid access token'
-            });
-        }
-    }
-};
-
-module.exports = { verifyToken };
-=======
     } catch (refreshError) {
         console.error('Refresh token error:', refreshError.message);
         return res.status(403).json({ success: false, message: 'Refresh token invalid or expired' });
@@ -223,4 +117,3 @@ const verifyAnyToken = async (req, res, next) => {
 };
 
 module.exports = { verifyToken, verifyAnyToken };
->>>>>>> final-fixes
