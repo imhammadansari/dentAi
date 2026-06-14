@@ -14,14 +14,12 @@ const AdminAllPatients = () => {
     const [search, setSearch] = useState('');
     const [deletingId, setDeletingId] = useState(null);
 
-    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
-
     const fetchData = async () => {
         setLoading(true);
         try {
             const res = await axios.get(
                 `${import.meta.env.VITE_SERVER_URL}/api/users/admin/all`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
             setPatients(res.data.data);
             setStats(res.data.stats);
@@ -41,7 +39,7 @@ const AdminAllPatients = () => {
         try {
             await axios.delete(
                 `${import.meta.env.VITE_SERVER_URL}/api/users/admin/${id}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
             toast.success('Patient deleted successfully');
             setPatients(prev => prev.filter(p => p.id !== id));

@@ -13,14 +13,12 @@ const AdminDentist = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [deletingId, setDeletingId] = useState(null);
 
-    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
-
     const fetchDentists = async () => {
         setLoading(true);
         try {
             const res = await axios.get(
                 `${import.meta.env.VITE_SERVER_URL}/api/dentists/admin/all`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
             setDentists(res.data.data || []);
         } catch (err) {
@@ -39,7 +37,7 @@ const AdminDentist = () => {
         try {
             await axios.delete(
                 `${import.meta.env.VITE_SERVER_URL}/api/dentists/admin/${id}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
             toast.success('Dentist deleted');
             setDentists(prev => prev.filter(d => d._id !== id));
