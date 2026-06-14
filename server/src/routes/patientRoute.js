@@ -7,14 +7,14 @@ const router = express.Router();
 
 router.post('/register', patientRegister);
 router.post('/login', userLogin);
-router.post('/logout', userLogout);
+router.post('/logout', verifyToken('patient'), userLogout);
 router.post('/refresh-token', refreshTokenGenerate);
-router.get("/my-consultations", verifyToken, getPatientConsultations);
-router.put("/update-profile", verifyToken, updatePatientProfile);
-router.get('/verify', verifyToken, getPatient);
-router.get('/test', verifyToken, testRoute);
-router.get('/admin/all', verifyToken, isAdmin, getAllPatientsAdmin);
-router.delete('/admin/:id', verifyToken, isAdmin, deletePatient);
+router.get("/my-consultations", verifyToken('patient'), getPatientConsultations);
+router.put("/update-profile", verifyToken('patient'), updatePatientProfile);
+router.get('/verify', verifyToken('patient'), getPatient);
+router.get('/test', verifyToken('patient'), testRoute);
+router.get('/admin/all', verifyToken('admin'), isAdmin, getAllPatientsAdmin);
+router.delete('/admin/:id', verifyToken('admin'), isAdmin, deletePatient);
 router.get("/:id", getPatientById);
 
 module.exports = router;

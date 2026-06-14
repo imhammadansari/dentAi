@@ -1,5 +1,5 @@
 const adminModel = require("../models/adminModel");
-const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
+const { accessTokenCookieOptions, refreshTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
@@ -24,7 +24,6 @@ const createFirstAdmin = async () => {
 const adminRegister = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-
         if (!name || !email || !password) {
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
@@ -36,7 +35,6 @@ const adminRegister = async (req, res) => {
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
-
         const admin = await adminModel.create({ name, email, password: hash, role: "admin" });
 
         res.status(201).json({
@@ -52,20 +50,15 @@ const adminRegister = async (req, res) => {
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-
         if (!email || !password) {
             return res.status(400).json({ success: false, message: "Email and password are required" });
         }
 
         const admin = await adminModel.findOne({ email });
-        if (!admin) {
-            return res.status(404).json({ success: false, message: "Admin not found" });
-        }
+        if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
 
         const isPasswordValid = await bcrypt.compare(password, admin.password);
-        if (!isPasswordValid) {
-            return res.status(404).json({ success: false, message: "Invalid credentials" });
-        }
+        if (!isPasswordValid) return res.status(404).json({ success: false, message: "Invalid credentials" });
 
         const accessToken = jwt.sign(
             { email: admin.email, id: admin._id, role: admin.role, name: admin.name },
@@ -76,25 +69,19 @@ const adminLogin = async (req, res) => {
         const refreshToken = jwt.sign(
             { email: admin.email, id: admin._id, role: admin.role },
             process.env.REFRESH_TOKEN,
-            { expiresIn: "7d" } // fixed: was "7days" which JWT doesn't recognise
+            { expiresIn: "7d" }
         );
 
         admin.refreshToken = refreshToken;
         await admin.save();
 
-        res.cookie("accessToken", accessToken, accessTokenCookieOptions);
-        res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+        res.cookie(COOKIE_NAMES.admin.access, accessToken, accessTokenCookieOptions);
+        res.cookie(COOKIE_NAMES.admin.refresh, refreshToken, refreshTokenCookieOptions);
 
         res.status(200).json({
             success: true,
             message: "Login successful",
-            data: {
-                id: admin._id,
-                name: admin.name,
-                email: admin.email,
-                role: admin.role,
-                permissions: admin.permissions
-            }
+            data: { id: admin._id, name: admin.name, email: admin.email, role: admin.role, permissions: admin.permissions }
         });
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -104,21 +91,12 @@ const adminLogin = async (req, res) => {
 const getAdmin = async (req, res) => {
     try {
         const userId = req.user.id;
-
         const admin = await adminModel.findById(userId).select('-password');
-        if (!admin) {
-            return res.status(404).json({ success: false, message: 'Admin not found' });
-        }
+        if (!admin) return res.status(404).json({ success: false, message: 'Admin not found' });
 
         res.json({
             success: true,
-            user: {
-                id: admin._id,
-                name: admin.name,
-                email: admin.email,
-                role: admin.role,
-                permissions: admin.permissions
-            }
+            user: { id: admin._id, name: admin.name, email: admin.email, role: admin.role, permissions: admin.permissions }
         });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -126,11 +104,9 @@ const getAdmin = async (req, res) => {
 };
 
 const adminLogout = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies[COOKIE_NAMES.admin.refresh];
 
-    if (!refreshToken) {
-        return res.status(401).json({ success: false, message: "No refresh token found" });
-    }
+    if (!refreshToken) return res.status(401).json({ success: false, message: "No refresh token found" });
 
     try {
         const admin = await adminModel.findOne({ refreshToken });
@@ -139,8 +115,8 @@ const adminLogout = async (req, res) => {
             await admin.save();
         }
 
-        res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
-        res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
+        res.clearCookie(COOKIE_NAMES.admin.access, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
+        res.clearCookie(COOKIE_NAMES.admin.refresh, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
 
         res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
@@ -161,13 +137,10 @@ const updateAdmin = async (req, res) => {
     try {
         const { adminId } = req.params;
         const updateData = req.body;
-
         if (updateData.password) delete updateData.password;
 
         const admin = await adminModel.findByIdAndUpdate(adminId, updateData, { new: true }).select('-password');
-        if (!admin) {
-            return res.status(404).json({ success: false, message: "Admin not found" });
-        }
+        if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
 
         res.status(200).json({ success: true, message: "Admin updated successfully", data: admin });
     } catch (error) {
@@ -178,15 +151,12 @@ const updateAdmin = async (req, res) => {
 const deleteAdmin = async (req, res) => {
     try {
         const { adminId } = req.params;
-
         if (req.user.id === adminId) {
             return res.status(400).json({ success: false, message: "Cannot delete your own account" });
         }
 
         const admin = await adminModel.findByIdAndDelete(adminId);
-        if (!admin) {
-            return res.status(404).json({ success: false, message: "Admin not found" });
-        }
+        if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
 
         res.status(200).json({ success: true, message: "Admin deleted successfully" });
     } catch (error) {
@@ -206,7 +176,7 @@ const getAdminStats = async (req, res) => {
             dentistModel.countDocuments({ approvalStatus: 'Approved' }),
             bookingModel.find(),
             dentistModel.countDocuments({ approvalStatus: 'Pending' }),
-            reportModel.countDocuments() // real report count
+            reportModel.countDocuments()
         ]);
 
         const totalAppointments = allBookings.filter(b => ['Booked', 'Completed'].includes(b.status)).length;
@@ -215,15 +185,7 @@ const getAdminStats = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: {
-                totalPatients,
-                totalDentists,
-                totalAppointments,
-                upcomingCount,
-                completedCount,
-                pendingDentists,
-                totalReports // real value now
-            }
+            data: { totalPatients, totalDentists, totalAppointments, upcomingCount, completedCount, pendingDentists, totalReports }
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
