@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config({ path: require('path').join(__dirname, '.env') });
 console.log("ABLY KEY:", process.env.ABLY_API_KEY);
 const express = require('express');
 const path = require('path');
