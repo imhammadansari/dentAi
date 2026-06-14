@@ -1,5 +1,9 @@
 const patientModel = require("../models/patientModel");
+<<<<<<< HEAD
 const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
+=======
+const { accessTokenCookieOptions, refreshTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
+>>>>>>> final-fixes
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const bookingModel = require("../models/bookingModel");
@@ -13,62 +17,53 @@ const patientRegister = async (req, res) => {
         }
 
         let user = await patientModel.findOne({ email });
-
         if (user) return res.status(201).send("Patient already exist");
 
         bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, async (err, hash) => {
-
                 if (err) return res.send(err.message);
-
-                else {
-                    let user = await patientModel.create({
-                        name, email, password: hash
-                    })
-
-                    res.status(200).json({
-                        success: true,
-                        message: "Patient Registered Successfully",
-                        data: {
-                            id: user._id,
-                            name: user.name,
-                            email: user.email,
-                            role: user.role
-                        }
-                    })
-                }
-
-            })
-        })
+                let user = await patientModel.create({ name, email, password: hash });
+                res.status(200).json({
+                    success: true,
+                    message: "Patient Registered Successfully",
+                    data: { id: user._id, name: user.name, email: user.email, role: user.role }
+                });
+            });
+        });
     } catch (error) {
         res.send(error.message);
-        console.log(error.meesage)
-
     }
-}
+};
 
 const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.send("All fields are required");
-        }
+        if (!email || !password) return res.send("All fields are required");
 
         let user = await patientModel.findOne({ email });
-
         if (!user) return res.status(401).send("User does not exist");
 
-        else {
-            bcrypt.compare(password, user.password, async (err, result) => {
-                if (err) return res.send("Something went wrong, Check your password");
+        bcrypt.compare(password, user.password, async (err, result) => {
+            if (err) return res.send("Something went wrong, Check your password");
+            if (!result) return res.status(404).send("Invalid Credentials");
 
-                if (!result) return res.status(404).send("Invalid Credentials");
+            let accessToken = jwt.sign(
+                { email: user.email, id: user._id, role: user.role },
+                process.env.JWT_TOKEN,
+                { expiresIn: "10h" }
+            );
 
+            let refreshToken = jwt.sign(
+                { email: user.email, id: user._id, role: user.role },
+                process.env.REFRESH_TOKEN,
+                { expiresIn: "7d" }
+            );
 
-                let accessToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.JWT_TOKEN,
-                    { expiresIn: "10h" });
+            user.refreshToken = refreshToken;
+            await user.save();
 
+<<<<<<< HEAD
                 res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
                 let refreshToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.REFRESH_TOKEN, { expiresIn: "7days" });
@@ -91,115 +86,107 @@ const userLogin = async (req, res) => {
                 })
             })
         }
-    } catch (error) {
-        res.send(error.message)
+=======
+            res.cookie(COOKIE_NAMES.patient.access, accessToken, accessTokenCookieOptions);
+            res.cookie(COOKIE_NAMES.patient.refresh, refreshToken, refreshTokenCookieOptions);
 
+            res.status(200).json({
+                success: true,
+                message: "Loggedin successfully",
+                data: { id: user._id, name: user.name, email: user.email, role: user.role }
+            });
+        });
+>>>>>>> final-fixes
+    } catch (error) {
+        res.send(error.message);
     }
-}
+};
 
 const refreshTokenGenerate = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies[COOKIE_NAMES.patient.refresh];
 
     if (!refreshToken) return res.status(401).send("Refresh Token Missing");
 
     try {
-
         const user = await patientModel.findOne({ refreshToken });
-
         if (!user) return res.status(404).send("Invalid refreshtoken");
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decoded) => {
             if (err) return res.status(403).send("Invalid Refreshtoken");
 
+            const newAccessToken = jwt.sign(
+                { id: decoded.id, email: decoded.email, role: decoded.role },
+                process.env.JWT_TOKEN,
+                { expiresIn: '10h' }
+            );
 
+<<<<<<< HEAD
             const newAccessToken = jwt.sign({ id: decoded.id, email: decoded.email, role: decoded.role }, process.env.JWT_TOKEN,
                 { expiresIn: '10h' });
 
             res.cookie("accessToken", newAccessToken, accessTokenCookieOptions)
+=======
+            res.cookie(COOKIE_NAMES.patient.access, newAccessToken, accessTokenCookieOptions);
+>>>>>>> final-fixes
 
             res.status(200).json({
                 success: true,
                 message: "new access token generated",
                 accessToken: newAccessToken
-            })
+            });
         });
-
     } catch (error) {
-        console.log(error.message)
-        res.status(500).json({
-            message: "Server error",
-            error: error.message,
-        });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
-}
+};
 
 const getPatient = async (req, res) => {
     try {
         const userId = req.user.id;
-
         const user = await patientModel.findById(userId).select('-password');
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
         res.json({
             success: true,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
+            user: { id: user._id, name: user.name, email: user.email, role: user.role }
         });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
-}
+};
 
 const getPatientById = async (req, res) => {
     try {
         const { id } = req.params;
-
         const patient = await patientModel.findById(id);
 
-        if (!patient) {
-            return res.status(404).json({
-                success: false,
-                message: "Patient not found"
-            });
-        }
+        if (!patient) return res.status(404).json({ success: false, message: "Patient not found" });
 
         const bookings = await bookingModel.find({ patientId: id });
 
         res.status(200).json({
             success: true,
-            data: {
-                ...patient.toObject(),
-                bookings
-            }
+            data: { ...patient.toObject(), bookings }
         });
-
     } catch (error) {
-        console.log(error.message);
         res.status(500).send(error.message);
     }
 };
 
 const testRoute = async (req, res) => {
     res.status(200).json({ message: 'Test route working' });
-}
+};
 
 const userLogout = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies[COOKIE_NAMES.patient.refresh];
 
     if (!refreshToken) return res.status(401).send("No User found");
 
     try {
         const user = await patientModel.findOne({ refreshToken });
-        if (!user) {
 
+<<<<<<< HEAD
             res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure })
         }
 
@@ -211,32 +198,30 @@ const userLogout = async (req, res) => {
         res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' })
 
         res.status(200).send("User Loggedout")
+=======
+        if (user) {
+            user.refreshToken = null;
+            await user.save();
+        }
 
+        res.clearCookie(COOKIE_NAMES.patient.access, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
+        res.clearCookie(COOKIE_NAMES.patient.refresh, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
+>>>>>>> final-fixes
+
+        res.status(200).send("User Loggedout");
     } catch (error) {
-        console.log(error.message)
-        res.status(500).json({
-            message: "Server error",
-            error: error.message,
-        });
-
+        res.status(500).json({ message: "Server error", error: error.message });
     }
-
-
-}
+};
 
 const getAllPatientsAdmin = async (req, res) => {
     try {
         const patients = await patientModel.find().select('-password -refreshToken');
-
-        // Get all bookings for stats
         const allBookings = await bookingModel.find();
 
-        const totalAppointments = allBookings.filter(
-            b => ['Booked', 'Completed'].includes(b.status)
-        ).length;
+        const totalAppointments = allBookings.filter(b => ['Booked', 'Completed'].includes(b.status)).length;
         const upcomingCount = allBookings.filter(b => b.status === 'Booked').length;
 
-        // Build per-patient visit counts
         const visitMap = {};
         allBookings.forEach(b => {
             const pid = b.patientId?.toString();
@@ -257,12 +242,7 @@ const getAllPatientsAdmin = async (req, res) => {
         res.status(200).json({
             success: true,
             data: patientsData,
-            stats: {
-                totalPatients: patients.length,
-                totalAppointments,
-                upcomingCount,
-                totalReports: 0 // future
-            }
+            stats: { totalPatients: patients.length, totalAppointments, upcomingCount, totalReports: 0 }
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -274,7 +254,6 @@ const deletePatient = async (req, res) => {
         const { id } = req.params;
         const patient = await patientModel.findByIdAndDelete(id);
         if (!patient) return res.status(404).json({ message: 'Patient not found' });
-        // Also delete their bookings
         await bookingModel.deleteMany({ patientId: id });
         res.status(200).json({ success: true, message: 'Patient deleted successfully' });
     } catch (error) {
@@ -300,4 +279,8 @@ const updatePatientProfile = async (req, res) => {
     }
 };
 
-module.exports = { patientRegister, userLogin, refreshTokenGenerate, getPatient, testRoute, userLogout, getPatientById, getAllPatientsAdmin, deletePatient, updatePatientProfile };
+module.exports = {
+    patientRegister, userLogin, refreshTokenGenerate, getPatient,
+    testRoute, userLogout, getPatientById, getAllPatientsAdmin,
+    deletePatient, updatePatientProfile
+};

@@ -10,12 +10,12 @@ const router = express.Router();
 
 router.get('/seed', createFirstAdmin);
 router.post('/login', adminLogin);
-router.get('/stats', verifyToken, isAdmin, getAdminStats);
-router.post('/register', verifyToken, isAdmin, adminRegister);
-router.get('/verify', verifyToken, getAdmin);
-router.post('/logout', verifyToken, adminLogout);
-router.get('/all', verifyToken, isAdmin, getAllAdmins);
-router.put('/:adminId', verifyToken, isAdmin, updateAdmin);
-router.delete('/:adminId', verifyToken, isAdmin, deleteAdmin);
+router.get('/stats', verifyToken('admin'), isAdmin, getAdminStats);
+router.post('/register', verifyToken('admin'), isAdmin, adminRegister);
+router.get('/verify', verifyToken('admin'), getAdmin);
+router.post('/logout', verifyToken('admin'), adminLogout);
+router.get('/all', verifyToken('admin'), isAdmin, getAllAdmins);
+router.put('/:adminId', verifyToken('admin'), isAdmin, updateAdmin);
+router.delete('/:adminId', verifyToken('admin'), isAdmin, deleteAdmin);
 
 module.exports = router;

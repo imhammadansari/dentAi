@@ -1,5 +1,9 @@
 const dentistModel = require("../models/dentistModel");
+<<<<<<< HEAD
 const { accessTokenCookieOptions, refreshTokenCookieOptions } = require('../utils/cookieOptions');
+=======
+const { accessTokenCookieOptions, refreshTokenCookieOptions, COOKIE_NAMES } = require('../utils/cookieOptions');
+>>>>>>> final-fixes
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
@@ -8,44 +12,23 @@ const dentistRegister = async (req, res) => {
         const { name, email, password, specialty, licenseNumber, phone } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: "Name, email, and password are required"
-            });
+            return res.status(400).json({ success: false, message: "Name, email, and password are required" });
         }
 
         let existingDentist = await dentistModel.findOne({ email });
-
         if (existingDentist) {
-            return res.status(400).json({
-                success: false,
-                message: "Dentist with this email already exists"
-            });
+            return res.status(400).json({ success: false, message: "Dentist with this email already exists" });
         }
 
         bcrypt.genSalt(10, (err, salt) => {
-            if (err) {
-                return res.status(500).json({
-                    success: false,
-                    message: "Error generating salt",
-                    error: err.message
-                });
-            }
+            if (err) return res.status(500).json({ success: false, message: "Error generating salt", error: err.message });
 
             bcrypt.hash(password, salt, async (err, hash) => {
-                if (err) {
-                    return res.status(500).json({
-                        success: false,
-                        message: "Error hashing password",
-                        error: err.message
-                    });
-                }
+                if (err) return res.status(500).json({ success: false, message: "Error hashing password", error: err.message });
 
                 try {
                     const dentist = await dentistModel.create({
-                        name,
-                        email,
-                        password: hash,
+                        name, email, password: hash,
                         specialty: specialty || "General Dentistry",
                         licenseNumber: licenseNumber || "",
                         phone: phone || "",
@@ -57,30 +40,17 @@ const dentistRegister = async (req, res) => {
                         success: true,
                         message: "Dentist registration submitted for approval",
                         data: {
-                            id: dentist._id,
-                            name: dentist.name,
-                            email: dentist.email,
-                            specialty: dentist.specialty,
-                            approvalStatus: dentist.approvalStatus,
-                            role: dentist.role
+                            id: dentist._id, name: dentist.name, email: dentist.email,
+                            specialty: dentist.specialty, approvalStatus: dentist.approvalStatus, role: dentist.role
                         }
                     });
                 } catch (error) {
-                    res.status(500).json({
-                        success: false,
-                        message: "Error creating dentist",
-                        error: error.message
-                    });
+                    res.status(500).json({ success: false, message: "Error creating dentist", error: error.message });
                 }
             });
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
-        console.log(error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 
@@ -89,19 +59,12 @@ const dentistLogin = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: "Email and password are required"
-            });
+            return res.status(400).json({ success: false, message: "Email and password are required" });
         }
 
         const dentist = await dentistModel.findOne({ email });
-
         if (!dentist) {
-            return res.status(404).json({
-                success: false,
-                message: "Dentist not found"
-            });
+            return res.status(404).json({ success: false, message: "Dentist not found" });
         }
 
         if (dentist.approvalStatus !== "Approved") {
@@ -113,110 +76,70 @@ const dentistLogin = async (req, res) => {
         }
 
         bcrypt.compare(password, dentist.password, async (err, result) => {
-            if (err) {
-                return res.status(500).json({
-                    success: false,
-                    message: "Error comparing password"
-                });
-            }
-
-            if (!result) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Invalid credentials"
-                });
-            }
+            if (err) return res.status(500).json({ success: false, message: "Error comparing password" });
+            if (!result) return res.status(404).json({ success: false, message: "Invalid credentials" });
 
             const accessToken = jwt.sign(
-                {
-                    email: dentist.email,
-                    id: dentist._id,
-                    role: dentist.role,
-                    name: dentist.name
-                },
+                { email: dentist.email, id: dentist._id, role: dentist.role, name: dentist.name },
                 process.env.JWT_TOKEN,
                 { expiresIn: "10h" }
             );
 
             const refreshToken = jwt.sign(
-                {
-                    email: dentist.email,
-                    id: dentist._id,
-                    role: dentist.role
-                },
+                { email: dentist.email, id: dentist._id, role: dentist.role },
                 process.env.REFRESH_TOKEN,
-                { expiresIn: "7days" }
+                { expiresIn: "7d" }
             );
 
             dentist.refreshToken = refreshToken;
             await dentist.save();
 
+<<<<<<< HEAD
             res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
             res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+=======
+            res.cookie(COOKIE_NAMES.dentist.access, accessToken, accessTokenCookieOptions);
+            res.cookie(COOKIE_NAMES.dentist.refresh, refreshToken, refreshTokenCookieOptions);
+>>>>>>> final-fixes
 
             res.status(200).json({
                 success: true,
                 message: "Login successful",
                 data: {
-                    id: dentist._id,
-                    name: dentist.name,
-                    email: dentist.email,
-                    specialty: dentist.specialty,
-                    role: dentist.role,
-                    approvalStatus: dentist.approvalStatus,
-                    accessToken,
-                    refreshToken
+                    id: dentist._id, name: dentist.name, email: dentist.email,
+                    specialty: dentist.specialty, role: dentist.role, approvalStatus: dentist.approvalStatus
                 }
             });
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
-        console.log(error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 
 const getDentist = async (req, res) => {
     try {
         const userId = req.user.id;
-
         const dentist = await dentistModel.findById(userId).select('-password');
 
-        if (!dentist) {
-            return res.status(404).json({
-                success: false,
-                message: 'Dentist not found'
-            });
-        }
+        if (!dentist) return res.status(404).json({ success: false, message: 'Dentist not found' });
 
         res.json({
             success: true,
             user: {
-                id: dentist._id,
-                name: dentist.name,
-                email: dentist.email,
-                specialty: dentist.specialty,
-                phone: dentist.phone,
-                licenseNumber: dentist.licenseNumber,
-                role: dentist.role,
+                id: dentist._id, name: dentist.name, email: dentist.email,
+                specialty: dentist.specialty, phone: dentist.phone,
+                licenseNumber: dentist.licenseNumber, role: dentist.role,
                 approvalStatus: dentist.approvalStatus
             }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error'
-        });
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 };
 
 const dentistLogout = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies[COOKIE_NAMES.dentist.refresh];
 
     try {
         if (refreshToken) {
@@ -227,6 +150,7 @@ const dentistLogout = async (req, res) => {
             }
         }
 
+<<<<<<< HEAD
         res.clearCookie("accessToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
 
         res.clearCookie("refreshToken", { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
@@ -235,32 +159,23 @@ const dentistLogout = async (req, res) => {
             success: true,
             message: "Logged out successfully"
         });
+=======
+        res.clearCookie(COOKIE_NAMES.dentist.access, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
+        res.clearCookie(COOKIE_NAMES.dentist.refresh, { httpOnly: true, sameSite: refreshTokenCookieOptions.sameSite, secure: refreshTokenCookieOptions.secure, path: '/' });
+>>>>>>> final-fixes
 
+        res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (err) {
-        console.error("dentistLogout error:", err.message);
         res.status(500).json({ success: false, message: err.message });
     }
 };
 
 const getPendingDentists = async (req, res) => {
     try {
-        const pendingDentists = await dentistModel.find({
-            approvalStatus: "Pending"
-        }).select('-password');
-
-        if (!pendingDentists) return req.send("No Pending Requests found");
-
-        res.status(200).json({
-            success: true,
-            count: pendingDentists.length,
-            data: pendingDentists
-        });
+        const pendingDentists = await dentistModel.find({ approvalStatus: "Pending" }).select('-password');
+        res.status(200).json({ success: true, count: pendingDentists.length, data: pendingDentists });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 
@@ -269,61 +184,31 @@ const updateDentistStatus = async (req, res) => {
         const { dentistId } = req.params;
         const { status } = req.body;
 
-        if (!["Approved", "Rejected"].includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: "Status must be either 'Approved' or 'Rejected'"
-            });
+        if (!["Approved", "Rejected", "Pending"].includes(status)) {
+            return res.status(400).json({ success: false, message: "Invalid status value" });
         }
 
         const dentist = await dentistModel.findByIdAndUpdate(
-            dentistId,
-            { approvalStatus: status },
-            { new: true }
+            dentistId, { approvalStatus: status }, { new: true }
         ).select('-password');
 
-        if (!dentist) {
-            return res.status(404).json({
-                success: false,
-                message: "Dentist not found"
-            });
-        }
+        if (!dentist) return res.status(404).json({ success: false, message: "Dentist not found" });
 
-        res.status(200).json({
-            success: true,
-            message: `Dentist ${status.toLowerCase()} successfully`,
-            data: dentist
-        });
+        res.status(200).json({ success: true, message: `Dentist ${status.toLowerCase()} successfully`, data: dentist });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 
 const getAllDentists = async (req, res) => {
     try {
         const dentists = await dentistModel.find().select("-password");
-
         if (!dentists) return res.status(404).send("No Dentists Found!");
-
-        // console.log(dentists);
-
-        res.status(200).json({
-            success: true,
-            message: "Fetched all dentists",
-            data: dentists
-        })
+        res.status(200).json({ success: true, message: "Fetched all dentists", data: dentists });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+        res.status(500).json({ success: false, message: error.message });
     }
-}
+};
 
 const deleteDentist = async (req, res) => {
     try {
@@ -336,14 +221,7 @@ const deleteDentist = async (req, res) => {
     }
 };
 
-
 module.exports = {
-    dentistRegister,
-    dentistLogin,
-    getDentist,
-    dentistLogout,
-    getPendingDentists,
-    updateDentistStatus,
-    getAllDentists,
-    deleteDentist
+    dentistRegister, dentistLogin, getDentist, dentistLogout,
+    getPendingDentists, updateDentistStatus, getAllDentists, deleteDentist
 };
