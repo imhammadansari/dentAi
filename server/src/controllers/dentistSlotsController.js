@@ -81,11 +81,6 @@ const getDentistsSlots = async (req, res) => {
             data: formattedSlots
         });
 
-        res.status(200).json({
-            success: true,
-            message: "All slots fetched",
-            data: formattedSlots
-        })
     } catch (error) {
         console.log(error.message);
         res.status(500).send(error.message);

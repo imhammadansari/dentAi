@@ -26,10 +26,9 @@ const AddSlots = () => {
     const fetchExistingSlotsForDate = async (date) => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
             const res = await axios.get(
                 `${import.meta.env.VITE_SERVER_URL}/api/slots/dentist-slots`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }  // ← cookie automatically send hogi
             );
 
             const allSlots = res.data.data || [];
@@ -45,6 +44,42 @@ const AddSlots = () => {
             console.log(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const addSlot = async () => {
+        if (!newSlot.startTime || !newSlot.endTime) return;
+        if (newSlot.endTime <= newSlot.startTime) {
+            toast.error('End time must be after start time');
+            return;
+        }
+        if (isStartTimeTaken(newSlot.startTime)) {
+            toast.error('This start time is already added for the selected date');
+            return;
+        }
+
+        setAdding(true);
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_SERVER_URL}/api/slots/add-slot`,
+                {
+                    date: selectedDate.toISOString().split('T')[0],
+                    start: newSlot.startTime,
+                    end: newSlot.endTime,
+                },
+                { withCredentials: true }  // ← cookie automatically send hogi
+            );
+
+            if (response.status === 200) {
+                toast.success('Slot added successfully!');
+                fetchExistingSlotsForDate(selectedDate);
+                const nextAvailable = timeSlots.find(t => !isStartTimeTaken(t) && t > newSlot.startTime);
+                setNewSlot({ startTime: nextAvailable || timeSlots[0], endTime: '09:30' });
+            }
+        } catch (error) {
+            toast.error(error.response?.data || error.message);
+        } finally {
+            setAdding(false);
         }
     };
 
