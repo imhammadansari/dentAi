@@ -95,11 +95,24 @@ const DentistLogin = ({ isLogin = true }) => {
         }
     };
 
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!isValidEmail(formData.email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
         if (isLoginMode) {
-            await handleDentistLogin(formData.email, formData.password);
+            setLoading(true);
+            const result = await handleDentistLogin(formData.email, formData.password);
+            // Keep the button disabled only on success — the page is about to
+            // redirect. On failure, re-enable it so the user can retry.
+            if (!result?.success) {
+                setLoading(false);
+            }
         } else {
             await handleSignup();
         }

@@ -21,18 +21,16 @@ const UpcomingConsultations = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [chatStatuses, setChatStatuses] = useState({}); // bookingId -> { exists, hasMessages, status }
 
-    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-    const authHeader = { Authorization: `Bearer ${token}` };
 
     // Auto-complete past bookings, then fetch all bookings
     const init = useCallback(async () => {
         try {
             // Silently auto-complete any past bookings
-            await axios.post(`${SERVER}/api/chat/auto-complete-bookings`, {}, { headers: authHeader });
-        } catch (_) {}
+            await axios.post(`${SERVER}/api/chat/auto-complete-bookings`, {}, { withCredentials: true });
+        } catch (_) { }
 
         try {
-            const res = await axios.get(`${SERVER}/api/bookings/dentist-all-bookings`, { headers: authHeader });
+            const res = await axios.get(`${SERVER}/api/bookings/dentist-all-bookings`, { withCredentials: true });
             // Show Booked + Completed (not Cancelled)
             const relevant = (res.data.data || []).filter(
                 b => b.status?.toLowerCase() == 'booked'
@@ -57,7 +55,7 @@ const UpcomingConsultations = () => {
             await Promise.all(
                 consultations.map(async (c) => {
                     try {
-                        const res = await axios.get(`${SERVER}/api/chat/${c.id}/status`, { headers: authHeader });
+                        const res = await axios.get(`${SERVER}/api/chat/${c.id}/status`,  { withCredentials: true });
                         statuses[c.id] = res.data;
                     } catch (_) {
                         statuses[c.id] = { exists: false };
@@ -75,7 +73,11 @@ const UpcomingConsultations = () => {
             now.getFullYear() + '-' +
             String(now.getMonth() + 1).padStart(2, '0') + '-' +
             String(now.getDate()).padStart(2, '0');
-        if (c.date !== today) return false;
+
+        if (!c.date) return false;
+        const bookingDate = new Date(c.date).toISOString().split('T')[0];
+        if (bookingDate !== today) return false;
+
         const [sh, sm] = (c.start || '00:00').split(':').map(Number);
         const [eh, em] = (c.end || '00:00').split(':').map(Number);
         const start = new Date(); start.setHours(sh, sm, 0, 0);

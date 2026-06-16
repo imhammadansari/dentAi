@@ -45,9 +45,12 @@ const AuthProvider = ({ children }) => {
                 const status = error.response?.status;
 
                 const isVerifyCall = originalRequest?.url?.includes('/api/dentists/verify');
+                const isAuthCall =
+                    isVerifyCall ||
+                    originalRequest?.url?.includes('/api/dentists/login') ||
+                    originalRequest?.url?.includes('/api/dentists/register');
 
-                if ((status === 401 || status === 403) && originalRequest && !originalRequest._retried && !isVerifyCall) {
-                    originalRequest._retried = true;
+                if ((status === 401 || status === 403) && originalRequest && !originalRequest._retried && !isAuthCall) {
 
                     if (isRefreshing) {
                         return new Promise((resolve, reject) => {
@@ -137,8 +140,19 @@ const AuthProvider = ({ children }) => {
                 return { success: true };
             }
         } catch (error) {
-            if (error.response?.status === 404) toast.error("Email or Password Incorrect");
-            const errorMessage = error.response?.data?.message || error.message || 'Login failed.';
+            const status = error.response?.status;
+            let errorMessage;
+
+            if (status === 401 || status === 404) {
+                errorMessage = 'Email or password is incorrect';
+            } else {
+                errorMessage =
+                    (typeof error.response?.data === 'string' ? error.response.data : error.response?.data?.message)
+                    || error.message
+                    || 'Login failed.';
+            }
+
+            toast.error(errorMessage);
             setError(errorMessage);
             return { success: false, error: errorMessage };
         } finally {

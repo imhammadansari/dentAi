@@ -38,6 +38,10 @@ const AddSlots = () => {
         fetchExistingSlotsForDate(selectedDate);
     }, [selectedDate]);
 
+    const toLocalDateString = (date) => {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+
     const fetchExistingSlotsForDate = async (date) => {
         setLoading(true);
         try {
@@ -47,7 +51,7 @@ const AddSlots = () => {
             );
 
             const allSlots = res.data.data || [];
-            const selectedDateStr = date.toISOString().split('T')[0];
+            const selectedDateStr = toLocalDateString(date);
 
             const slotsForDate = allSlots.filter(s => {
                 const slotDate = new Date(s.date).toISOString().split('T')[0];
@@ -185,12 +189,12 @@ const AddSlots = () => {
                                                     disabled={taken}
                                                     onClick={() => setNewSlot({ ...newSlot, startTime: time })}
                                                     className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${past
-                                                            ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed line-through'
-                                                            : taken
-                                                                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
-                                                                : selected
-                                                                    ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                                                                    : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                        ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed line-through'
+                                                        : taken
+                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
+                                                            : selected
+                                                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                                         }`}
                                                 >
                                                     {time}
@@ -212,10 +216,10 @@ const AddSlots = () => {
                                                     disabled={disabled}
                                                     onClick={() => setNewSlot({ ...newSlot, endTime: time })}
                                                     className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${disabled
-                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                                            : selected
-                                                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                        : selected
+                                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                                         }`}
                                                 >
                                                     {time}

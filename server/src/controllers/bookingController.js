@@ -210,14 +210,12 @@ const getPatientConsultations = async (req, res) => {
 const getTodaySchedule = async (req, res) => {
     try {
         const dentistId = req.user.id;
-        const today = new Date().toISOString().split("T")[0];
+        const today = req.query.date || new Date().toISOString().split("T")[0];
 
         const slotsModel = require("../models/slotsModel");
 
-        // Get all slots for today
         const slots = await slotsModel.find({ dentistId });
 
-        // Filter slots whose date matches today
         const todaySlots = slots.filter(slot => {
             const slotDate = slot.date;
             return slotDate === today;

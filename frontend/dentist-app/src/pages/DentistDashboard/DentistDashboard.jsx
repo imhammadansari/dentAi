@@ -27,13 +27,13 @@ const DentistDashboard = () => {
                 // Fetch unique patients + stats
                 const patientsRes = await axios.get(
                     `${import.meta.env.VITE_SERVER_URL}/api/bookings/dentist-patients`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { withCredentials: true }
                 );
 
                 // Fetch all raw bookings for upcoming list
                 const bookingsRes = await axios.get(
                     `${import.meta.env.VITE_SERVER_URL}/api/bookings/dentist-all-bookings`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { withCredentials: true }
                 );
 
                 const { patients, stats } = patientsRes.data;
@@ -180,9 +180,15 @@ const TodaySchedule = () => {
         const fetchSchedule = async () => {
             try {
                 const token = localStorage.getItem("token");
+                const now = new Date();
+                const today =
+                    now.getFullYear() + '-' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(now.getDate()).padStart(2, '0');
+
                 const res = await axios.get(
-                    `${import.meta.env.VITE_SERVER_URL}/api/bookings/today-schedule`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    `${import.meta.env.VITE_SERVER_URL}/api/bookings/today-schedule?date=${today}`,
+                    { withCredentials: true }
                 );
                 setSchedule(res.data.data || []);
             } catch (err) {

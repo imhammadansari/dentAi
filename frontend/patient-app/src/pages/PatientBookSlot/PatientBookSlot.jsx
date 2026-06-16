@@ -11,6 +11,10 @@ const BookSlot = () => {
     const [loading, setLoading] = useState(true);
     const [bookingId, setBookingId] = useState(null);
 
+    const toLocalDateString = (date) => {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -64,7 +68,7 @@ const BookSlot = () => {
     };
 
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = toLocalDateString(now);
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
     // Filter out slots where end time has already passed
@@ -128,9 +132,8 @@ const BookSlot = () => {
                                         return (
                                             <div
                                                 key={slotId}
-                                                className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                                                    isFull ? 'bg-gray-50 border-gray-200' : 'bg-emerald-50 border-emerald-100 hover:border-emerald-300'
-                                                }`}
+                                                className={`flex items-center justify-between p-4 rounded-xl border transition-all ${isFull ? 'bg-gray-50 border-gray-200' : 'bg-emerald-50 border-emerald-100 hover:border-emerald-300'
+                                                    }`}
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${isFull ? 'bg-gray-200' : 'bg-emerald-100'}`}>

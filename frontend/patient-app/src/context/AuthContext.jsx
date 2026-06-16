@@ -39,24 +39,19 @@ const AuthProvider = ({ children }) => {
             failedQueue = [];
         };
 
-        // If a request fails with 401/403 (e.g. accessToken cookie missing/expired),
-        // try hitting /verify once — the verifyToken middleware will use the
-        // refreshToken cookie to issue a new accessToken cookie. If that
-        // succeeds, retry the original request. If it also fails, both tokens
-        // are dead — clear session and send the user to the home page.
         const resInterceptor = axios.interceptors.response.use(
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
                 const status = error.response?.status;
 
-                // Don't intercept the /verify call itself — that path is
-                // handled directly by verifyUser() to avoid double-calls
-                // and redirect loops.
                 const isVerifyCall = originalRequest?.url?.includes('/api/users/verify');
+                const isAuthCall =
+                    isVerifyCall ||
+                    originalRequest?.url?.includes('/api/users/login') ||
+                    originalRequest?.url?.includes('/api/users/register');
 
-                if ((status === 401 || status === 403) && originalRequest && !originalRequest._retried && !isVerifyCall) {
-                    originalRequest._retried = true;
+                if ((status === 401 || status === 403) && originalRequest && !originalRequest._retried && !isAuthCall) {
 
                     if (isRefreshing) {
                         return new Promise((resolve, reject) => {
@@ -88,10 +83,7 @@ const AuthProvider = ({ children }) => {
         return () => axios.interceptors.response.eject(resInterceptor);
     }, []);
 
-    // Silent background verify — runs once on app boot.
-    // The accessToken (and refreshToken) httpOnly cookies are sent automatically.
-    // If the accessToken is expired, the verifyToken middleware transparently
-    // issues a new one using the refreshToken cookie before this call returns.
+
     const verifyUser = async () => {
         try {
             const response = await axios.get('/api/users/verify', { withCredentials: true });
@@ -113,8 +105,7 @@ const AuthProvider = ({ children }) => {
         verifyUser();
     }, []);
 
-    // If verification finished, there's no user, and we're on a protected
-    // (non-login/signup/landing) page, kick the user back to the home page.
+
     useEffect(() => {
         if (loading) return;
         if (user) return;
@@ -150,8 +141,19 @@ const AuthProvider = ({ children }) => {
                 return { success: true };
             }
         } catch (error) {
-            if (error.response?.status === 404) toast.error("Email or Password Incorrect");
-            const errorMessage = error.response?.data?.message || error.message || 'Login failed.';
+            const status = error.response?.status;
+            let errorMessage;
+
+            if (status === 401 || status === 404) {
+                errorMessage = 'Email or password is incorrect';
+            } else {
+                errorMessage =
+                    (typeof error.response?.data === 'string' ? error.response.data : error.response?.data?.message)
+                    || error.message
+                    || 'Login failed.';
+            }
+
+            toast.error(errorMessage);
             setError(errorMessage);
             return { success: false, error: errorMessage };
         } finally {

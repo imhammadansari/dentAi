@@ -8,6 +8,10 @@ const DentistAllSlots = () => {
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState(null);
 
+    const toLocalDateString = (date) => {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+
     const fetchSlots = async () => {
         setLoading(true);
         try {
@@ -62,7 +66,7 @@ const DentistAllSlots = () => {
         return acc;
     }, {});
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateString(new Date());
 
     return (
         <div className="p-2 lg:p-4 min-h-full">
@@ -93,9 +97,8 @@ const DentistAllSlots = () => {
 
                         return (
                             <div key={dateLabel} className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
-                                <div className={`px-4 py-3 flex items-center justify-between ${
-                                    isToday ? 'bg-emerald-500' : isPast ? 'bg-gray-100' : 'bg-emerald-50'
-                                }`}>
+                                <div className={`px-4 py-3 flex items-center justify-between ${isToday ? 'bg-emerald-500' : isPast ? 'bg-gray-100' : 'bg-emerald-50'
+                                    }`}>
                                     <div className="flex items-center gap-2">
                                         <CalendarDaysIcon className={`w-4 h-4 ${isToday ? 'text-white' : 'text-emerald-600'}`} />
                                         <span className={`font-semibold text-sm ${isToday ? 'text-white' : isPast ? 'text-gray-500' : 'text-emerald-800'}`}>
@@ -119,11 +122,10 @@ const DentistAllSlots = () => {
                                     {dateSlots.map((slot) => (
                                         <div
                                             key={slot.id}
-                                            className={`flex items-center justify-between p-3 rounded-xl border ${
-                                                isPast
+                                            className={`flex items-center justify-between p-3 rounded-xl border ${isPast
                                                     ? 'bg-gray-50 border-gray-200'
                                                     : 'bg-emerald-50 border-emerald-100'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center gap-2">
                                                 <ClockIcon className={`w-4 h-4 flex-shrink-0 ${isPast ? 'text-gray-400' : 'text-emerald-500'}`} />

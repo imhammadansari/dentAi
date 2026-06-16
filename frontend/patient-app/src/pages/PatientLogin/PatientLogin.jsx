@@ -87,15 +87,21 @@ const PatientLogin = ({ isLogin = true }) => {
         }
     };
 
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!isValidEmail(formData.email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
 
         setLoading(true);
 
         try {
             if (isLoginMode) {
                 await handlePatientLogin(formData.email, formData.password);
-                // Loading true hi rahega until redirect/navigation happens
             } else {
                 await handleSignup();
             }

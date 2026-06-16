@@ -68,7 +68,11 @@ const PatientAllConsultations = () => {
             now.getFullYear() + '-' +
             String(now.getMonth() + 1).padStart(2, '0') + '-' +
             String(now.getDate()).padStart(2, '0');
-        if (!consultation.date || consultation.date !== today) return false;
+
+        if (!consultation.date) return false;
+        const consultationDate = new Date(consultation.date).toISOString().split('T')[0];
+        if (consultationDate !== today) return false;
+
         if (!consultation.time) return false;
         const parts = consultation.time.split(' - ');
         const startStr = parts[0]?.trim();
