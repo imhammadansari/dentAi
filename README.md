@@ -285,38 +285,6 @@ npm install
 npm run dev
 
 
-## 🔐 Environment Variables
-
-### Server — `server/.env`
-
-# Server
-PORT=8000
-CLIENT_URL=http://localhost:5173
-MONGODB_URL="mongodb+srv://imhammadansari:hammad64@cluster0.4mdno.mongodb.net/dentAi"
-# MONGODB_URL="mongodb://localhost:27017/dentAI"
-JWT_TOKEN=dentAI
-REFRESH_TOKEN=REFRESH_TOKEN_DentAI
-CLOUD_NAME=dajsvzu0q
-CLOUD_API_KEY=883238264377216
-CLOUD_SECRET_KEY=vnUFxkUq5C-1nhEqnYRK6rNsRhk
-ABLY_API_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
-
-### Patient App — `frontend/patient-app/.env`
-
-VITE_SERVER_URL=https://13.51.175.156.nip.io
-VITE_ABLY_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
-
-### Dentist App — `frontend/dentist-app/.env`
-
-VITE_SERVER_URL=https://13.51.175.156.nip.io
-VITE_ABLY_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
-
-### Admin App — `frontend/admin-app/.env`
-
-VITE_SERVER_URL=https://13.51.175.156.nip.io
-VITE_ABLY_KEY=2P53Rg.GMFRPw:NW3Iv-K_cGNFx59UCdWBQ3T5cNB6FW6sfJHdz9vHlIE
-
-
 ## 💬 Realtime Chat System
 
 The chat system uses **Ably** with secure server-side token authentication.
@@ -358,26 +326,3 @@ This project is licensed under the **ISC License**.
 # AI Server Start
 cd ai_service
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8001
-
-## Credentials
-
-### Admin
-admin@dentai.com
-Admin@123
-
-### Dentists
-farankhalil@gmail.com
-123456
-
-dusdus@gmail.com
-123456
-
-hammadansari@example.com
-123456
-
-### Patients
-jhulelaal@gmail.com
-123456
-
-muaaz@gmail.com
-123456
