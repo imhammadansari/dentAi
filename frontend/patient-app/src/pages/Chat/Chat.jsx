@@ -73,6 +73,7 @@ const Chat = () => {
                     channelRef.current = channel;
                     channel.subscribe("message", (msg) => {
                         const newMsg = msg.data;
+                        if (newMsg.senderId === user.id) return;
                         setMessages(prev => {
                             const exists = prev.some(m =>
                                 m.senderId === newMsg.senderId &&

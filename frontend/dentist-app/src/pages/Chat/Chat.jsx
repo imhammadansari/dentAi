@@ -70,6 +70,7 @@ const Chat = () => {
                     channelRef.current = channel;
                     channel.subscribe("message", (msg) => {
                         const newMsg = msg.data;
+                        if (newMsg.senderId === user.id) return;
                         setMessages(prev => {
                             const exists = prev.some(m =>
                                 m.senderId === newMsg.senderId &&
@@ -287,11 +288,10 @@ const Chat = () => {
                                 )}
 
                                 <div className={`max-w-[78%] sm:max-w-[65%] flex flex-col gap-0.5 ${isOwn ? "items-end" : "items-start"}`}>
-                                    <div className={`rounded-2xl px-3 py-2 ${
-                                        isOwn
+                                    <div className={`rounded-2xl px-3 py-2 ${isOwn
                                             ? "bg-gradient-to-br from-emerald-500 to-green-400 text-white rounded-br-sm"
                                             : "bg-white text-gray-800 border border-gray-100 shadow-sm rounded-bl-sm"
-                                    }`}>
+                                        }`}>
                                         {msg.fileUrl && (
                                             <>
                                                 {isImage(msg.fileType) ? (

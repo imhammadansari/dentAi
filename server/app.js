@@ -11,11 +11,6 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// app.use(cors({
-//     origin: (origin, callback) => callback(null, true),
-//     credentials: true
-// }))
-
 app.use(cors({
     origin: [
         'http://localhost:5173',
