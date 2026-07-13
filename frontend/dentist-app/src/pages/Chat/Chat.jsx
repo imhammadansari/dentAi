@@ -55,6 +55,7 @@ const Chat = () => {
                 if (data.status === "ended") {
                     setChatEnded(true);
                     setEndedBy(data.endedBy);
+                    
                     setLoading(false);
                     return;
                 }
