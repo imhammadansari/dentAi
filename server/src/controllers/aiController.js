@@ -23,7 +23,8 @@ exports.analyzeXray = async (req, res) => {
         });
 
         // const internalAIServiceEndpoint = 'http://127.0.0.1:8001/predict';
-        const internalAIServiceEndpoint = 'https://dentai-production-d2ab.up.railway.app/predict';
+        const internalAIServiceEndpoint = 'https://dentai-production-1f1f.up.railway.app/predict';
+        
         
         console.log(`[Gatekeeper] Forwarding buffer matrix to local model cluster: ${internalAIServiceEndpoint}`);
         
