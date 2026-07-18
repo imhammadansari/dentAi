@@ -165,7 +165,7 @@ const DentistAllPatients = () => {
 
                             <button
                                 onClick={fetchPatients}
-                                className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-700 hover:bg-emerald-100 transition-colors"
+                                className="px-4 py-3 cursor-pointer bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-700 hover:bg-emerald-100 transition-colors"
                             >
                                 <ArrowPathIcon className="w-5 h-5" />
                             </button>

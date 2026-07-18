@@ -213,7 +213,7 @@ const UpcomingConsultations = () => {
                                         {statusKey === 'booked' && withinTime && (
                                             <button
                                                 onClick={() => navigate(`/dentist-dashboard/chat/${c.id}`)}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm shadow-emerald-200 transition-all"
+                                                className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm shadow-emerald-200 transition-all"
                                             >
                                                 <ChatBubbleLeftRightIcon className="w-4 h-4" />
                                                 Open Chat
@@ -225,7 +225,7 @@ const UpcomingConsultations = () => {
                                             <button
                                                 disabled
                                                 title="Chat available only during appointment time"
-                                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-50 text-emerald-300 cursor-not-allowed"
+                                                className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-50 text-emerald-300 cursor-not-allowed"
                                             >
                                                 <ChatBubbleLeftRightIcon className="w-4 h-4" />
                                                 Chat
@@ -236,7 +236,7 @@ const UpcomingConsultations = () => {
                                         {hasChat && (
                                             <button
                                                 onClick={() => navigate(`/dentist-dashboard/chat/${c.id}`)}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all"
+                                                className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all"
                                             >
                                                 <EyeIcon className="w-4 h-4" />
                                                 View Chat

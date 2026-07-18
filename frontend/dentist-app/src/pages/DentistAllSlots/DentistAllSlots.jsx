@@ -141,7 +141,7 @@ const DentistAllSlots = () => {
                                             <button
                                                 onClick={() => deleteSlot(slot.id)}
                                                 disabled={deletingId === slot.id}
-                                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition-colors disabled:opacity-50"
+                                                className="p-1.5 cursor-pointer bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition-colors disabled:opacity-50"
                                                 title="Delete slot"
                                             >
                                                 <TrashIcon className="w-4 h-4" />

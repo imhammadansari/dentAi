@@ -122,7 +122,7 @@ const PatientSidebar = ({ userData, setMobileSidebar }) => {
                 <div className="mt-8">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/50"
+                        className="w-full flex items-center cursor-pointer gap-3 p-3 rounded-xl transition-all hover:bg-white/50"
                         style={{ color: '#6b7280' }}
                     >
                         <ArrowRightOnRectangleIcon className="w-5 h-5" />

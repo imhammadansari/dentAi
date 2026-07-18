@@ -170,7 +170,7 @@ const PatientLogin = ({ isLogin = true }) => {
                             <button
                                 onClick={() => setIsLoginMode(true)}
                                 disabled={loading}
-                                className={`flex-1 cursor-pointer py-3 text-center font-semibold rounded-xl transition-all ${isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`flex-1 cursor-pointer cursor-pointer py-3 text-center font-semibold rounded-xl transition-all ${isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 style={isLoginMode ? { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' } : { backgroundColor: '#f9fafb' }}
                             >
                                 Login
@@ -178,7 +178,7 @@ const PatientLogin = ({ isLogin = true }) => {
                             <button
                                 onClick={() => setIsLoginMode(false)}
                                 disabled={loading}
-                                className={`flex-1 cursor-pointer py-3 text-center font-semibold rounded-xl transition-all ml-4 ${!isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`flex-1 cursor-pointer cursor-pointer py-3 text-center font-semibold rounded-xl transition-all ml-4 ${!isLoginMode ? 'text-white shadow-lg' : 'text-gray-600 hover:text-gray-900'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 style={!isLoginMode ? { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' } : { backgroundColor: '#f9fafb' }}
                             >
                                 Sign Up
@@ -261,7 +261,7 @@ const PatientLogin = ({ isLogin = true }) => {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                                        className="absolute cursor-pointer right-4 top-1/2 transform -translate-y-1/2"
                                         style={{ color: '#6b7280' }}
                                         disabled={loading}
                                     >
@@ -330,7 +330,7 @@ const PatientLogin = ({ isLogin = true }) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center group ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}
+                                className={`w-full cursor-pointer py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center group ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}
                                 style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
                             >
                                 {loading ? (
@@ -376,7 +376,7 @@ const PatientLogin = ({ isLogin = true }) => {
                                         setError('');
                                         setSuccess('');
                                     }}
-                                    className="font-semibold hover:underline transition-all"
+                                    className="font-semibold cursor-pointer hover:underline transition-all"
                                     style={{ color: '#16a34a' }}
                                     disabled={loading}
                                 >

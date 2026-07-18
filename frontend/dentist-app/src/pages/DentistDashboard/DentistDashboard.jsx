@@ -103,7 +103,7 @@ const DentistDashboard = () => {
                 <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-black">Upcoming Appointments</h4>
-                        <button onClick={() => navigate("/dentist-dashboard/appointments")} className="text-emerald-600 hover:text-emerald-700 font-medium">
+                        <button onClick={() => navigate("/dentist-dashboard/appointments")} className="text-emerald-600 cursor-pointer hover:text-emerald-700 font-medium">
                             View All →
                         </button>
                     </div>
@@ -133,7 +133,7 @@ const DentistDashboard = () => {
                 <div className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h4 className="text-lg font-bold text-black">Recent Patients</h4>
-                        <button onClick={() => navigate("/dentist-dashboard/patients")} className="text-emerald-600 hover:text-emerald-700 font-medium">
+                        <button onClick={() => navigate("/dentist-dashboard/patients")} className="text-emerald-600 cursor-pointer hover:text-emerald-700 font-medium">
                             View All →
                         </button>
                     </div>

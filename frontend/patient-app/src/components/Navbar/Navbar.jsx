@@ -36,7 +36,7 @@ export const Navbar = () => {
                 <div className="hidden md:flex items-center gap-8">
                     {navLinks.map(l => (
                         <button key={l} onClick={() => scrollTo(l.toLowerCase().replace(/\s+/g, '-'))}
-                            className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors">
+                            className="text-sm cursor-pointer font-medium text-emerald-700 hover:text-emerald-900 transition-colors">
                             {l}
                         </button>
                     ))}
@@ -45,18 +45,18 @@ export const Navbar = () => {
                 <div className="hidden md:flex items-center gap-3">
                     {isAuthenticated() ? (
                         <button onClick={() => navigate('/patient-dashboard/home')}
-                            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900 transition-colors">
+                            className="flex cursor-pointer items-center gap-2 px-5 py-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900 transition-colors">
                             <UserCircleIcon className="w-5 h-5" />
                             {user?.name}
                         </button>
                     ) : (
                         <>
                             <button onClick={() => navigate('/patient-login')}
-                                className="px-5 py-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900 transition-colors">
+                                className="px-5 cursor-pointer py-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900 transition-colors">
                                 Login
                             </button>
                             <button onClick={() => navigate('/patient-signup')}
-                                className="px-5 py-2 text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 shadow-md shadow-emerald-200"
+                                className="px-5 py-2 cursor-pointer text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 shadow-md shadow-emerald-200"
                                 style={{ background: brandGradient }}>
                                 Get Started
                             </button>
@@ -64,7 +64,7 @@ export const Navbar = () => {
                     )}
                 </div>
 
-                <button className="md:hidden text-emerald-700" onClick={() => setMenuOpen(!menuOpen)}>
+                <button className="md:hidden text-emerald-700 cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
                     {menuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
                 </button>
             </div>
@@ -73,7 +73,7 @@ export const Navbar = () => {
                 <div className="md:hidden bg-white border-t border-emerald-100 px-6 py-4 space-y-4">
                     {navLinks.map(l => (
                         <button key={l} onClick={() => scrollTo(l.toLowerCase().replace(/\s+/g, '-'))}
-                            className="block w-full text-left text-sm font-medium text-emerald-700 py-2">
+                            className="block w-full cursor-pointer text-left text-sm font-medium text-emerald-700 py-2">
                             {l}
                         </button>
                     ))}
@@ -81,7 +81,7 @@ export const Navbar = () => {
                     {isAuthenticated() ? (
                         <div className="pt-2 border-t border-emerald-100">
                             <button onClick={() => { navigate('/patient-dashboard/home'); setMenuOpen(false); }}
-                                className="flex items-center gap-2 w-full text-left text-sm font-semibold text-emerald-700 py-2">
+                                className="flex cursor-pointer items-center gap-2 w-full text-left text-sm font-semibold text-emerald-700 py-2">
                                 <UserCircleIcon className="w-5 h-5" />
                                 {user?.name}
                             </button>
@@ -89,11 +89,11 @@ export const Navbar = () => {
                     ) : (
                         <div className="flex gap-3 pt-2 border-t border-emerald-100">
                             <button onClick={() => navigate('/patient-login')}
-                                className="flex-1 py-2.5 text-sm font-semibold text-emerald-700 border border-emerald-200 rounded-xl">
+                                className="flex-1 cursor-pointer py-2.5 text-sm font-semibold text-emerald-700 border border-emerald-200 rounded-xl">
                                 Login
                             </button>
                             <button onClick={() => navigate('/patient-signup')}
-                                className="flex-1 py-2.5 text-sm font-semibold text-white rounded-xl"
+                                className="flex-1 cursor-pointer py-2.5 text-sm font-semibold text-white rounded-xl"
                                 style={{ background: brandGradient }}>
                                 Sign Up
                             </button>

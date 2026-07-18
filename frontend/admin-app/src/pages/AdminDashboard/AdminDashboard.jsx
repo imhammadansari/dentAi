@@ -130,7 +130,7 @@ const AdminDashboard = () => {
                                     <button
                                         key={i}
                                         onClick={() => navigate(item.link)}
-                                        className={`w-full flex items-center justify-between p-3 rounded-xl border ${item.color} hover:opacity-80 transition-opacity`}
+                                        className={`w-full flex items-center cursor-pointer justify-between p-3 rounded-xl border ${item.color} hover:opacity-80 transition-opacity`}
                                     >
                                         <span className="font-medium text-sm">{item.label}</span>
                                         <span className="text-xs opacity-70">{item.desc} →</span>
@@ -190,7 +190,7 @@ const AdminDashboard = () => {
 
                                     <button
                                         onClick={() => navigate('/admin-dashboard/reports')}
-                                        className="w-full text-center text-sm text-emerald-600 font-medium hover:text-emerald-800 transition-colors"
+                                        className="w-full text-center cursor-pointer text-sm text-emerald-600 font-medium hover:text-emerald-800 transition-colors"
                                     >
                                         View all reports →
                                     </button>

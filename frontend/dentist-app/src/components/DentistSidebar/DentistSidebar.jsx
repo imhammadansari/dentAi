@@ -111,7 +111,7 @@ const DentistSidebar = ({ userData, setMobileSidebar }) => {
                 <div className="mt-8">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 p-3 text-emerald-700 hover:bg-emerald-50 rounded-xl transition-all"
+                        className="w-full flex cursor-pointer items-center gap-3 p-3 text-emerald-700 hover:bg-emerald-50 rounded-xl transition-all"
                     >
                         <ArrowRightOnRectangleIcon className="w-5 h-5" />
                         <span className="font-medium">Logout</span>

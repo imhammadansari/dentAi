@@ -166,7 +166,7 @@ const AdminAllPatients = () => {
                                             <button
                                                 onClick={() => handleDelete(patient.id)}
                                                 disabled={deletingId === patient.id}
-                                                className="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                                                className="p-2 bg-red-50 cursor-pointer text-red-500 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
                                                 title="Delete patient"
                                             >
                                                 <TrashIcon className="w-4 h-4" />

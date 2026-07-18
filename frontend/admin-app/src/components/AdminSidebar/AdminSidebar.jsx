@@ -107,7 +107,7 @@ const AdminSidebar = ({ userData, setMobileSidebar }) => {
                 <div className="mt-8">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/50 text-gray-700"
+                        className="w-full cursor-pointer flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/50 text-gray-700"
                     >
                         <ArrowRightOnRectangleIcon className="w-5 h-5" />
                         <span className="font-medium">Logout</span>

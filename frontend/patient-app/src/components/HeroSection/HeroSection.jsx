@@ -40,13 +40,13 @@ export const HeroSection = ({ scrollTo }) => {
                     </p>
                     <div className="flex flex-wrap gap-4" style={{ animation: 'slideUp 0.7s ease 0.3s both' }}>
                         <button onClick={() => navigate('/patient-signup')}
-                            className="group flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-2xl shadow-xl shadow-emerald-200 hover:shadow-emerald-300 transition-all hover:-translate-y-0.5"
+                            className="group flex cursor-pointer items-center gap-2 px-8 py-4 text-white font-semibold rounded-2xl shadow-xl shadow-emerald-200 hover:shadow-emerald-300 transition-all hover:-translate-y-0.5"
                             style={{ background: brandGradient }}>
                             Start For Free
                             <ArrowUpRightIcon className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                         </button>
                         <button onClick={() => scrollTo('how-it-works')}
-                            className="flex items-center gap-2 px-8 py-4 font-semibold text-emerald-700 bg-white border-2 border-emerald-200 rounded-2xl hover:border-emerald-400 hover:bg-emerald-50 transition-all">
+                            className="flex cursor-pointer items-center gap-2 px-8 py-4 font-semibold text-emerald-700 bg-white border-2 border-emerald-200 rounded-2xl hover:border-emerald-400 hover:bg-emerald-50 transition-all">
                             See How It Works
                         </button>
                     </div>

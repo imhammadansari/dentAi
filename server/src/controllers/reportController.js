@@ -101,8 +101,8 @@ const buildPDF = (report, patientName) => {
                     .text('#' + (i + 1) + '  ' + ((d.stage || d.label_raw || 'FINDING').replace(/_/g, ' ').toUpperCase()), margin + 18, y + 10);
                 const conf = parseFloat(d.confidence) || 0;
                 const confColor = conf >= 0.8 ? RED : conf >= 0.5 ? AMBER : GREEN;
-                doc.font('Helvetica-Bold').fontSize(9).fillColor(confColor)
-                    .text('Confidence: ' + (d.confidence || 'N/A'), margin + contentWidth - 120, y + 10);
+                // doc.font('Helvetica-Bold').fontSize(9).fillColor(confColor)
+                //     .text('Confidence: ' + (d.confidence || 'N/A'), margin + contentWidth - 120, y + 10);
                 doc.font('Helvetica').fontSize(9.5).fillColor(GRAY)
                     .text('Diagnosis: ', margin + 18, y + 30, { continued: true, width: textWidth })
                     .fillColor(DARK).text(expText, { continued: false });

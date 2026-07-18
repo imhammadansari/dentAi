@@ -62,7 +62,7 @@ export const Footer = () => {
                                 <li key={l}>
                                     <button
                                         onClick={() => scrollToSection(l.toLowerCase().replace(/\s+/g, '-'))}
-                                        className="text-emerald-400 hover:text-white text-sm transition-colors">
+                                        className="text-emerald-400 cursor-pointer hover:text-white text-sm transition-colors">
                                         {l}
                                     </button>
                                 </li>
@@ -77,7 +77,7 @@ export const Footer = () => {
                                 <li key={l.label}>
                                     <button
                                         onClick={() => handlePatientLinkClick(l.path)}
-                                        className="text-emerald-400 hover:text-white text-sm transition-colors">
+                                        className="text-emerald-400 cursor-pointer hover:text-white text-sm transition-colors">
                                         {l.label}
                                     </button>
                                 </li>
@@ -92,7 +92,7 @@ export const Footer = () => {
                                 <li key={l.label}>
                                     <button
                                         onClick={() => navigate(l.path)}
-                                        className="text-emerald-400 hover:text-white text-sm transition-colors">
+                                        className="text-emerald-400 cursor-pointer hover:text-white text-sm transition-colors">
                                         {l.label}
                                     </button>
                                 </li>

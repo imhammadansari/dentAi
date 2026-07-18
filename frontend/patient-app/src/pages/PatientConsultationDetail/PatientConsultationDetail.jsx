@@ -13,7 +13,7 @@ const PatientConsultationDetail = () => {
                 <p>No consultation data found.</p>
                 <button
                     onClick={() => navigate(-1)}
-                    className="mt-4 px-4 py-2 bg-emerald-500 text-white rounded-lg"
+                    className="mt-4 px-4 py-2 bg-emerald-500 text-white rounded-lg cursor-pointer"
                 >
                     Go Back
                 </button>
@@ -36,7 +36,7 @@ const PatientConsultationDetail = () => {
         <div className="p-3 lg:p-4 w-full mx-auto">
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-emerald-700 hover:text-emerald-900 mb-6 font-medium"
+                className="flex items-center gap-2 text-emerald-700 hover:text-emerald-900 mb-6 font-medium cursor-pointer"
             >
                 <ArrowLeftIcon className="w-4 h-4" />
                 Back to Consultations

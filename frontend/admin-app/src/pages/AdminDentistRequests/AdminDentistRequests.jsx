@@ -130,7 +130,7 @@ const AdminRequests = () => {
                 </div>
                 <button
                     onClick={fetchDentists}
-                    className="px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl font-medium hover:bg-emerald-100 transition-colors"
+                    className="px-4 py-2.5 bg-emerald-50 cursor-pointer text-emerald-700 rounded-xl font-medium hover:bg-emerald-100 transition-colors"
                 >
                     Refresh
                 </button>
@@ -233,7 +233,7 @@ const AdminRequests = () => {
                                                         <button
                                                             onClick={() => handleStatusChange(dentist._id, 'Approved')}
                                                             disabled={processingId === dentist._id}
-                                                            className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                                                            className="flex cursor-pointer items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
                                                         >
                                                             <CheckCircleIcon className="w-3.5 h-3.5" />
                                                             Approve
@@ -241,7 +241,7 @@ const AdminRequests = () => {
                                                         <button
                                                             onClick={() => handleStatusChange(dentist._id, 'Rejected')}
                                                             disabled={processingId === dentist._id}
-                                                            className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                                                            className="flex cursor-pointer items-center gap-1 px-2.5 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
                                                         >
                                                             <XCircleIcon className="w-3.5 h-3.5" />
                                                             Reject

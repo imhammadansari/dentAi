@@ -113,7 +113,7 @@ const PatientAllConsultations = () => {
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === tab
+                                className={`px-4 py-2 rounded-lg cursor-pointer font-medium transition-colors ${activeTab === tab
                                     ? 'bg-emerald-500 text-white'
                                     : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                     }`}
@@ -168,7 +168,7 @@ const PatientAllConsultations = () => {
                                             {statusKey === 'booked' && withinTime && (
                                                 <button
                                                     onClick={() => navigate(`/patient-dashboard/chat/${consultation.id}`)}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm transition-all"
+                                                    className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm transition-all"
                                                 >
                                                     <ChatBubbleLeftRightIcon className="w-4 h-4" />
                                                     Open Chat
@@ -178,7 +178,7 @@ const PatientAllConsultations = () => {
                                             {statusKey === 'booked' && !withinTime && !hasChat && (
                                                 <button
                                                     disabled
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-300 cursor-not-allowed"
+                                                    className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-300 cursor-not-allowed"
                                                     title="Chat available only during appointment time"
                                                 >
                                                     <ChatBubbleLeftRightIcon className="w-4 h-4" />
@@ -189,7 +189,7 @@ const PatientAllConsultations = () => {
                                             {hasChat && (
                                                 <button
                                                     onClick={() => navigate(`/patient-dashboard/chat/${consultation.id}`)}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all"
+                                                    className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition-all"
                                                 >
                                                     <EyeIcon className="w-4 h-4" />
                                                     View Chat
@@ -206,7 +206,7 @@ const PatientAllConsultations = () => {
                                                         state: { consultation }
                                                     })
                                                 }
-                                                className="px-6 py-2 border-2 border-emerald-200 text-emerald-700 rounded-lg font-medium hover:bg-emerald-50 transition-colors"
+                                                className="px-6 py-2 cursor-pointer border-2 border-emerald-200 text-emerald-700 rounded-lg font-medium hover:bg-emerald-50 transition-colors"
                                             >
                                                 View Details
                                             </button>

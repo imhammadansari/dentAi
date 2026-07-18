@@ -74,7 +74,7 @@ const PatientDetails = () => {
                                             {new Date(report.date).toLocaleDateString()} • {report.dentist}
                                         </p>
                                     </div>
-                                    <button className="px-4 py-2 bg-primary-50 text-primary-700 rounded-lg font-medium hover:bg-primary-100">
+                                    <button className="px-4 py-2 cursor-pointer bg-primary-50 text-primary-700 rounded-lg font-medium hover:bg-primary-100">
                                         View Full Report
                                     </button>
                                 </div>
@@ -269,11 +269,11 @@ const PatientDetails = () => {
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <button className="px-4 py-2 bg-primary-50 text-primary-700 font-medium rounded-lg hover:bg-primary-100 transition-colors flex items-center gap-2">
+                        <button className="px-4 py-2 cursor-pointer bg-primary-50 text-primary-700 font-medium rounded-lg hover:bg-primary-100 transition-colors flex items-center gap-2">
                             <PrinterIcon className="w-4 h-4" />
                             Print
                         </button>
-                        <button className="px-4 py-2 bg-gradient-dent text-white font-medium rounded-lg hover:shadow-primary-200 transition-all flex items-center gap-2">
+                        <button className="px-4 py-2 cursor-pointer bg-gradient-dent text-white font-medium rounded-lg hover:shadow-primary-200 transition-all flex items-center gap-2">
                             <ShareIcon className="w-4 h-4" />
                             Share
                         </button>
@@ -323,7 +323,7 @@ const PatientDetails = () => {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex-1 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors ${activeTab === tab.id
+                                    className={`flex-1 py-3 cursor-pointer px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors ${activeTab === tab.id
                                         ? 'bg-gradient-dent text-white'
                                         : 'text-primary-700 hover:bg-primary-50'
                                         }`}

@@ -41,6 +41,7 @@ const Analyze = () => {
                 <input type="file" onChange={onFileChange} accept="image/*" />
                 <button
                     onClick={onUpload}
+                    className='cursor-pointer'
                     disabled={!selectedFile || loading}
                     style={loading ? styles.buttonDisabled : styles.button}
                 >

@@ -49,10 +49,10 @@ const Header = () => {
 
                 {/* Auth Buttons */}
                 <div className="hidden md:flex items-center gap-2">
-                    <button onClick={() => navigate('/patient-login')} className="px-5 cursor-pointer py-2 text-emerald-700 font-medium hover:text-emerald-900 transition-colors">
+                    <button onClick={() => navigate('/patient-login')} className="px-5 cursor-pointer py-2 text-emerald-700 cursor-pointer font-medium hover:text-emerald-900 transition-colors">
                         Login As Patient
                     </button>
-                    <button onClick={() => navigate('/dentist-login')} className="px-5 cursor-pointer py-2 text-emerald-700 font-medium hover:text-emerald-900 transition-colors">
+                    <button onClick={() => navigate('/dentist-login')} className="px-5 cursor-pointer py-2 text-emerald-700 cursor-pointer font-medium hover:text-emerald-900 transition-colors">
                         Login As Dentist
                     </button>
                 </div>
@@ -62,7 +62,7 @@ const Header = () => {
                 {/* Mobile Menu Button */}
                 <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="md:hidden p-2 text-emerald-700"
+                    className="md:hidden p-2 text-emerald-700 cursor-pointer"
                 >
                     {isMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
                 </button>

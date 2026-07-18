@@ -25,7 +25,7 @@ export const CTASection = () => {
                                 Join hundreds of patients already using Dent AI to stay ahead of dental issues — before they become problems.
                             </p>
                             <button onClick={() => navigate('/patient-signup')}
-                                className="inline-flex items-center gap-2 px-10 py-4 bg-white text-emerald-800 font-bold rounded-2xl text-lg hover:bg-emerald-50 transition-all shadow-2xl shadow-emerald-900/30 hover:-translate-y-0.5">
+                                className="inline-flex cursor-pointer items-center gap-2 px-10 py-4 bg-white text-emerald-800 font-bold rounded-2xl text-lg hover:bg-emerald-50 transition-all shadow-2xl shadow-emerald-900/30 hover:-translate-y-0.5">
                                 Create Free Account
                                 <ArrowUpRightIcon className="w-5 h-5" />
                             </button>

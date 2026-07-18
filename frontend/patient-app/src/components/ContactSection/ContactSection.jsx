@@ -183,7 +183,7 @@ export const ContactSection = () => {
                             <button
                                 type="submit"
                                 disabled={sending}
-                                className="w-full py-4 text-white font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-emerald-200 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:-translate-y-0 flex items-center justify-center gap-2"
+                                className="w-full cursor-pointer py-4 text-white font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-emerald-200 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:-translate-y-0 flex items-center justify-center gap-2"
                                 style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)' }}>
                                 {sending && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                                 {sending ? 'Sending...' : 'Send Message'}

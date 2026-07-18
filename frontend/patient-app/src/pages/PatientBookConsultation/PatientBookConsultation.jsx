@@ -52,7 +52,7 @@ const PatientBookConsultation = () => {
               </div> */}
               <button
                 onClick={() => navigate(`/patient-dashboard/book-slot/${dentist._id}`)}
-                className="w-full py-3 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600"
+                className="w-full cursor-pointer py-3 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600"
               >
                 Book Appointment
               </button>

@@ -84,7 +84,7 @@ const AdminAllReports = () => {
                 <button
                     onClick={fetchReports}
                     disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors text-sm font-medium disabled:opacity-50"
+                    className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors text-sm font-medium disabled:opacity-50"
                 >
                     <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     Refresh
@@ -244,7 +244,7 @@ const AdminAllReports = () => {
                                             onClick={() => handleDownload(report._id, report.patientName)}
                                             disabled={report.status !== 'generated' || !report.pdfBase64}
                                             title={report.status !== 'generated' ? 'No PDF — report was only saved, not generated' : 'Download PDF'}
-                                            className="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                            className="p-2 bg-emerald-50 cursor-pointer text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             <ArrowDownTrayIcon className="w-4 h-4" />
                                         </button>

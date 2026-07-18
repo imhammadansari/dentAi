@@ -215,7 +215,7 @@ const Chat = () => {
                 <div className="flex items-center gap-2 min-w-0">
                     <button
                         onClick={() => navigate(`${getBasePath(user?.role)}/consultations`)}
-                        className="p-2 hover:bg-emerald-50 rounded-xl transition-colors flex-shrink-0"
+                        className="cursor-pointer p-2 hover:bg-emerald-50 rounded-xl transition-colors flex-shrink-0"
                     >
                         <ArrowLeftIcon className="w-5 h-5 text-emerald-700" />
                     </button>
@@ -244,7 +244,7 @@ const Chat = () => {
                     {!chatEnded && (
                         <button
                             onClick={() => setEndConfirm(true)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors"
+                            className="flex items-center gap-1 px-2.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer rounded-lg text-xs font-medium transition-colors"
                         >
                             <XMarkIcon className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">End</span>
@@ -299,7 +299,7 @@ const Chat = () => {
                                                 ) : isPdf(msg.fileType) ? (
                                                     <button
                                                         onClick={() => openPdf(msg.fileUrl)}
-                                                        className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-sm font-medium w-full text-left transition-colors
+                                                        className={`flex cursor-pointer items-center gap-2 px-2.5 py-2 rounded-xl text-sm font-medium w-full text-left transition-colors
                                                             ${isOwn
                                                                 ? "bg-white/20 hover:bg-white/30 text-white"
                                                                 : "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200"
@@ -349,7 +349,7 @@ const Chat = () => {
                         <button
                             onClick={() => fileInputRef.current?.click()}
                             disabled={uploading}
-                            className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-colors flex-shrink-0 disabled:opacity-40 active:scale-95"
+                            className="p-2.5 bg-emerald-50 cursor-pointer hover:bg-emerald-100 text-emerald-600 rounded-xl transition-colors flex-shrink-0 disabled:opacity-40 active:scale-95"
                             title="Attach file"
                         >
                             {uploading
@@ -379,7 +379,7 @@ const Chat = () => {
                         <button
                             onClick={sendMessage}
                             disabled={!text.trim() || sending}
-                            className="p-2.5 bg-gradient-to-br from-emerald-500 to-green-400 text-white rounded-xl transition-all disabled:opacity-40 flex-shrink-0 active:scale-95 shadow-sm shadow-emerald-200"
+                            className="p-2.5 cursor-pointer bg-gradient-to-br from-emerald-500 to-green-400 text-white rounded-xl transition-all disabled:opacity-40 flex-shrink-0 active:scale-95 shadow-sm shadow-emerald-200"
                         >
                             {sending
                                 ? <div className="w-5 h-5 border-2 border-t-white border-white/40 rounded-full animate-spin" />
@@ -397,7 +397,7 @@ const Chat = () => {
                     <p className="text-sm text-red-500 font-medium mb-2">This chat has ended</p>
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-6 py-2 bg-emerald-500 text-white rounded-xl text-sm font-medium hover:bg-emerald-600 transition-colors active:scale-95"
+                        className="px-6 py-2 cursor-pointer bg-emerald-500 text-white rounded-xl text-sm font-medium hover:bg-emerald-600 transition-colors active:scale-95"
                     >
                         Go Back
                     </button>
@@ -417,13 +417,13 @@ const Chat = () => {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setEndConfirm(false)}
-                                className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors active:scale-95"
+                                className="flex-1 cursor-pointer py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors active:scale-95"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleEndChat}
-                                className="flex-1 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors active:scale-95"
+                                className="flex-1 cursor-pointer py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors active:scale-95"
                             >
                                 End Chat
                             </button>

@@ -137,7 +137,7 @@ const PatientAccount = () => {
                             {!editing && (
                                 <button
                                     onClick={() => setEditing(true)}
-                                    className="flex items-center gap-1.5 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-medium transition-colors"
+                                    className="flex cursor-pointer items-center gap-1.5 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-medium transition-colors"
                                 >
                                     <PencilIcon className="w-4 h-4" />
                                     Edit Profile
@@ -199,13 +199,13 @@ const PatientAccount = () => {
                                     <button
                                         onClick={handleSave}
                                         disabled={loading}
-                                        className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-green-400 text-white font-bold rounded-xl hover:shadow-md hover:shadow-emerald-200 transition-all disabled:opacity-50"
+                                        className="flex-1 cursor-pointer py-3 bg-gradient-to-r from-emerald-500 to-green-400 text-white font-bold rounded-xl hover:shadow-md hover:shadow-emerald-200 transition-all disabled:opacity-50"
                                     >
                                         {loading ? 'Saving...' : 'Save Profile'}
                                     </button>
                                     <button
                                         onClick={() => setEditing(false)}
-                                        className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors"
+                                        className="px-6 cursor-pointer py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors"
                                     >
                                         Cancel
                                     </button>

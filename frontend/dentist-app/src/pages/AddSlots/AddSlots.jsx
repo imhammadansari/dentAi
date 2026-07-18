@@ -188,7 +188,7 @@ const AddSlots = () => {
                                                     key={time}
                                                     disabled={taken}
                                                     onClick={() => setNewSlot({ ...newSlot, startTime: time })}
-                                                    className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${past
+                                                    className={`py-2 px-1 cursor-pointer rounded-lg text-sm font-medium transition-all border ${past
                                                         ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed line-through'
                                                         : taken
                                                             ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
@@ -215,7 +215,7 @@ const AddSlots = () => {
                                                     key={time}
                                                     disabled={disabled}
                                                     onClick={() => setNewSlot({ ...newSlot, endTime: time })}
-                                                    className={`py-2 px-1 rounded-lg text-sm font-medium transition-all border ${disabled
+                                                    className={`py-2 px-1 cursor-pointer rounded-lg text-sm font-medium transition-all border ${disabled
                                                         ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                                                         : selected
                                                             ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'

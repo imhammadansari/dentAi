@@ -62,7 +62,7 @@ const PatientBookingsPage = () => {
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-2 rounded-lg border transition ${activeTab === tab
+                        className={`px-4 py-2 cursor-pointer rounded-lg border transition ${activeTab === tab
                                 ? "bg-emerald-500 text-white border-emerald-500"
                                 : "bg-white text-black border-emerald-200 hover:bg-emerald-50"
                             }`}
@@ -109,7 +109,7 @@ const PatientBookingsPage = () => {
                                     {booking.status === "Booked" && (
                                         <button
                                             onClick={() => navigate(`/dentist-dashboard/chat/${booking._id}`)}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${withinTime
+                                            className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${withinTime
                                                     ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm"
                                                     : "bg-emerald-50 text-emerald-400 cursor-not-allowed"
                                                 }`}

@@ -186,7 +186,7 @@ const PatientUploadXray = () => {
             <button
               onClick={onUpload}
               disabled={!selectedFile || loading}
-              className={`px-8 py-3 font-bold rounded-xl transition-all ${loading ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-emerald-700 text-white hover:bg-emerald-800'}`}
+              className={`px-8 py-3 font-bold cursor-pointer rounded-xl transition-all ${loading ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-emerald-700 text-white hover:bg-emerald-800'}`}
             >
               {loading ? 'Analyzing...' : 'Start AI Scan'}
             </button>
@@ -253,7 +253,7 @@ const PatientUploadXray = () => {
                 <button
                   onClick={handleSaveReport}
                   disabled={saving}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-50 border-2 border-emerald-300 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-100 transition-all disabled:opacity-50"
+                  className="flex-1 cursor-pointer flex items-center justify-center gap-2 py-3 bg-emerald-50 border-2 border-emerald-300 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-100 transition-all disabled:opacity-50"
                 >
                   <BookmarkIcon className="w-5 h-5" />
                   {saving ? 'Saving...' : 'Save Report'}
@@ -263,7 +263,7 @@ const PatientUploadXray = () => {
                 <button
                   onClick={() => handleGenerateReport(false)}
                   disabled={generating}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 transition-all disabled:opacity-50"
+                  className="flex-1 cursor-pointer flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 transition-all disabled:opacity-50"
                 >
                   <DocumentArrowDownIcon className="w-5 h-5" />
                   {generating ? 'Generating...' : 'Generate Report'}
@@ -274,7 +274,7 @@ const PatientUploadXray = () => {
                   onClick={handleCompare}
                   disabled={comparing || !hasPrevious}
                   title={!hasPrevious ? 'No previous report to compare with' : 'Compare with your last report'}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 font-semibold rounded-xl transition-all
+                  className={`flex-1 cursor-pointer flex items-center justify-center gap-2 py-3 font-semibold rounded-xl transition-all
                     ${!hasPrevious
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-200'
                       : 'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50'
@@ -306,7 +306,7 @@ const PatientUploadXray = () => {
                   vs. report from {new Date(comparisonResult.previousReport?.date).toLocaleDateString()}
                 </p>
               </div>
-              <button onClick={() => setShowCompareModal(false)} className="text-white hover:text-blue-200">
+              <button onClick={() => setShowCompareModal(false)} className="cursor-pointer text-white hover:text-blue-200">
                 <XMarkIcon className="w-6 h-6" />
               </button>
             </div>
@@ -333,14 +333,14 @@ const PatientUploadXray = () => {
                 <button
                   onClick={() => handleGenerateReport(true, comparisonResult.comparison)}
                   disabled={generating}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-all disabled:opacity-50"
+                  className="flex-1 flex items-center cursor-pointer justify-center gap-2 py-3 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-all disabled:opacity-50"
                 >
                   <DocumentArrowDownIcon className="w-5 h-5" />
                   {generating ? 'Generating...' : 'Download Comparison PDF'}
                 </button>
                 <button
                   onClick={() => setShowCompareModal(false)}
-                  className="px-5 py-3 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-all"
+                  className="px-5 py-3 cursor-pointer bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-all"
                 >
                   Close
                 </button>

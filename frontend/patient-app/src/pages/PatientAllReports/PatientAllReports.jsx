@@ -108,7 +108,7 @@ const PatientAllReports = () => {
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${filter === f
+                    className={`px-3 py-1.5 rounded-lg cursor-pointer text-sm font-medium capitalize transition-all ${filter === f
                       ? 'bg-emerald-500 text-white shadow-sm'
                       : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       }`}
@@ -191,7 +191,7 @@ const PatientAllReports = () => {
                       <button
                         onClick={() => handleDownload(report._id)}
                         disabled={downloading === report._id}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500 text-white rounded-lg text-xs font-semibold hover:bg-emerald-600 transition-all disabled:opacity-60"
+                        className="flex items-center cursor-pointer gap-1.5 px-3 py-2 bg-emerald-500 text-white rounded-lg text-xs font-semibold hover:bg-emerald-600 transition-all disabled:opacity-60"
                       >
                         {downloading === report._id ? (
                           <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

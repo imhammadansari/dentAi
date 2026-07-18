@@ -154,7 +154,7 @@ const PatientDashboard = () => {
           <h3 className="text-xl font-bold text-emerald-900">Recent Reports</h3>
           <button
             onClick={() => navigate('/patient-dashboard/reports')}
-            className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1 text-sm"
+            className="text-emerald-600 hover:text-emerald-700 cursor-pointer font-medium flex items-center gap-1 text-sm"
           >
             View All <ChevronRightIcon className="w-4 h-4" />
           </button>
@@ -170,7 +170,7 @@ const PatientDashboard = () => {
             <p className="text-emerald-600 font-medium">No reports yet</p>
             <button
               onClick={() => navigate('/patient-dashboard/upload')}
-              className="mt-3 px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm font-medium hover:bg-emerald-600 transition-all"
+              className="mt-3 px-4 cursor-pointer py-2 bg-emerald-500 text-white rounded-xl text-sm font-medium hover:bg-emerald-600 transition-all"
             >
               Upload X-Ray
             </button>
@@ -201,7 +201,7 @@ const PatientDashboard = () => {
                   <button
                     onClick={() => handleDownload(report._id)}
                     disabled={downloading === report._id}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-semibold hover:bg-emerald-600 transition-all disabled:opacity-60"
+                    className="flex cursor-pointer items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-semibold hover:bg-emerald-600 transition-all disabled:opacity-60"
                   >
                     {downloading === report._id
                       ? <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />

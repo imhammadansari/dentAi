@@ -156,7 +156,7 @@ const BookSlot = () => {
                                                     <button
                                                         onClick={() => bookSlot(slotId)}
                                                         disabled={isBooking}
-                                                        className="flex items-center gap-1 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                                        className="flex cursor-pointer items-center gap-1 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                                                     >
                                                         {isBooking ? 'Booking...' : (
                                                             <>
