@@ -63,7 +63,7 @@ const startServer = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URL);
         console.log("Database Connected");
-        // Ensure a first admin account exists
+
         try { await createFirstAdmin(); } catch (err) { console.error('Seed admin error:', err); }
 
         app.listen(PORT, () => {

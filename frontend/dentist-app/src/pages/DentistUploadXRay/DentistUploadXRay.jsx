@@ -85,7 +85,7 @@ const DentistUploadXRay = () => {
 
                     <h3 className="text-2xl font-bold text-emerald-900 mb-2">Upload Dental X-Ray</h3>
                     <p className="text-emerald-600 mb-6 max-w-md mx-auto text-sm lg:text-base">
-                        Upload panoramic, bitewing, or periapical X-rays. Our AI will analyze and generate a report.
+                        Upload bitewing, or periapical X-rays. Our AI will analyze and generate a report.
                     </p>
 
                     <input type="file" accept="image/*" id="xrayUpload" className="hidden" onChange={onFileChange} />

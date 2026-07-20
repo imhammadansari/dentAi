@@ -3,7 +3,7 @@ import { Reveal } from '../Reveal/Reveal';
 
 const stats = [
     { num: '500+', label: 'Patients Served' },
-    { num: '94%', label: 'AI Accuracy Rate' },
+    { num: '75+%', label: 'AI Accuracy Rate' },
     { num: '10+', label: 'Expert Dentists' },
     { num: '24/7', label: 'Always Available' },
 ];

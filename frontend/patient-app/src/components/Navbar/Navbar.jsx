@@ -25,12 +25,13 @@ export const Navbar = () => {
 
     return (
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-xl shadow-sm border-b border-emerald-100/60' : 'bg-transparent'}`}>
-            <div className="max-w-7xl mx-auto px-6 lg:px-18 py-4 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-6 lg:px-18 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: brandGradient }}>
+                    {/* <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: brandGradient }}>
                         <ShieldCheckIcon className="w-5 h-5 text-white" />
                     </div>
-                    <span className="text-xl font-bold text-emerald-900">Dent<span className="text-emerald-500">AI</span></span>
+                    <span className="text-xl font-bold text-emerald-900">Dent<span className="text-emerald-500">AI</span></span> */}
+                    <img className='w-24' src="/images/logo-dent-ai.png" alt="" />
                 </div>
 
                 <div className="hidden md:flex items-center gap-8">

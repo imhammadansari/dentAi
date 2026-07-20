@@ -26,14 +26,15 @@ const Header = () => {
             <div className="flex justify-between items-center">
                 {/* Logo */}
                 <div className='flex gap-2 items-center'>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
+                    {/* <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                         <ShieldCheckIcon className="w-6 h-6 text-white cusror-pointer" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold" style={{ color: '#14532d' }}>
                             Dent<span style={{ color: '#22c55e' }}>AI</span>
                         </h1>
-                    </div>
+                    </div> */}
+                    <img src="/images/logo.png" alt="" />
 
                 </div>
 

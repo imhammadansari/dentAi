@@ -134,15 +134,17 @@ const PatientLogin = ({ isLogin = true }) => {
         <div className="min-h-screen flex items-center justify-center p-2" style={{ background: 'linear-gradient(135deg, #f0f9f0 0%, #e6f7e6 100%)' }}>
             <div className="w-full max-w-md">
 
-                <div className="text-center">
-                    <div className="flex justify-center mb-1">
+                <div className="text-center flex flex-col items-center">
+                    {/* <div className="flex justify-center mb-1">
                         <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                             <ShieldCheckIcon className="w-8 h-8 text-white" />
                         </div>
                     </div>
                     <h1 className="text-3xl font-bold mb-2" style={{ color: '#14532d' }}>
                         Dent<span style={{ color: '#22c55e' }}>AI</span>
-                    </h1>
+                    </h1> */}
+
+                    <img className='w-32' src="/images/logo-dent-ai.png" alt="" />
                     <p className="text-lg pb-2" style={{ color: '#4b5563' }}>
                         {isLoginMode ? 'Welcome back to your Dental Care' : 'Join our Dental Care Community'}
                     </p>

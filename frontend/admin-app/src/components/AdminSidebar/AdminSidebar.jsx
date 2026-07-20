@@ -39,10 +39,10 @@ const AdminSidebar = ({ userData, setMobileSidebar }) => {
 
     return (
         <div className="w-64 h-screen flex flex-col" style={{ backgroundColor: '#f0fdf4', borderRight: '1px solid #d1fae5' }}>
-            <div className="p-6">
-                <div className="flex items-center justify-between lg:justify-normal lg:gap-3 mb-6">
-                    <div className='flex gap-2 items-center'>
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
+            <div className="px-6 py-2">
+                <div className="flex items-center justify-between lg:justify-center lg:gap-3 mb-2">
+                    <div className='flex gap-2 items-center justify-center'>
+                        {/* <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                             <ShieldCheckIcon className="w-6 h-6 text-white" />
                         </div>
                         <div>
@@ -50,7 +50,8 @@ const AdminSidebar = ({ userData, setMobileSidebar }) => {
                                 Dent<span style={{ color: '#22c55e' }}>AI</span>
                             </h1>
                             <p className="text-xs font-medium" style={{ color: '#16a34a' }}>Admin Portal</p>
-                        </div>
+                        </div> */}
+                        <img className='w-32' src="/images/logo-dent-ai.png" alt="" />
                     </div>
                     <IoMenuSharp
                         onClick={() => setMobileSidebar && setMobileSidebar(false)}
@@ -60,8 +61,8 @@ const AdminSidebar = ({ userData, setMobileSidebar }) => {
 
                 <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '1px solid #f3e8ff' }}>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
-                            <UserCircleIcon className="w-10 h-10 text-white" />
+                        <div className="p-2 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
+                            <UserCircleIcon className="w-6 h-6 text-white" />
                         </div>
                         <div>
                             <h3 className="font-semibold text-gray-900">{name}</h3>

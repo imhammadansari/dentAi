@@ -55,10 +55,10 @@ export const FeatureSection = () => (
                             alt="Features"
                             className="rounded-3xl shadow-2xl shadow-emerald-100 w-full"
                         />
-                        <div className="absolute -top-5 -left-5 bg-emerald-600 text-white rounded-2xl p-4 shadow-xl">
+                        {/* <div className="absolute -top-5 -left-5 bg-emerald-600 text-white rounded-2xl p-4 shadow-xl">
                             <p className="text-2xl font-bold">94%</p>
                             <p className="text-xs text-emerald-200">AI accuracy</p>
-                        </div>
+                        </div> */}
                     </div>
                 </Reveal>
             </div>

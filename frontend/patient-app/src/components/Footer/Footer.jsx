@@ -45,10 +45,12 @@ export const Footer = () => {
                 <div className="grid md:grid-cols-4 gap-10 mb-12">
                     <div>
                         <div className="flex items-center gap-2.5 mb-5">
-                            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)' }}>
+                            {/* <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)' }}>
                                 <ShieldCheckIcon className="w-5 h-5 text-white" />
                             </div>
-                            <span className="text-xl font-bold">Dent<span className="text-emerald-400">AI</span></span>
+                            <span className="text-xl font-bold">Dent<span className="text-emerald-400">AI</span></span> */}
+
+                            <img className='w-36' src="/images/logo-dent-white.png" alt="" />
                         </div>
                         <p className="text-emerald-400 text-sm leading-relaxed">
                             Revolutionizing dental care through AI-powered analysis and expert connectivity.

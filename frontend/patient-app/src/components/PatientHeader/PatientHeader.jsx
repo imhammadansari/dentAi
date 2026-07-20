@@ -35,14 +35,14 @@ const PatientHeader = ({ activeTab, userData, toggleSidebar }) => {
     }, []);
 
     return (
-        <div className="bg-white border-b border-emerald-100 p-4 lg:p-6 flex justify-between items-center">
+        <div className="bg-white border-b border-emerald-100 px-4 lg:p-6 flex justify-between items-center">
             <div className='hidden lg:block'>
                 <h2 className="text-[16px] lg:text-2xl font-bold text-emerald-900">{headerInfo.title}</h2>
                 <p className="text-emerald-600 mt-1">{headerInfo.subtitle}</p>
             </div>
 
             <Link to='/' className='flex lg:hidden gap-2 items-center'>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
+                {/* <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
                     <ShieldCheckIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -50,7 +50,8 @@ const PatientHeader = ({ activeTab, userData, toggleSidebar }) => {
                         Dent<span style={{ color: '#22c55e' }}>AI</span>
                     </h1>
                     <p className="text-xs font-medium" style={{ color: '#16a34a' }}>Patient Portal</p>
-                </div>
+                </div> */}
+                <img className='w-20' src="/images/logo-dent-ai.png" alt="" />
             </Link>
 
             <div className="flex items-center gap-4">

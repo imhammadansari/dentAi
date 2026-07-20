@@ -18,10 +18,7 @@ const processQueue = (error) => {
     failedQueue = [];
 };
 
-// If a request fails with 401 (accessToken cookie missing/expired), hit
-// /verify once — verifyToken middleware will use the refreshToken cookie to
-// issue a new accessToken cookie. On success, retry the original request.
-// On failure, both tokens are dead — redirect to login.
+
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
